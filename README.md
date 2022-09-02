@@ -1,2 +1,2 @@
 # osg-project
-This is the Open Source Game project, intended to serve as a learning tool for new developers.
+The Open Source Game Project is a joint project between Preponderous Software and the Fairfield Programming Association intended to serve as a learning reference for new developers.
