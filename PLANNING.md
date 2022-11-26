@@ -7,7 +7,7 @@
 ## Setting
 The game will take place in a medieval island town with nearby landmarks like forests/caves.
 
-### Potential Locations
+### Locations
 - [ ] Player Home
 - [ ] Town Square
 - [ ] Docks
@@ -18,6 +18,43 @@ The game will take place in a medieval island town with nearby landmarks like fo
 - [ ] Forest
 - [ ] Cave
 
+### Actions
+- Player Home
+  - sleep
+  - go to town square
+- Town Square
+  - talk to townsfolk
+  - go to player home
+  - go to the docks
+  - go to the general store
+  - go to the credit union / bank
+  - go to the tavern
+  - go to the forest
+- Docks
+  - talk to townsfolk
+  - go to town square
+  - go to coastline
+- Coastline
+  - talk to fishermen
+  - go to docks
+  - go to forest
+- General Store
+  - talk to shopkeeper
+  - go to town square
+- Credit Union / Bank
+  - talk to teller
+  - go to town square
+- Tavern
+  - talk to patrons
+  - gamble
+  - go to town square
+- Forest
+  - cut lumber
+  - go to town square
+  - go to coastline
+- Cave
+  - go to forest
+ 
 ## Tech Stack
 - C# (object code)
 - Unity (graphics)
