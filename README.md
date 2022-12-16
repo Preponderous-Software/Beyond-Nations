@@ -6,3 +6,6 @@ Preponderous Software is leading development on this project and will be focusin
 
 ## What is the role of the Fairfield Programming Association?
 The FPA is focusing on community management, deadlines, publishing, press, advertisement and will be providing general assistance with development.
+
+## Planning Document
+The planning document can be found [here](PLANNING.md).
