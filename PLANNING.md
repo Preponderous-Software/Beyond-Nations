@@ -1,5 +1,7 @@
 # Planning Document
+
 ## General Goals
+
 - Provide a reasonably-sized 3D virtual world that provokes curiosity and a sense of exploration.
 - Allow the player to visit a number of locations containing a number of NPCs.
 - Allow the player to perform location-specific actions and make performing actions cause time to pass.
@@ -8,9 +10,11 @@
 - Ensure that the game is cross-platform (Windows/UNIX-based)
 
 ## Setting
+
 The game will take place in a medieval island town with nearby landmarks like forests/caves.
 
 ### Locations
+
 - [ ] Player Home
 - [ ] Town Square
 - [ ] Docks
@@ -22,6 +26,7 @@ The game will take place in a medieval island town with nearby landmarks like fo
 - [ ] Cave
 
 ### Actions
+
 - Player Home
   - sleep
   - go to town square
@@ -59,11 +64,13 @@ The game will take place in a medieval island town with nearby landmarks like fo
   - go to forest
  
 ## Tech Stack
+
 - C# (object code)
 - Unity (graphics)
 - JSON (data persistence)
 
 ## Elements
+
 1. Menus
 1. Movement
 1. Sounds
@@ -74,4 +81,5 @@ The game will take place in a medieval island town with nearby landmarks like fo
 1. Multiplayer Mode
 
 ## Inspiration
+
 The inspiration for this project is [FishE](https://github.com/Stephenson-Software/FishE), a simple text-adventure created in 2016.
