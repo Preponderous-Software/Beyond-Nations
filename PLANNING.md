@@ -13,6 +13,10 @@
 
 The game will take place in a medieval island town with nearby landmarks like forests/caves.
 
+## Narrative
+
+The player will inherit property from a distant relative and come to the island by ship.
+
 ### Locations
 
 - [ ] Player Home
@@ -20,48 +24,30 @@ The game will take place in a medieval island town with nearby landmarks like fo
 - [ ] Docks
 - [ ] Coastline
 - [ ] General Store
-- [ ] Credit Union / Bank
+- [ ] Bank
 - [ ] Tavern
-- [ ] Forest
-- [ ] Cave
 
 ### Actions
 
 - Player Home
   - sleep
-  - go to town square
 - Town Square
   - talk to townsfolk
-  - go to player home
-  - go to the docks
-  - go to the general store
-  - go to the credit union / bank
-  - go to the tavern
-  - go to the forest
 - Docks
   - talk to townsfolk
-  - go to town square
-  - go to coastline
 - Coastline
   - talk to fishermen
-  - go to docks
-  - go to forest
 - General Store
   - talk to shopkeeper
-  - go to town square
 - Credit Union / Bank
   - talk to teller
-  - go to town square
 - Tavern
   - talk to patrons
   - gamble
-  - go to town square
 - Forest
   - cut lumber
-  - go to town square
-  - go to coastline
 - Cave
-  - go to forest
+  - mine ore
  
 ## Tech Stack
 
@@ -71,14 +57,16 @@ The game will take place in a medieval island town with nearby landmarks like fo
 
 ## Elements
 
-1. Menus
 1. Movement
-1. Sounds
-1. Music
-1. Combat
-1. Data Persistence
-1. Quests
-1. Multiplayer Mode
+2. Inventory Management
+3. Resource Collection
+4. NPC Relationship Tracking
+5. Menu UI
+6. Sounds
+7. Music
+8. Data Persistence
+9. Quests
+10. Multiplayer
 
 ## Inspiration
 
