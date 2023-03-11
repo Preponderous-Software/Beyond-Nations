@@ -52,7 +52,8 @@ The player will inherit property from a distant relative and come to the island 
 ## Tech Stack
 
 - C# (object code)
-- Unity (graphics)
+- Unity (game engine)
+- Blender (3d modeling)
 - JSON (data persistence)
 
 ## Elements
