@@ -8,7 +8,7 @@ The Open Source Game project is a joint effort between Preponderous Software and
 3. Clone this repository with the following command:
 > git clone https://github.com/Preponderous-Software/osg-project
 4. Navigate to the `osg-project/Assets/Scenes` directory.
-5. Open the `tinyIsland` scene.
+5. Open the `main` scene.
 
 ## Troubleshooting
 ### Missing Editor Version
