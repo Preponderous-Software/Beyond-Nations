@@ -17,6 +17,10 @@ Attempting to open the repository folder directly as a Unity project will result
 
 The planning document can be found [here](PLANNING.md).
 
+## External Learning Resources
+- [Blender](https://www.youtube.com/watch?v=TPrnSACiTJ4)
+- [Unity](https://www.youtube.com/watch?v=pwZpJzpE2lQ)
+
 ## Roles
 ### What is the role of Preponderous Software?
 
