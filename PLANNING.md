@@ -1,54 +1,14 @@
 # Planning Document
+The game will take place in a procedurally generated world with a number of nations. Players can start a nation or join an existing one. The primary objective of the game is to claim territory, build a nation & provide a good life for its citizens. Relationships between nations as well as relationships between citizens of nations will be explored. The game will be a sandbox with a focus on emergent gameplay. The game will be designed to be played in a multiplayer environment, but will also be playable in a single player environment with a single player nation.
 
-## General Goals
+## Systems
+- World Generation
+- Nation Building & Management
+- NPC Relations
+- Resource Collection
+- Building Construction
+- Life Simulation (stories, resource supply & demand, day-to-day activities)
 
-- Provide a reasonably-sized 3D virtual world that provokes curiosity and a sense of exploration.
-- Allow the player to visit a number of locations containing a number of NPCs.
-- Allow the player to perform location-specific actions and make performing actions cause time to pass.
-- Allow multiple players to cooperatively experience the game.
-- Allow users in the community to easily mod the game.
-- Ensure that the game is cross-platform (Windows/UNIX-based)
-
-## Setting
-
-The game will take place in a medieval island town with nearby landmarks like forests/caves.
-
-## Narrative
-
-The player will inherit property from a distant relative and come to the island by ship.
-
-### Locations
-
-- [ ] Player Home
-- [ ] Town Square
-- [ ] Docks
-- [ ] Coastline
-- [ ] General Store
-- [ ] Bank
-- [ ] Tavern
-
-### Actions
-
-- Player Home
-  - sleep
-- Town Square
-  - talk to townsfolk
-- Docks
-  - talk to townsfolk
-- Coastline
-  - talk to fishermen
-- General Store
-  - talk to shopkeeper
-- Credit Union / Bank
-  - talk to teller
-- Tavern
-  - talk to patrons
-  - gamble
-- Forest
-  - cut lumber
-- Cave
-  - mine ore
- 
 ## Tech Stack
 
 - C# (object code)
@@ -56,19 +16,6 @@ The player will inherit property from a distant relative and come to the island 
 - Blender (3d modeling)
 - JSON (data persistence)
 
-## Elements
-
-1. Movement
-2. Inventory Management
-3. Resource Collection
-4. NPC Relationship Tracking
-5. Menu UI
-6. Sounds
-7. Music
-8. Data Persistence
-9. Quests
-10. Multiplayer
-
 ## Inspiration
 
-The inspiration for this project is [FishE](https://github.com/Stephenson-Software/FishE), a simple text-adventure created in 2016.
+The inspiration for this project is [Medieval Factions](https://github.com/Dans-Plugins/Medieval-Factions), a minecraft plugin that allows players to create their own nation, claim territory & form relations with other nations. The plugin is limited by the fact that it is a plugin for a game that is not designed for this kind of gameplay. The goal of this project is to create a game that is designed for this kind of gameplay.
