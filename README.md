@@ -20,11 +20,14 @@ In this game, there are several systems in place to provide an immersive experie
 - The **Life Simulation** system adds a layer of realism to the game by simulating resource supply and demand, day-to-day activities, and stories of citizens. This system immerses players in the world of the game, making it more engaging and immersive.
 
 ## Tech Stack
-We will be using the following tech stack:
-- C# (object code)
-- Unity (game engine)
-- Blender (3d modeling)
-- JSON (data persistence)
+Our game will be built using the following technologies:
+- [C#](https://docs.microsoft.com/en-us/dotnet/csharp/): This object-oriented programming language will be used to write the game's code.
+- [Unity](https://unity.com/): A popular game engine that provides a framework for designing and developing games.
+- [Blender](https://www.blender.org/): A powerful 3D modeling software that will be used to create the game's visual assets.
+- [JSON](https://www.json.org/json-en.html): A lightweight data format that will be used to store and exchange game data, providing efficient and reliable data persistence.
+- [Git](https://git-scm.com/): A version control system that allows for collaborative development and efficient management of codebase changes.
+- [GitHub](https://github.com/): A web-based Git repository hosting service that enables version control and collaboration for developers.
+- [Visual Studio Code](https://code.visualstudio.com/): A code editor that supports a wide range of programming languages and offers features such as debugging, syntax highlighting, and extensions.
 
 ## Inspiration
 Our inspiration for this project comes from the Medieval Factions Minecraft plugin. This plugin enables players to create their own nation, claim territory, and form relations with other nations. The plugin is limited because it is designed for a game that is not created for this kind of gameplay. The objective of our project is to develop a game specifically designed for this kind of gameplay.
