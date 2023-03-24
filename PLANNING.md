@@ -1,7 +1,9 @@
 # Planning Document
-The game will take place in a procedurally generated world with a number of nations. Players can start a nation or join an existing one. The primary objective of the game is to claim territory, build a nation & provide a good life for its citizens. Relationships between nations as well as relationships between citizens of nations will be explored. The game will be a sandbox with a focus on emergent gameplay. The game will be designed to be played in a multiplayer environment, but will also be playable in a single player environment with a single player nation.
+The game is set in a procedurally generated world with multiple nations. Players can either start their own nation or join an existing one. The main objective of the game is to claim territory, develop a nation, and ensure a good life for its citizens. The game explores the relationships between nations and citizens of those nations. It is a sandbox game with a focus on emergent gameplay. It is designed to be played in a multiplayer environment, but players can also enjoy it in a single-player environment with a single-player nation.
 
-## Systems
+## Game Systems
+The game systems include:
+
 - World Generation
 - Nation Building & Management
 - NPC Relations
@@ -10,6 +12,7 @@ The game will take place in a procedurally generated world with a number of nati
 - Life Simulation (stories, resource supply & demand, day-to-day activities)
 
 ## Tech Stack
+We will be using the following tech stack:
 
 - C# (object code)
 - Unity (game engine)
@@ -17,5 +20,4 @@ The game will take place in a procedurally generated world with a number of nati
 - JSON (data persistence)
 
 ## Inspiration
-
-The inspiration for this project is [Medieval Factions](https://github.com/Dans-Plugins/Medieval-Factions), a minecraft plugin that allows players to create their own nation, claim territory & form relations with other nations. The plugin is limited by the fact that it is a plugin for a game that is not designed for this kind of gameplay. The goal of this project is to create a game that is designed for this kind of gameplay.
+Our inspiration for this project comes from the Medieval Factions Minecraft plugin. This plugin enables players to create their own nation, claim territory, and form relations with other nations. However, the plugin is limited because it is designed for a game that is not created for this kind of gameplay. The objective of our project is to develop a game specifically designed for this kind of gameplay.
