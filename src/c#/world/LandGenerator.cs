@@ -9,22 +9,22 @@ using static Environment;
  * A land generator is a component that generates land.
  * It is a part of the world.
  */
-public class LandGenerator : MonoBehaviour {
-    public int chunkSize = 5;
-    public int locationScale = 3;
-    public Player player; // must be set in Unity
-
+public class LandGenerator {
     private Environment environment;
+    private Player player;
+    private int chunkSize = 5;
+    private int locationScale = 3;
     private int currentChunkX = 0;
     private int currentChunkZ = 0;
 
-    // Start is called before the first frame update
-    void Start() {
-        environment = new Environment(chunkSize, locationScale);
+    public LandGenerator(Environment environment, Player player) {
+        this.environment = environment;
+        this.player = player;
+        this.chunkSize = environment.getChunkSize();
+        this.locationScale = environment.getLocationScale();
     }
 
-    // Update is called once per frame
-    void Update() {
+    public void update() {
         updateCurrentChunkBasedOnPlayerPosition();
 
         generateChunkIfNotExistent(currentChunkX, currentChunkZ);

@@ -14,6 +14,7 @@ public class Environment {
 
     public Environment(int chunkSize, int locationScale) {
         gameObject = new GameObject("Environment");
+        gameObject.transform.parent = GameObject.Find("Open Source Game").transform;
         gameObject.transform.position = new Vector3(0, 0, 0);
 
         // create initial chunk
@@ -37,5 +38,13 @@ public class Environment {
 
     public int getSize() {
         return chunks.Count;
+    }
+
+    public int getChunkSize() {
+        return chunks[0].getSize();
+    }
+
+    public int getLocationScale() {
+        return chunks[0].getLocationScale();
     }
 }

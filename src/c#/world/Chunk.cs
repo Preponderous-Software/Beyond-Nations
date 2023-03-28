@@ -55,6 +55,10 @@ public class Chunk {
         return gameObject;
     }
 
+    public int getLocationScale() {
+        return locations[0, 0].getScale();
+    }
+
     private Vector3 calculatePosition(int locationScale) {
         return new Vector3(xpos * size * locationScale, 0, zpos * size * locationScale);
     }
