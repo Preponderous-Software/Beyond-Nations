@@ -9,15 +9,7 @@ The game's main objective is to claim territory, develop your nation, and ensure
 With sandbox-style gameplay that promotes emergent experiences, every playthrough will be a new adventure. Whether players prefer a multiplayer environment or a single-player experience with a single-player nation, this game offers something for everyone.
 
 ## Game Systems
-In this game, there are several systems in place to provide an immersive experience for players.
-- The **World Generation** system procedurally generates a vast world for players to explore. This ensures that every playthrough is unique.
-- The **Nation Building** system is designed to give players the freedom to create their own nation from scratch or join an existing one. This system promotes a sense of ownership and control over the player's gaming experience.
-- The **Territory Management** system is focused on claiming territory and developing the player's nation to ensure a prosperous life for its citizens. This system requires careful planning and strategic decision-making to maintain a thriving nation.
-- The **Diplomacy** system allows players to navigate complex relationships between nations. This system encourages players to form alliances and engage in battles with their enemies.
-- The **Relationship** system enables players to form relationships with other citizens. This system encourages players to interact with other citizens and build a community.
-- The **Resource Collection** system allows players to collect resources from the world. This system encourages players to explore the world and discover new resources.
-- The **Building/Construction** system enables players to construct buildings and structures to enhance their nation's infrastructure. This system encourages creativity and innovation in nation-building.
-- The **Life Simulation** system adds a layer of realism to the game by simulating resource supply and demand, day-to-day activities, and stories of citizens. This system immerses players in the world of the game, making it more engaging and immersive.
+There are a number of systems that will be implemented in the game. These systems will be used to create a rich and engaging gameplay experience. Details can be found in the [Systems Document](./docs/SYSTEMS.md).
 
 ## Tech Stack
 Our game will be built using the following technologies:
