@@ -19,4 +19,8 @@ public class ChunkId {
         ChunkId other = (ChunkId) obj;
         return guid.Equals(other.guid);
     }
+
+    public override int GetHashCode() {
+        return guid.GetHashCode();
+    }
 }

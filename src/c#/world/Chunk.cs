@@ -67,7 +67,10 @@ public class Chunk {
     }
 
     private Vector3 calculatePosition(int locationScale) {
-        return new Vector3(xpos * size * locationScale, 0, zpos * size * locationScale);
+        int lengthOfChunk = size * locationScale;
+        int x = xpos * lengthOfChunk;
+        int z = zpos * lengthOfChunk;
+        return new Vector3(x, 0, z);
     }
 
     private void initializeGameObject() {

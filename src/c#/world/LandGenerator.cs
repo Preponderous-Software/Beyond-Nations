@@ -6,8 +6,7 @@ using static Chunk;
 using static Environment;
 
 /**
- * A land generator is a component that generates land.
- * It is a part of the world.
+ * The LandGenerator class is responsible for generating the land.
  */
 public class LandGenerator {
     private Environment environment;
@@ -25,15 +24,35 @@ public class LandGenerator {
     }
 
     public void update() {
-        updateCurrentChunkBasedOnPlayerPosition();
+        calculateCurrentChunk();
+        generateCurrentChunk();
+        generateSurroundingChunks();
+    }
 
+    public int getCurrentChunkX() {
+        return currentChunkX;
+    }
+
+    public int getCurrentChunkZ() {
+        return currentChunkZ;
+    }
+
+    private void generateCurrentChunk() {
         generateChunkIfNotExistent(currentChunkX, currentChunkZ);
+    }
 
-        // generate surrounding chunks
+    private void generateSurroundingChunks() {
+        // sides
         generateChunkIfNotExistent(currentChunkX + 1, currentChunkZ);
         generateChunkIfNotExistent(currentChunkX - 1, currentChunkZ);
         generateChunkIfNotExistent(currentChunkX, currentChunkZ + 1);
         generateChunkIfNotExistent(currentChunkX, currentChunkZ - 1);
+
+        // corners
+        generateChunkIfNotExistent(currentChunkX + 1, currentChunkZ + 1);
+        generateChunkIfNotExistent(currentChunkX - 1, currentChunkZ + 1);
+        generateChunkIfNotExistent(currentChunkX + 1, currentChunkZ - 1);
+        generateChunkIfNotExistent(currentChunkX - 1, currentChunkZ - 1);
     }
 
     private void generateChunkIfNotExistent(int chunkX, int chunkZ) {
@@ -45,18 +64,23 @@ public class LandGenerator {
     }
 
     /**
-     * Updates the current chunk.
+     * Calculates the current chunk based on the player position.
      */
-    private void updateCurrentChunkBasedOnPlayerPosition() {
+    private void calculateCurrentChunk() {
         Vector3 playerPosition = player.transform.position;
+        int lengthOfChunk = chunkSize * locationScale;
 
-        // calculate chunkX & chunkZ based on player position taking into account chunk size and location scale
-        int chunkX = (int) (playerPosition.x / (chunkSize * locationScale));
-        int chunkZ = (int) (playerPosition.z / (chunkSize * locationScale));
+        if (playerPosition.x >= 0) {
+            currentChunkX = (int) (playerPosition.x / lengthOfChunk);
+        } else {
+            currentChunkX = (int) (playerPosition.x / lengthOfChunk) - 1; // this 
+        }
 
-        // update current chunk
-        currentChunkX = chunkX;
-        currentChunkZ = chunkZ;
+        if (playerPosition.z >= 0) {
+            currentChunkZ = (int) (playerPosition.z / lengthOfChunk);
+        } else {
+            currentChunkZ = (int) (playerPosition.z / lengthOfChunk) - 1;
+        }
     }
 
     private void createNewChunkAt(int chunkX, int chunkZ) {

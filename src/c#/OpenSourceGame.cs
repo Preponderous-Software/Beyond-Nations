@@ -40,6 +40,16 @@ public class OpenSourceGame : MonoBehaviour {
 
         if (tickCounter.shouldUpdate()) {
             landGenerator.update();
+
+            checkIfPlayerIsFallingIntoVoid();
+        }
+    }
+
+    void checkIfPlayerIsFallingIntoVoid() {
+        float ypos = player.transform.position.y;
+        if (ypos < -10) {
+            Debug.Log("Player fell into the void.");
+            player.transform.position = new Vector3(0, 10, 0);
         }
     }
 }
