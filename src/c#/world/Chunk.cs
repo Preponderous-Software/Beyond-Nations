@@ -2,12 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static Location;
+using static ChunkId;
 
 /**
 * A chunk is a 2D array of locations.
 * It is a part of the environment.
 */
 public class Chunk {
+    private ChunkId id;
     private int size;
     private Location[,] locations;
     private Vector3 position;
@@ -17,6 +19,7 @@ public class Chunk {
     private GameObject gameObject;
 
     public Chunk(int xpos, int zpos, int size, int locationScale) {
+        this.id = new ChunkId();
         this.size = size;
         this.locations = new Location[size, size];
         this.xpos = xpos;
@@ -25,6 +28,10 @@ public class Chunk {
         this.position = calculatePosition(locationScale);
         initializeGameObject();
         generateLocations(locationScale);
+    }
+
+    public ChunkId getId() {
+        return id;
     }
 
     public int getSize() {
