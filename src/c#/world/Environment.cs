@@ -3,23 +3,30 @@ using System.Collections.Generic;
 using UnityEngine;
 using static Location;
 using static Chunk;
+using static EnvironmentId;
 
 /*
 * An environment is a collection of chunks.
 * It is the world.
 */
 public class Environment {
+    private EnvironmentId id;
     private List<Chunk> chunks = new List<Chunk>();
     private GameObject gameObject;
 
     public Environment(int chunkSize, int locationScale) {
+        this.id = new EnvironmentId();
         gameObject = new GameObject("Environment");
         gameObject.transform.parent = GameObject.Find("Open Source Game").transform;
         gameObject.transform.position = new Vector3(0, 0, 0);
 
         // create initial chunk
         Chunk chunk = new Chunk(0, 0, chunkSize, locationScale);
-        addChunk(chunk);        
+        addChunk(chunk);
+    }
+
+    public EnvironmentId getId() {
+        return id;
     }
 
     public void addChunk(Chunk chunk) {

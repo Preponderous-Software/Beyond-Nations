@@ -1,22 +1,29 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static LocationId;
 
 /**
 * A location is a single point in the world.
 * It is a part of a chunk.
 */
 public class Location {
+    private LocationId id;
     private Vector3 position;
     private int scale;
     private string name;
     private GameObject gameObject;
 
     public Location(int xpos, int zpos, int scale) {
+        this.id = new LocationId();
         this.position = new Vector3(xpos * scale, 0, zpos * scale);
         this.scale = scale;
         this.name = "Location_" + xpos + "_" + zpos;
         initializeGameObject();
+    }
+
+    public LocationId getId() {
+        return id;
     }
 
     public Vector3 getPosition() {
