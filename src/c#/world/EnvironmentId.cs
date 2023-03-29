@@ -19,4 +19,8 @@ public class EnvironmentId {
         EnvironmentId other = (EnvironmentId) obj;
         return guid.Equals(other.guid);
     }
+
+    public override int GetHashCode() {
+        return guid.GetHashCode();
+    }
 }

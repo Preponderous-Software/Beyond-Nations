@@ -19,4 +19,8 @@ public class LocationId {
         LocationId other = (LocationId) obj;
         return guid.Equals(other.guid);
     }
+
+    public override int GetHashCode() {
+        return guid.GetHashCode();
+    }
 }
