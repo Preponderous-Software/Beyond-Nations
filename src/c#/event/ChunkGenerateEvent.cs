@@ -18,4 +18,8 @@ public class ChunkGenerateEvent : Event {
         get { return chunkZ; }
         set { chunkZ = value; }
     }
+
+    public override string ToString() {
+        return "ChunkGenerateEvent [chunkX=" + chunkX + ", chunkZ=" + chunkZ + ", type=" + Type + ", description=" + Description + ", date=" + Date + "]";
+    }
 }

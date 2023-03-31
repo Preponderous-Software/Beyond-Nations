@@ -56,8 +56,11 @@ public class OpenSourceGame : MonoBehaviour {
     void checkIfPlayerIsFallingIntoVoid() {
         float ypos = player.transform.position.y;
         if (ypos < -10) {
-            Debug.Log("Player fell into the void.");
-            player.transform.position = new Vector3(0, 10, 0);
+            // produce event
+            eventProducer.producePlayerFallingIntoVoidEvent(player.transform.position);
+
+            // reset player position
+            player.transform.position = new Vector3(0, 10, 0);            
         }
     }
 }

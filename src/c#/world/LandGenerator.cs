@@ -87,11 +87,11 @@ public class LandGenerator {
     }
 
     private void createNewChunkAt(int chunkX, int chunkZ) {
+        // produce event
+        eventProducer.produceChunkGenerateEvent(chunkX, chunkZ);
+
         // create new chunk
         Chunk chunk = new Chunk(chunkX, chunkZ, chunkSize, locationScale);
         environment.addChunk(chunk);
-
-        // produce event
-        eventProducer.produceChunkGenerateEvent(chunkX, chunkZ);
     }
 }

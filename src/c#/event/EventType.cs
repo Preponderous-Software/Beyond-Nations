@@ -1,4 +1,5 @@
 public enum EventType {
     None,
-    ChunkGenerate
+    ChunkGenerate,
+    PlayerFallingIntoVoid
 }

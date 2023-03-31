@@ -18,7 +18,18 @@ public class EventProducer {
         }
         else {
             eventRepository.addEvent(chunkGenerateEvent);
-            Debug.Log("Produced event: \"" + chunkGenerateEvent.Description + "\"");
+            Debug.Log("Produced event: " + chunkGenerateEvent);
+        }
+    }
+
+    public void producePlayerFallingIntoVoidEvent(Vector3 position) {
+        PlayerFallingIntoVoidEvent playerFallingIntoVoidEvent = new PlayerFallingIntoVoidEvent(position);
+        if (useKafka) {
+            // TODO: send event to Kafka
+        }
+        else {
+            eventRepository.addEvent(playerFallingIntoVoidEvent);
+            Debug.Log("Produced event: " + playerFallingIntoVoidEvent);
         }
     }
 }
