@@ -11,6 +11,8 @@ using static LandGenerator;
 * It is the entry point of the game.
 */
 public class OpenSourceGame : MonoBehaviour {
+    private EventRepository eventRepository;
+    private EventProducer eventProducer;
     private Environment environment;
     private LandGenerator landGenerator;
     private TickCounter tickCounter;
@@ -24,10 +26,16 @@ public class OpenSourceGame : MonoBehaviour {
     void Start() {
         Debug.Log("Starting game...");
 
+        eventRepository = new EventRepository();
+        Debug.Log("Event repository created.");
+
+        eventProducer = new EventProducer(eventRepository);
+        Debug.Log("Event producer created.");
+
         environment = new Environment(chunkSize, locationScale);
         Debug.Log("Environment created.");
 
-        landGenerator = new LandGenerator(environment, player);
+        landGenerator = new LandGenerator(environment, player, eventProducer);
         Debug.Log("Land generator created.");
 
         tickCounter = new TickCounter(updateInterval);
