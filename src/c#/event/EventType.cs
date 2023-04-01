@@ -1,5 +1,8 @@
-public enum EventType {
-    None,
-    ChunkGenerate,
-    PlayerFallingIntoVoid
+namespace osg {
+
+    public enum EventType {
+        None,
+        ChunkGenerate,
+        PlayerFallingIntoVoid
+    }
 }

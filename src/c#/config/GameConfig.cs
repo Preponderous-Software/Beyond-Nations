@@ -1,29 +1,32 @@
-class GameConfig {
-    private int chunkSize;
-    private int locationScale;
-    private int updateInterval;
-    private int statusExpirationTicks;
+namespace osg {
 
-    public GameConfig() {
-        chunkSize = 9;
-        locationScale = 9;
-        updateInterval = 10;
-        statusExpirationTicks = 500;
-    }
+    class GameConfig {
+        private int chunkSize;
+        private int locationScale;
+        private int updateInterval;
+        private int statusExpirationTicks;
 
-    public int getChunkSize() {
-        return chunkSize;
-    }
+        public GameConfig() {
+            chunkSize = 9;
+            locationScale = 9;
+            updateInterval = 10;
+            statusExpirationTicks = 500;
+        }
 
-    public int getLocationScale() {
-        return locationScale;
-    }
+        public int getChunkSize() {
+            return chunkSize;
+        }
 
-    public int getUpdateInterval() {
-        return updateInterval;
-    }
+        public int getLocationScale() {
+            return locationScale;
+        }
 
-    public int getStatusExpirationTicks() {
-        return statusExpirationTicks;
+        public int getUpdateInterval() {
+            return updateInterval;
+        }
+
+        public int getStatusExpirationTicks() {
+            return statusExpirationTicks;
+        }
     }
 }
