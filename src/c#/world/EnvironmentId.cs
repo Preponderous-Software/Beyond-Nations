@@ -1,26 +1,29 @@
 using System;
 
-public class EnvironmentId {
-    private Guid guid;
+namespace osg {
 
-    public EnvironmentId() {
-        guid = Guid.NewGuid();
-    }
+    public class EnvironmentId {
+        private Guid guid;
 
-    public override string ToString() {
-        return guid.ToString();
-    }
-
-    public override bool Equals(object obj) {
-        if (obj == null || GetType() != obj.GetType()) {
-            return false;
+        public EnvironmentId() {
+            guid = Guid.NewGuid();
         }
 
-        EnvironmentId other = (EnvironmentId) obj;
-        return guid.Equals(other.guid);
-    }
+        public override string ToString() {
+            return guid.ToString();
+        }
 
-    public override int GetHashCode() {
-        return guid.GetHashCode();
+        public override bool Equals(object obj) {
+            if (obj == null || GetType() != obj.GetType()) {
+                return false;
+            }
+
+            EnvironmentId other = (EnvironmentId) obj;
+            return guid.Equals(other.guid);
+        }
+
+        public override int GetHashCode() {
+            return guid.GetHashCode();
+        }
     }
 }

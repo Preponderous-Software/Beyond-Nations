@@ -1,26 +1,29 @@
 using System;
 
-public class LocationId {
-    private Guid guid;
+namespace osg {
+    
+    public class LocationId {
+        private Guid guid;
 
-    public LocationId() {
-        guid = Guid.NewGuid();
-    }
-
-    public override string ToString() {
-        return guid.ToString();
-    }
-
-    public override bool Equals(object obj) {
-        if (obj == null || GetType() != obj.GetType()) {
-            return false;
+        public LocationId() {
+            guid = Guid.NewGuid();
         }
 
-        LocationId other = (LocationId) obj;
-        return guid.Equals(other.guid);
-    }
+        public override string ToString() {
+            return guid.ToString();
+        }
 
-    public override int GetHashCode() {
-        return guid.GetHashCode();
+        public override bool Equals(object obj) {
+            if (obj == null || GetType() != obj.GetType()) {
+                return false;
+            }
+
+            LocationId other = (LocationId) obj;
+            return guid.Equals(other.guid);
+        }
+
+        public override int GetHashCode() {
+            return guid.GetHashCode();
+        }
     }
 }

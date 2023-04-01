@@ -1,24 +1,25 @@
-using static Event;
-using static ChunkGenerateEvent;
 using System;
 using UnityEngine;
 
-public class EventProducer {
-    private EventRepository eventRepository;
+namespace osg {
 
-    public EventProducer(EventRepository eventRepository) {
-        this.eventRepository = eventRepository;
-    }
+    public class EventProducer {
+        private EventRepository eventRepository;
 
-    public void produceChunkGenerateEvent(int chunkX, int chunkZ) {
-        ChunkGenerateEvent chunkGenerateEvent = new ChunkGenerateEvent(chunkX, chunkZ);
-        eventRepository.addEvent(chunkGenerateEvent);
-        Debug.Log("Produced event: " + chunkGenerateEvent);
-    }
+        public EventProducer(EventRepository eventRepository) {
+            this.eventRepository = eventRepository;
+        }
 
-    public void producePlayerFallingIntoVoidEvent(Vector3 position) {
-        PlayerFallingIntoVoidEvent playerFallingIntoVoidEvent = new PlayerFallingIntoVoidEvent(position);
-        eventRepository.addEvent(playerFallingIntoVoidEvent);
-        Debug.Log("Produced event: " + playerFallingIntoVoidEvent);
+        public void produceChunkGenerateEvent(int chunkX, int chunkZ) {
+            ChunkGenerateEvent chunkGenerateEvent = new ChunkGenerateEvent(chunkX, chunkZ);
+            eventRepository.addEvent(chunkGenerateEvent);
+            Debug.Log("Produced event: " + chunkGenerateEvent);
+        }
+
+        public void producePlayerFallingIntoVoidEvent(Vector3 position) {
+            PlayerFallingIntoVoidEvent playerFallingIntoVoidEvent = new PlayerFallingIntoVoidEvent(position);
+            eventRepository.addEvent(playerFallingIntoVoidEvent);
+            Debug.Log("Produced event: " + playerFallingIntoVoidEvent);
+        }
     }
 }

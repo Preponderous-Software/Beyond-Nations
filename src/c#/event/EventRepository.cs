@@ -1,26 +1,27 @@
-using static Event;
-using static EventType;
 using System.Collections.Generic;
 
-public class EventRepository {
-    private Dictionary<EventType, List<Event>> events;
+namespace osg {
 
-    public EventRepository() {
-        events = new Dictionary<EventType, List<Event>>();
-    }
+    public class EventRepository {
+        private Dictionary<EventType, List<Event>> events;
 
-    public void addEvent(Event e) {
-        try {
-            List<Event> list = events[e.getType()];
-            list.Add(e);
-        } catch (KeyNotFoundException) {
-            List<Event> list = new List<Event>();
-            list.Add(e);
-            events.Add(e.getType(), list);
+        public EventRepository() {
+            events = new Dictionary<EventType, List<Event>>();
         }
-    }
 
-    public List<Event> getEvents(EventType eventType) {
-        return events[eventType];
+        public void addEvent(Event e) {
+            try {
+                List<Event> list = events[e.getType()];
+                list.Add(e);
+            } catch (KeyNotFoundException) {
+                List<Event> list = new List<Event>();
+                list.Add(e);
+                events.Add(e.getType(), list);
+            }
+        }
+
+        public List<Event> getEvents(EventType eventType) {
+            return events[eventType];
+        }
     }
 }

@@ -1,88 +1,89 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static Location;
-using static ChunkId;
 
-/**
-* A chunk is a 2D array of locations.
-* It is a part of the environment.
-*/
-public class Chunk {
-    private ChunkId id;
-    private int size;
-    private Location[,] locations;
-    private Vector3 position;
-    private int xpos;
-    private int zpos;
-    private string name;
-    private GameObject gameObject;
+namespace osg {
 
-    public Chunk(int xpos, int zpos, int size, int locationScale) {
-        this.id = new ChunkId();
-        this.size = size;
-        this.locations = new Location[size, size];
-        this.xpos = xpos;
-        this.zpos = zpos;
-        this.name = "Chunk_" + xpos + "_" + zpos;
-        this.position = calculatePosition(locationScale);
-        initializeGameObject();
-        generateLocations(locationScale);
-    }
+    /**
+    * A chunk is a 2D array of locations.
+    * It is a part of the environment.
+    */
+    public class Chunk {
+        private ChunkId id;
+        private int size;
+        private Location[,] locations;
+        private Vector3 position;
+        private int xpos;
+        private int zpos;
+        private string name;
+        private GameObject gameObject;
 
-    public ChunkId getId() {
-        return id;
-    }
+        public Chunk(int xpos, int zpos, int size, int locationScale) {
+            this.id = new ChunkId();
+            this.size = size;
+            this.locations = new Location[size, size];
+            this.xpos = xpos;
+            this.zpos = zpos;
+            this.name = "Chunk_" + xpos + "_" + zpos;
+            this.position = calculatePosition(locationScale);
+            initializeGameObject();
+            generateLocations(locationScale);
+        }
 
-    public int getSize() {
-        return size;
-    }
+        public ChunkId getId() {
+            return id;
+        }
 
-    public int getX() {
-        return xpos;
-    }
+        public int getSize() {
+            return size;
+        }
 
-    public int getZ() {
-        return zpos;
-    }
+        public int getX() {
+            return xpos;
+        }
 
-    public Vector3 getPosition() {
-        return position;
-    }
+        public int getZ() {
+            return zpos;
+        }
 
-    public Location[,] getLocations() {
-        return locations;
-    }
+        public Vector3 getPosition() {
+            return position;
+        }
 
-    public Location getLocation(int x, int z) {
-        return locations[x, z];
-    }
+        public Location[,] getLocations() {
+            return locations;
+        }
 
-    public GameObject getGameObject() {
-        return gameObject;
-    }
+        public Location getLocation(int x, int z) {
+            return locations[x, z];
+        }
 
-    public int getLocationScale() {
-        return locations[0, 0].getScale();
-    }
+        public GameObject getGameObject() {
+            return gameObject;
+        }
 
-    private Vector3 calculatePosition(int locationScale) {
-        int lengthOfChunk = size * locationScale;
-        int x = xpos * lengthOfChunk;
-        int z = zpos * lengthOfChunk;
-        return new Vector3(x, 0, z);
-    }
+        public int getLocationScale() {
+            return locations[0, 0].getScale();
+        }
 
-    private void initializeGameObject() {
-        this.gameObject = new GameObject(name);
-        this.gameObject.transform.position = position;
-    }
+        private Vector3 calculatePosition(int locationScale) {
+            int lengthOfChunk = size * locationScale;
+            int x = xpos * lengthOfChunk;
+            int z = zpos * lengthOfChunk;
+            return new Vector3(x, 0, z);
+        }
 
-    private void generateLocations(int locationScale) {
-        for (int x = 0; x < size; x++) {
-            for (int z = 0; z < size; z++) {
-                locations[x, z] = new Location(xpos * size + x, zpos * size + z, locationScale);
-                locations[x, z].getGameObject().transform.parent = gameObject.transform;
+        private void initializeGameObject() {
+            this.gameObject = new GameObject(name);
+            this.gameObject.transform.position = position;
+        }
+
+        private void generateLocations(int locationScale) {
+            for (int x = 0; x < size; x++) {
+                for (int z = 0; z < size; z++) {
+                    locations[x, z] = new Location(xpos * size + x, zpos * size + z, locationScale);
+                    locations[x, z].getGameObject().transform.parent = gameObject.transform;
+                }
             }
         }
     }
