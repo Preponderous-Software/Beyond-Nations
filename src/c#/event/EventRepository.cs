@@ -1,21 +1,26 @@
 using static Event;
+using static EventType;
 using System.Collections.Generic;
 
-/**
- * This is a temporary repository for events until we get Kafka up and running.
- */
 public class EventRepository {
-    private List<Event> events;
+    private Dictionary<EventType, List<Event>> events;
 
     public EventRepository() {
-        events = new List<Event>();
+        events = new Dictionary<EventType, List<Event>>();
     }
 
     public void addEvent(Event e) {
-        events.Add(e);
+        try {
+            List<Event> list = events[e.getType()];
+            list.Add(e);
+        } catch (KeyNotFoundException) {
+            List<Event> list = new List<Event>();
+            list.Add(e);
+            events.Add(e.getType(), list);
+        }
     }
 
-    public List<Event> getEvents() {
-        return events;
+    public List<Event> getEvents(EventType eventType) {
+        return events[eventType];
     }
 }

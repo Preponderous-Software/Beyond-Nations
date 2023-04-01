@@ -14,6 +14,6 @@ public class PlayerFallingIntoVoidEvent : Event {
     }
 
     public override string ToString() {
-        return "PlayerFallingIntoVoidEvent [position=" + position + ", type=" + Type + ", description=" + Description + ", date=" + Date + "]";
+        return "PlayerFallingIntoVoidEvent [position=" + position + ", type=" + getType() + ", description=" + getDescription() + ", date=" + getDate() + "]";
     }
 }

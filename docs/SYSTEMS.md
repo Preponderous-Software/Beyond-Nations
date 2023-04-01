@@ -13,7 +13,7 @@ The game will consist of the following systems:
 **Note:** This document is a work in progress. It will be updated as the project progresses and more systems are planned/implemented.
 
 ## Event
-The event system will be used to manage events that occur in the game. Events will be used to trigger actions and update the state of the game. Events will be triggered by the player, the world, or other systems. Events will be able to trigger other events. Events will be able to be subscribed to by other systems. Events will be able to be queued and executed at a later time. We will use Kafka under the hood for this system.
+The event system will be used to manage events that occur in the game. Events will be used to trigger actions and update the state of the game. Events will be triggered by the player, the world, or other systems. Events will be able to trigger other events. Events will be able to be subscribed to by other systems.
 
 ## World Generation
 The world generation system will be used to create a procedurally generated world. The world will be populated with biomes, terrain, and other features.

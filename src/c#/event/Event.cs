@@ -12,18 +12,15 @@ public abstract class Event {
         this.date = DateTime.Now;
     }
 
-    public EventType Type {
-        get { return type; }
-        set { type = value; }
+    public EventType getType() {
+        return type;
     }
 
-    public string Description {
-        get { return description; }
-        set { description = value; }
+    public string getDescription() {
+        return description;
     }
 
-    public DateTime Date {
-        get { return date; }
-        set { date = value; }
+    public DateTime getDate() {
+        return date;
     }
 }

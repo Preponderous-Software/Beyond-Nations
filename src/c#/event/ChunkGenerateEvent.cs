@@ -20,6 +20,6 @@ public class ChunkGenerateEvent : Event {
     }
 
     public override string ToString() {
-        return "ChunkGenerateEvent [chunkX=" + chunkX + ", chunkZ=" + chunkZ + ", type=" + Type + ", description=" + Description + ", date=" + Date + "]";
+        return "ChunkGenerateEvent [chunkX=" + chunkX + ", chunkZ=" + chunkZ + ", type=" + getType() + ", description=" + getDescription() + ", date=" + getDate() + "]";
     }
 }
