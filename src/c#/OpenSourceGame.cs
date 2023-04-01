@@ -1,11 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using static Environment;
 using static Chunk;
 using static Location;
 using static LandGenerator;
 using static GameConfig;
+using static CanvasFactory;
 
 /**
 * The OpenSourceGame class is the main class of the game.
@@ -20,7 +22,9 @@ public class OpenSourceGame : MonoBehaviour {
     private TickCounter tickCounter;
     public Player player; // must be set in Unity Editor -- TODO: make this private and set it in the constructor (will require refactoring Player.cs)
 
-    // Start is called before the first frame update
+    private TextGameObject chunkPositionText;
+
+    // Initialization
     void Start() {
         Debug.Log("Starting game...");
 
@@ -41,27 +45,44 @@ public class OpenSourceGame : MonoBehaviour {
 
         tickCounter = new TickCounter(gameConfig.getUpdateInterval());
         Debug.Log("Tick counter created.");
+
+        createChunkPositionText();
     }
 
-    // Update is called once per frame
+    // Per-frame updates
     void Update() {
         tickCounter.increment();
 
         if (tickCounter.shouldUpdate()) {
             landGenerator.update();
-
             checkIfPlayerIsFallingIntoVoid();
+            updateChunkPositionText();
         }
     }
 
     void checkIfPlayerIsFallingIntoVoid() {
         float ypos = player.transform.position.y;
         if (ypos < -10) {
-            // produce event
             eventProducer.producePlayerFallingIntoVoidEvent(player.transform.position);
-
-            // reset player position
-            player.transform.position = new Vector3(0, 10, 0);            
+            player.transform.position = new Vector3(0, 10, 0); 
         }
+    }
+
+    void createChunkPositionText() {
+        int x = 0;
+        int y = Screen.height / 4;
+        int fontSize = 20;
+        chunkPositionText = new TextGameObject("Chunk: (" + x + ", " + y + ")", fontSize, x, y);
+    }
+
+    void updateChunkPositionText() {
+        int x = landGenerator.getCurrentChunkX();
+        int z = landGenerator.getCurrentChunkZ();
+        chunkPositionText.updateText("Chunk: (" + x + ", " + z + ")");
+    }
+
+    public void updateText(GameObject canvasObject, string text) {
+        Text textComponent = canvasObject.GetComponentInChildren<Text>();
+        textComponent.text = text;
     }
 }
