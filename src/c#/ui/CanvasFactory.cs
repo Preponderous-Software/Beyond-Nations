@@ -2,13 +2,14 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class CanvasFactory {
+    private static int canvasCount = 0;
     
     public GameObject createCanvasObject(string text, int fontSize, int x, int y) {
-        GameObject canvasObject = new GameObject("Canvas");
+        GameObject canvasObject = new GameObject("Canvas-" + canvasCount++);
         Canvas canvas = canvasObject.AddComponent<Canvas>();
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
 
-        GameObject textObject = new GameObject("Text");
+        GameObject textObject = new GameObject(text);
         textObject.transform.SetParent(canvasObject.transform);
         Text textComponent = textObject.AddComponent<Text>();
         textComponent.text = text;
