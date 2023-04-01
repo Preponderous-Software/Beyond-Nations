@@ -6,6 +6,7 @@ using static Environment;
 using static Chunk;
 using static Location;
 using static LandGenerator;
+using static GameConfig;
 using static CanvasFactory;
 
 /**
@@ -13,6 +14,7 @@ using static CanvasFactory;
 * It is the entry point of the game.
 */
 public class OpenSourceGame : MonoBehaviour {
+    private GameConfig gameConfig;
     private EventRepository eventRepository;
     private EventProducer eventProducer;
     private Environment environment;
@@ -21,15 +23,14 @@ public class OpenSourceGame : MonoBehaviour {
     private CanvasFactory canvasFactory;
     public Player player; // must be set in Unity Editor -- TODO: make this private and set it in the constructor (will require refactoring Player.cs)
 
-    public int chunkSize = 9;
-    public int locationScale = 9;
-    public int updateInterval = 10; // update every x ticks
-
     private GameObject chunkPositionCanvasObject;
 
     // Initialization
     void Start() {
         Debug.Log("Starting game...");
+
+        gameConfig = new GameConfig();
+        Debug.Log("Game config created.");
 
         eventRepository = new EventRepository();
         Debug.Log("Event repository created.");
@@ -37,13 +38,13 @@ public class OpenSourceGame : MonoBehaviour {
         eventProducer = new EventProducer(eventRepository);
         Debug.Log("Event producer created.");
 
-        environment = new Environment(chunkSize, locationScale);
+        environment = new Environment(gameConfig.getChunkSize(), gameConfig.getLocationScale());
         Debug.Log("Environment created.");
 
         landGenerator = new LandGenerator(environment, player, eventProducer);
         Debug.Log("Land generator created.");
 
-        tickCounter = new TickCounter(updateInterval);
+        tickCounter = new TickCounter(gameConfig.getUpdateInterval());
         Debug.Log("Tick counter created.");
 
         canvasFactory = new CanvasFactory();
