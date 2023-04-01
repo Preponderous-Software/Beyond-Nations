@@ -8,6 +8,10 @@ using static Location;
 using static LandGenerator;
 using static GameConfig;
 using static CanvasFactory;
+using static EventRepository;
+using static EventProducer;
+using static TickCounter;
+using static TextGameObject;
 
 /**
 * The OpenSourceGame class is the main class of the game.
@@ -20,9 +24,9 @@ public class OpenSourceGame : MonoBehaviour {
     private Environment environment;
     private LandGenerator landGenerator;
     private TickCounter tickCounter;
-    public Player player; // must be set in Unity Editor -- TODO: make this private and set it in the constructor (will require refactoring Player.cs)
-
     private TextGameObject chunkPositionText;
+    private Status status;
+    public Player player; // must be set in Unity Editor -- TODO: make this private and set it in the constructor (will require refactoring Player.cs)
 
     // Initialization
     void Start() {
@@ -47,6 +51,8 @@ public class OpenSourceGame : MonoBehaviour {
         Debug.Log("Tick counter created.");
 
         createChunkPositionText();
+        status = new Status(tickCounter, gameConfig.getStatusExpirationTicks());
+        status.update("Game started.");
     }
 
     // Per-frame updates
@@ -57,6 +63,8 @@ public class OpenSourceGame : MonoBehaviour {
             landGenerator.update();
             checkIfPlayerIsFallingIntoVoid();
             updateChunkPositionText();
+
+            status.clearStatusIfExpired();
         }
     }
 
@@ -65,6 +73,7 @@ public class OpenSourceGame : MonoBehaviour {
         if (ypos < -10) {
             eventProducer.producePlayerFallingIntoVoidEvent(player.transform.position);
             player.transform.position = new Vector3(0, 10, 0); 
+            status.update("You fell into the void. You have been teleported to the surface.");
         }
     }
 
@@ -79,10 +88,5 @@ public class OpenSourceGame : MonoBehaviour {
         int x = landGenerator.getCurrentChunkX();
         int z = landGenerator.getCurrentChunkZ();
         chunkPositionText.updateText("Chunk: (" + x + ", " + z + ")");
-    }
-
-    public void updateText(GameObject canvasObject, string text) {
-        Text textComponent = canvasObject.GetComponentInChildren<Text>();
-        textComponent.text = text;
     }
 }
