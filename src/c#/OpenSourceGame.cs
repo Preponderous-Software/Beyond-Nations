@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using static Environment;
 using static Chunk;
 using static Location;
@@ -22,7 +23,9 @@ public class OpenSourceGame : MonoBehaviour {
     public int locationScale = 9;
     public int updateInterval = 10; // update every x ticks
 
-    // Start is called before the first frame update
+    private GameObject chunkPositionCanvasObject;
+
+    // Initialization
     void Start() {
         Debug.Log("Starting game...");
 
@@ -40,27 +43,63 @@ public class OpenSourceGame : MonoBehaviour {
 
         tickCounter = new TickCounter(updateInterval);
         Debug.Log("Tick counter created.");
+
+        createChunkPositionCanvas();
     }
 
-    // Update is called once per frame
+    // Per-frame updates
     void Update() {
         tickCounter.increment();
 
         if (tickCounter.shouldUpdate()) {
             landGenerator.update();
-
             checkIfPlayerIsFallingIntoVoid();
+            updateChunkPositionCanvas();
         }
     }
 
     void checkIfPlayerIsFallingIntoVoid() {
         float ypos = player.transform.position.y;
         if (ypos < -10) {
-            // produce event
             eventProducer.producePlayerFallingIntoVoidEvent(player.transform.position);
-
-            // reset player position
-            player.transform.position = new Vector3(0, 10, 0);            
+            player.transform.position = new Vector3(0, 10, 0); 
         }
+    }
+
+    void createChunkPositionCanvas() {
+        int x = 0;
+        int y = Screen.height / 4;
+        int fontSize = 20;
+        chunkPositionCanvasObject = createCanvasObject("Chunk: (0, 0)", fontSize, x, y);
+    }
+
+    void updateChunkPositionCanvas() {
+        int x = landGenerator.getCurrentChunkX();
+        int z = landGenerator.getCurrentChunkZ();
+        updateText(chunkPositionCanvasObject, "Chunk: (" + x + ", " + z + ")");
+    }
+
+    GameObject createCanvasObject(string text, int fontSize, int x, int y) {
+        GameObject canvasObject = new GameObject("Canvas");
+        Canvas canvas = canvasObject.AddComponent<Canvas>();
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+
+        GameObject textObject = new GameObject("Text");
+        textObject.transform.SetParent(canvasObject.transform);
+        Text textComponent = textObject.AddComponent<Text>();
+        textComponent.text = text;
+        textComponent.font = Resources.GetBuiltinResource(typeof(Font), "Arial.ttf") as Font;
+        textComponent.fontSize = fontSize;
+        textComponent.color = Color.black;
+        textComponent.alignment = TextAnchor.MiddleCenter;
+        textComponent.rectTransform.sizeDelta = new Vector2(250, 100);
+        textComponent.rectTransform.anchoredPosition = new Vector2(x, y);
+
+        return canvasObject;
+    }
+
+    void updateText(GameObject canvasObject, string text) {
+        Text textComponent = canvasObject.GetComponentInChildren<Text>();
+        textComponent.text = text;
     }
 }
