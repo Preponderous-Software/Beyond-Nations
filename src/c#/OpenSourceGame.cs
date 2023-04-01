@@ -22,40 +22,24 @@ namespace osg {
 
         // Initialization
         void Start() {
-            Debug.Log("Starting game...");
-
             gameConfig = new GameConfig();
-            Debug.Log("Game config created.");
-
             eventRepository = new EventRepository();
-            Debug.Log("Event repository created.");
-
             eventProducer = new EventProducer(eventRepository);
-            Debug.Log("Event producer created.");
-
             environment = new Environment(gameConfig.getChunkSize(), gameConfig.getLocationScale());
-            Debug.Log("Environment created.");
-
             landGenerator = new LandGenerator(environment, player, eventProducer);
-            Debug.Log("Land generator created.");
-
             tickCounter = new TickCounter(gameConfig.getUpdateInterval());
-            Debug.Log("Tick counter created.");
-
-            createChunkPositionText();
+            chunkPositionText = new TextGameObject("Chunk: (0, 0)", 20, 0, Screen.height / 4);
             status = new Status(tickCounter, gameConfig.getStatusExpirationTicks());
-            status.update("Game started.");
+            status.update("Entered world.");
         }
 
         // Per-frame updates
         void Update() {
             tickCounter.increment();
-
             if (tickCounter.shouldUpdate()) {
                 landGenerator.update();
                 checkIfPlayerIsFallingIntoVoid();
-                updateChunkPositionText();
-
+                chunkPositionText.updateText("Chunk: (" + landGenerator.getCurrentChunkX() + ", " + landGenerator.getCurrentChunkZ() + ")");
                 status.clearStatusIfExpired();
             }
         }
@@ -67,19 +51,6 @@ namespace osg {
                 player.transform.position = new Vector3(0, 10, 0); 
                 status.update("You fell into the void. You have been teleported to the surface.");
             }
-        }
-
-        void createChunkPositionText() {
-            int x = 0;
-            int y = Screen.height / 4;
-            int fontSize = 20;
-            chunkPositionText = new TextGameObject("Chunk: (" + x + ", " + y + ")", fontSize, x, y);
-        }
-
-        void updateChunkPositionText() {
-            int x = landGenerator.getCurrentChunkX();
-            int z = landGenerator.getCurrentChunkZ();
-            chunkPositionText.updateText("Chunk: (" + x + ", " + z + ")");
         }
     }
 }
