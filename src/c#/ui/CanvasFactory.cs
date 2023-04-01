@@ -9,7 +9,7 @@ public class CanvasFactory {
         Canvas canvas = canvasObject.AddComponent<Canvas>();
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
 
-        GameObject textObject = new GameObject(text);
+        GameObject textObject = new GameObject("Text");
         textObject.transform.SetParent(canvasObject.transform);
         Text textComponent = textObject.AddComponent<Text>();
         textComponent.text = text;
