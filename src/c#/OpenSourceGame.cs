@@ -6,6 +6,7 @@ using static Environment;
 using static Chunk;
 using static Location;
 using static LandGenerator;
+using static CanvasFactory;
 
 /**
 * The OpenSourceGame class is the main class of the game.
@@ -17,6 +18,7 @@ public class OpenSourceGame : MonoBehaviour {
     private Environment environment;
     private LandGenerator landGenerator;
     private TickCounter tickCounter;
+    private CanvasFactory canvasFactory;
     public Player player; // must be set in Unity Editor -- TODO: make this private and set it in the constructor (will require refactoring Player.cs)
 
     public int chunkSize = 9;
@@ -44,6 +46,8 @@ public class OpenSourceGame : MonoBehaviour {
         tickCounter = new TickCounter(updateInterval);
         Debug.Log("Tick counter created.");
 
+        canvasFactory = new CanvasFactory();
+
         createChunkPositionCanvas();
     }
 
@@ -70,7 +74,7 @@ public class OpenSourceGame : MonoBehaviour {
         int x = 0;
         int y = Screen.height / 4;
         int fontSize = 20;
-        chunkPositionCanvasObject = createCanvasObject("Chunk: (0, 0)", fontSize, x, y);
+        chunkPositionCanvasObject = canvasFactory.createCanvasObject("Chunk: (0, 0)", fontSize, x, y);
     }
 
     void updateChunkPositionCanvas() {
@@ -79,26 +83,7 @@ public class OpenSourceGame : MonoBehaviour {
         updateText(chunkPositionCanvasObject, "Chunk: (" + x + ", " + z + ")");
     }
 
-    GameObject createCanvasObject(string text, int fontSize, int x, int y) {
-        GameObject canvasObject = new GameObject("Canvas");
-        Canvas canvas = canvasObject.AddComponent<Canvas>();
-        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-
-        GameObject textObject = new GameObject("Text");
-        textObject.transform.SetParent(canvasObject.transform);
-        Text textComponent = textObject.AddComponent<Text>();
-        textComponent.text = text;
-        textComponent.font = Resources.GetBuiltinResource(typeof(Font), "Arial.ttf") as Font;
-        textComponent.fontSize = fontSize;
-        textComponent.color = Color.black;
-        textComponent.alignment = TextAnchor.MiddleCenter;
-        textComponent.rectTransform.sizeDelta = new Vector2(250, 100);
-        textComponent.rectTransform.anchoredPosition = new Vector2(x, y);
-
-        return canvasObject;
-    }
-
-    void updateText(GameObject canvasObject, string text) {
+    public void updateText(GameObject canvasObject, string text) {
         Text textComponent = canvasObject.GetComponentInChildren<Text>();
         textComponent.text = text;
     }
