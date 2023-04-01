@@ -4,6 +4,7 @@ using UnityEngine;
 using static Location;
 using static Chunk;
 using static Environment;
+using static EventProducer;
 
 /**
  * The LandGenerator class is responsible for generating the land.
@@ -11,14 +12,16 @@ using static Environment;
 public class LandGenerator {
     private Environment environment;
     private Player player;
+    private EventProducer eventProducer;
     private int chunkSize = 5;
     private int locationScale = 3;
     private int currentChunkX = 0;
     private int currentChunkZ = 0;
 
-    public LandGenerator(Environment environment, Player player) {
+    public LandGenerator(Environment environment, Player player, EventProducer eventProducer) {
         this.environment = environment;
         this.player = player;
+        this.eventProducer = eventProducer;
         this.chunkSize = environment.getChunkSize();
         this.locationScale = environment.getLocationScale();
     }
@@ -84,8 +87,10 @@ public class LandGenerator {
     }
 
     private void createNewChunkAt(int chunkX, int chunkZ) {
+        // produce event
+        eventProducer.produceChunkGenerateEvent(chunkX, chunkZ);
+
         // create new chunk
-        Debug.Log("Creating new chunk at " + chunkX + ", " + chunkZ);
         Chunk chunk = new Chunk(chunkX, chunkZ, chunkSize, locationScale);
         environment.addChunk(chunk);
     }
