@@ -20,10 +20,9 @@ public class OpenSourceGame : MonoBehaviour {
     private Environment environment;
     private LandGenerator landGenerator;
     private TickCounter tickCounter;
-    private CanvasFactory canvasFactory;
     public Player player; // must be set in Unity Editor -- TODO: make this private and set it in the constructor (will require refactoring Player.cs)
 
-    private GameObject chunkPositionCanvasObject;
+    private TextGameObject chunkPositionText;
 
     // Initialization
     void Start() {
@@ -47,9 +46,7 @@ public class OpenSourceGame : MonoBehaviour {
         tickCounter = new TickCounter(gameConfig.getUpdateInterval());
         Debug.Log("Tick counter created.");
 
-        canvasFactory = new CanvasFactory();
-
-        createChunkPositionCanvas();
+        createChunkPositionText();
     }
 
     // Per-frame updates
@@ -59,7 +56,7 @@ public class OpenSourceGame : MonoBehaviour {
         if (tickCounter.shouldUpdate()) {
             landGenerator.update();
             checkIfPlayerIsFallingIntoVoid();
-            updateChunkPositionCanvas();
+            updateChunkPositionText();
         }
     }
 
@@ -71,17 +68,17 @@ public class OpenSourceGame : MonoBehaviour {
         }
     }
 
-    void createChunkPositionCanvas() {
+    void createChunkPositionText() {
         int x = 0;
         int y = Screen.height / 4;
         int fontSize = 20;
-        chunkPositionCanvasObject = canvasFactory.createCanvasObject("Chunk: (0, 0)", fontSize, x, y);
+        chunkPositionText = new TextGameObject("Chunk: (" + x + ", " + y + ")", fontSize, x, y);
     }
 
-    void updateChunkPositionCanvas() {
+    void updateChunkPositionText() {
         int x = landGenerator.getCurrentChunkX();
         int z = landGenerator.getCurrentChunkZ();
-        updateText(chunkPositionCanvasObject, "Chunk: (" + x + ", " + z + ")");
+        chunkPositionText.updateText("Chunk: (" + x + ", " + z + ")");
     }
 
     public void updateText(GameObject canvasObject, string text) {
