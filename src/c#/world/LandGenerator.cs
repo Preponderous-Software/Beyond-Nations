@@ -91,6 +91,18 @@ namespace osg {
             // create new chunk
             Chunk chunk = new Chunk(chunkX, chunkZ, chunkSize, locationScale);
             environment.addChunk(chunk);
+
+            // add trees to random locations in chunk
+            int numberOfTrees = Random.Range(3, 6);
+            for (int i = 0; i < numberOfTrees; i++) {
+                int randomX = Random.Range(0, chunkSize);
+                int randomZ = Random.Range(0, chunkSize);
+                Vector3 position = new Vector3(chunkX * chunkSize * locationScale + randomX * locationScale, 3, chunkZ * chunkSize * locationScale + randomZ * locationScale);
+                TreeObject tree = new TreeObject(position, 5, chunk.getId());
+                tree.getGameObject().transform.parent = chunk.getGameObject().transform;
+
+                // TODO: add tree to location instead of chunk & create convenience methods
+            }
         }
     }
 }
