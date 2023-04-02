@@ -21,5 +21,11 @@ namespace osg {
             eventRepository.addEvent(playerFallingIntoVoidEvent);
             Debug.Log("Produced event: " + playerFallingIntoVoidEvent);
         }
+
+        public void produceNationCreationEvent(Nation nation) {
+            NationCreationEvent nationCreationEvent = new NationCreationEvent(nation);
+            eventRepository.addEvent(nationCreationEvent);
+            Debug.Log("Produced event: " + nationCreationEvent);
+        }
     }
 }

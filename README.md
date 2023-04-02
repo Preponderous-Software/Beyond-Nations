@@ -8,6 +8,19 @@ The game's main objective is to claim territory, develop your nation, and ensure
 
 With sandbox-style gameplay that promotes emergent experiences, every playthrough will be a new adventure. Whether players prefer a multiplayer environment or a single-player experience with a single-player nation, this game offers something for everyone.
 
+## Controls
+The following controls are available in the game:
+---
+| Key | Action |
+| --- | --- |
+| `W` | Move forward |
+| `A` | Turn left |
+| `S` | Move backward |
+| `D` | Turn right |
+| `Space` | Jump |
+| `Left Shift` | Sprint |
+| `N` | Create a new nation |
+
 ## Game Systems
 There are a number of systems that will be implemented in the game. These systems will be used to create a rich and engaging gameplay experience. Details can be found in the [Systems Document](./docs/SYSTEMS.md).
 
