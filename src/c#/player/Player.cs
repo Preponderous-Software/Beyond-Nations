@@ -6,7 +6,7 @@ namespace osg {
 
     public class Player : MonoBehaviour
     {
-        // movement
+        private PlayerId id = new PlayerId();
         private Rigidbody rigidBody = null;
         private bool isGrounded = false;
         private bool jumpKeyWasPressed = false;
@@ -14,8 +14,6 @@ namespace osg {
         private float verticalInput = 0;
         private int walkSpeed = 1;
         private int jumpForce = 5;
-
-        // camera
         private bool zoomingIn = false;
         private bool zoomingOut = false;
         private Camera playerCamera = null;
@@ -101,6 +99,11 @@ namespace osg {
                 Vector3 direction = playerCamera.transform.position - transform.position;
                 playerCamera.transform.position += direction * 0.1f;
             }
+        }
+
+        public PlayerId getId()
+        {
+            return id;
         }
 
         // called when player collides with something

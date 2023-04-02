@@ -18,6 +18,7 @@ namespace osg {
         private TickCounter tickCounter;
         private TextGameObject chunkPositionText;
         private Status status;
+        private NationRepository nationRepository;
         public Player player; // must be set in Unity Editor -- TODO: make this private and set it in the constructor (will require refactoring Player.cs)
 
         // Initialization
@@ -30,6 +31,8 @@ namespace osg {
             tickCounter = new TickCounter(gameConfig.getUpdateInterval());
             chunkPositionText = new TextGameObject("Chunk: (0, 0)", 20, 0, Screen.height / 4);
             status = new Status(tickCounter, gameConfig.getStatusExpirationTicks());
+            nationRepository = new NationRepository();
+
             status.update("Entered world.");
         }
 
@@ -41,6 +44,18 @@ namespace osg {
                 checkIfPlayerIsFallingIntoVoid();
                 chunkPositionText.updateText("Chunk: (" + landGenerator.getCurrentChunkX() + ", " + landGenerator.getCurrentChunkZ() + ")");
                 status.clearStatusIfExpired();
+            }
+
+            // if N pressed, create nation
+            if (Input.GetKeyDown(KeyCode.N)) {
+                if (nationRepository.getNation(player.getId()) != null) {
+                    status.update("You already have a nation.");
+                    return;
+                }
+                Nation nation = new Nation("Test Nation", player.getId());
+                nationRepository.addNation(nation);
+                eventProducer.produceNationCreationEvent(nation);
+                status.update("Created nation " + nation.getName() + ".");
             }
         }
 
