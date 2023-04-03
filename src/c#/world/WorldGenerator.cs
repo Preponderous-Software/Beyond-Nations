@@ -92,25 +92,46 @@ namespace osg {
             Chunk chunk = new Chunk(chunkX, chunkZ, chunkSize, locationScale);
             environment.addChunk(chunk);
             spawnTreeEntities(chunk);
+            spawnRockEntities(chunk);
         }
 
         private void spawnTreeEntities(Chunk chunk) {
-            // add trees to random locations in chunk
             int numberOfTrees = Random.Range(5, 10);
             for (int i = 0; i < numberOfTrees; i++) {
-                // get random location
                 Location randomLocation = chunk.getRandomLocation();
+                if (randomLocation.getNumberOfEntities() > 0) {
+                    continue;
+                }
+
                 Vector3 locationPosition = randomLocation.getPosition();
 
                 // create tree
                 Vector3 position = new Vector3(locationPosition.x, locationPosition.y + 1, locationPosition.z);
                 TreeEntity tree = new TreeEntity(position, 5, chunk.getId());
 
-                // add tree to chunk if location is not occupied
-                if (randomLocation.getNumberOfEntities() == 0) {
-                    chunk.addEntity(tree, randomLocation);
-                    tree.getGameObject().transform.parent = randomLocation.getGameObject().transform;
+                // add tree to chunk
+                chunk.addEntity(tree, randomLocation);
+                tree.getGameObject().transform.parent = randomLocation.getGameObject().transform;
+            }
+        }
+
+        private void spawnRockEntities(Chunk chunk) {
+            int numberOfRocks = Random.Range(3, 6);
+            for (int i = 0; i < numberOfRocks; i++) {
+                Location randomLocation = chunk.getRandomLocation();
+                if (randomLocation.getNumberOfEntities() > 0) {
+                    continue;
                 }
+
+                Vector3 locationPosition = randomLocation.getPosition();
+
+                // create rock
+                Vector3 position = new Vector3(locationPosition.x, locationPosition.y + 1, locationPosition.z);
+                RockEntity rock = new RockEntity(position, chunk.getId());
+
+                // add rock to chunk if location is not occupied
+                chunk.addEntity(rock, randomLocation);
+                rock.getGameObject().transform.parent = randomLocation.getGameObject().transform;
             }
         }
     }
