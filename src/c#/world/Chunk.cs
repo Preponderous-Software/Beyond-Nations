@@ -76,6 +76,10 @@ namespace osg {
             return entities.Contains(entity);
         }
 
+        public int getNumberOfEntities() {
+            return entities.Count;
+        }
+
         private Vector3 calculatePosition(int locationScale) {
             int lengthOfChunk = size * locationScale;
             int x = xpos * lengthOfChunk;

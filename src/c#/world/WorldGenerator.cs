@@ -103,9 +103,11 @@ namespace osg {
                 Vector3 position = new Vector3(locationPosition.x, locationPosition.y + 1, locationPosition.z);
                 TreeObject tree = new TreeObject(position, 5, chunk.getId());
 
-                // add tree to chunk
-                chunk.addEntity(tree, randomLocation);
-                tree.getGameObject().transform.parent = randomLocation.getGameObject().transform;
+                // add tree to chunk if location is not occupied
+                if (randomLocation.getNumberOfEntities() == 0) {
+                    chunk.addEntity(tree, randomLocation);
+                    tree.getGameObject().transform.parent = randomLocation.getGameObject().transform;
+                }
             }
         }
     }

@@ -48,6 +48,10 @@ namespace osg {
             return entityIds.Contains(entity.getId());
         }
 
+        public int getNumberOfEntities() {
+            return entityIds.Count;
+        }
+
         private void initializeGameObject() {
             this.gameObject = GameObject.CreatePrimitive(PrimitiveType.Cube);
             this.gameObject.name = name;

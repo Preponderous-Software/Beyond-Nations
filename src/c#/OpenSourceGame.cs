@@ -39,12 +39,6 @@ namespace osg {
         // Per-frame updates
         void Update() {
             tickCounter.increment();
-            if (tickCounter.shouldUpdate()) {
-                worldGenerator.update();
-                checkIfPlayerIsFallingIntoVoid();
-                chunkPositionText.updateText("Chunk: (" + worldGenerator.getCurrentChunkX() + ", " + worldGenerator.getCurrentChunkZ() + ")");
-                status.clearStatusIfExpired();
-            }
 
             // if N pressed, create nation
             if (Input.GetKeyDown(KeyCode.N)) {
@@ -56,6 +50,16 @@ namespace osg {
                 nationRepository.addNation(nation);
                 eventProducer.produceNationCreationEvent(nation);
                 status.update("Created nation " + nation.getName() + ".");
+            }
+        }
+
+        // Fixed updates
+        void FixedUpdate() {
+            if (tickCounter.shouldUpdate()) {
+                worldGenerator.update();
+                checkIfPlayerIsFallingIntoVoid();
+                chunkPositionText.updateText("Chunk: (" + worldGenerator.getCurrentChunkX() + ", " + worldGenerator.getCurrentChunkZ() + ")");
+                status.clearStatusIfExpired();
             }
         }
 
