@@ -93,7 +93,7 @@ namespace osg {
             environment.addChunk(chunk);
 
             // add trees to random locations in chunk
-            int numberOfTrees = Random.Range(3, 6);
+            int numberOfTrees = Random.Range(5, 10);
             for (int i = 0; i < numberOfTrees; i++) {
                 // get random location
                 Location randomLocation = chunk.getLocation(Random.Range(0, chunkSize), Random.Range(0, chunkSize));
