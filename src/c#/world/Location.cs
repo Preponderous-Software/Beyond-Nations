@@ -14,6 +14,7 @@ namespace osg {
         private int scale;
         private string name;
         private GameObject gameObject;
+        private List<EntityId> entityIds = new List<EntityId>();
 
         public Location(int xpos, int zpos, int scale) {
             this.id = new LocationId();
@@ -37,6 +38,14 @@ namespace osg {
 
         public GameObject getGameObject() {
             return gameObject;
+        }
+
+        public void addEntityId(EntityId entityId) {
+            entityIds.Add(entityId);
+        }
+
+        public bool isEntityPresent(Entity entity) {
+            return entityIds.Contains(entity.getId());
         }
 
         private void initializeGameObject() {
