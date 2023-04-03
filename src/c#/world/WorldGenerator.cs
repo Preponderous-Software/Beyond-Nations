@@ -5,9 +5,9 @@ using UnityEngine;
 namespace osg {
 
     /**
-    * The LandGenerator class is responsible for generating the land.
+    * The WorldGenerator class is responsible for generating the land.
     */
-    public class LandGenerator {
+    public class WorldGenerator {
         private Environment environment;
         private Player player;
         private EventProducer eventProducer;
@@ -16,7 +16,7 @@ namespace osg {
         private int currentChunkX = 0;
         private int currentChunkZ = 0;
 
-        public LandGenerator(Environment environment, Player player, EventProducer eventProducer) {
+        public WorldGenerator(Environment environment, Player player, EventProducer eventProducer) {
             this.environment = environment;
             this.player = player;
             this.eventProducer = eventProducer;

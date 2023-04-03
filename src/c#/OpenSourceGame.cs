@@ -14,7 +14,7 @@ namespace osg {
         private EventRepository eventRepository;
         private EventProducer eventProducer;
         private Environment environment;
-        private LandGenerator landGenerator;
+        private WorldGenerator worldGenerator;
         private TickCounter tickCounter;
         private TextGameObject chunkPositionText;
         private Status status;
@@ -27,7 +27,7 @@ namespace osg {
             eventRepository = new EventRepository();
             eventProducer = new EventProducer(eventRepository);
             environment = new Environment(gameConfig.getChunkSize(), gameConfig.getLocationScale());
-            landGenerator = new LandGenerator(environment, player, eventProducer);
+            worldGenerator = new WorldGenerator(environment, player, eventProducer);
             tickCounter = new TickCounter(gameConfig.getUpdateInterval());
             chunkPositionText = new TextGameObject("Chunk: (0, 0)", 20, 0, Screen.height / 4);
             status = new Status(tickCounter, gameConfig.getStatusExpirationTicks());
@@ -40,9 +40,9 @@ namespace osg {
         void Update() {
             tickCounter.increment();
             if (tickCounter.shouldUpdate()) {
-                landGenerator.update();
+                worldGenerator.update();
                 checkIfPlayerIsFallingIntoVoid();
-                chunkPositionText.updateText("Chunk: (" + landGenerator.getCurrentChunkX() + ", " + landGenerator.getCurrentChunkZ() + ")");
+                chunkPositionText.updateText("Chunk: (" + worldGenerator.getCurrentChunkX() + ", " + worldGenerator.getCurrentChunkZ() + ")");
                 status.clearStatusIfExpired();
             }
 
