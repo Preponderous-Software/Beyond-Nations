@@ -2,12 +2,12 @@ using UnityEngine;
 
 namespace osg {
 
-    public class TreeObject : Entity {
+    public class TreeEntity : Entity {
         private GameObject gameObject;
         private GameObject trunk;
         private GameObject leaves;
         
-        public TreeObject(Vector3 position, int height, ChunkId chunkId) : base("Tree", chunkId) {
+        public TreeEntity(Vector3 position, int height, ChunkId chunkId) : base("Tree", chunkId) {
             gameObject = new GameObject();
             gameObject.transform.position = position;
             gameObject.name = "Tree";

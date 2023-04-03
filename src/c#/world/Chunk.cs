@@ -80,6 +80,12 @@ namespace osg {
             return entities.Count;
         }
 
+        public Location getRandomLocation() {
+            int x = Random.Range(0, size);
+            int z = Random.Range(0, size);
+            return locations[x, z];
+        }
+
         private Vector3 calculatePosition(int locationScale) {
             int lengthOfChunk = size * locationScale;
             int x = xpos * lengthOfChunk;

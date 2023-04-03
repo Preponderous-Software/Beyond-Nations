@@ -91,17 +91,20 @@ namespace osg {
             // create new chunk
             Chunk chunk = new Chunk(chunkX, chunkZ, chunkSize, locationScale);
             environment.addChunk(chunk);
+            spawnTreeEntities(chunk);
+        }
 
+        private void spawnTreeEntities(Chunk chunk) {
             // add trees to random locations in chunk
             int numberOfTrees = Random.Range(5, 10);
             for (int i = 0; i < numberOfTrees; i++) {
                 // get random location
-                Location randomLocation = chunk.getLocation(Random.Range(0, chunkSize), Random.Range(0, chunkSize));
+                Location randomLocation = chunk.getRandomLocation();
                 Vector3 locationPosition = randomLocation.getPosition();
 
                 // create tree
                 Vector3 position = new Vector3(locationPosition.x, locationPosition.y + 1, locationPosition.z);
-                TreeObject tree = new TreeObject(position, 5, chunk.getId());
+                TreeEntity tree = new TreeEntity(position, 5, chunk.getId());
 
                 // add tree to chunk if location is not occupied
                 if (randomLocation.getNumberOfEntities() == 0) {
