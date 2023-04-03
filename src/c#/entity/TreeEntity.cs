@@ -7,7 +7,7 @@ namespace osg {
         private GameObject trunk;
         private GameObject leaves;
         
-        public TreeEntity(Vector3 position, int height, ChunkId chunkId) : base("Tree", chunkId) {
+        public TreeEntity(Vector3 position, int height, ChunkId chunkId) : base(EntityType.TREE, chunkId) {
             gameObject = new GameObject();
             gameObject.transform.position = position;
             gameObject.name = "Tree";
