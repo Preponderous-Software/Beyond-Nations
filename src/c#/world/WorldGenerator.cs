@@ -68,13 +68,13 @@ namespace osg {
         * Calculates the current chunk based on the player position.
         */
         private void calculateCurrentChunk() {
-            Vector3 playerPosition = player.transform.position;
+            Vector3 playerPosition = player.getGameObject().transform.position;
             int lengthOfChunk = chunkSize * locationScale;
 
             if (playerPosition.x >= 0) {
                 currentChunkX = (int) (playerPosition.x / lengthOfChunk);
             } else {
-                currentChunkX = (int) (playerPosition.x / lengthOfChunk) - 1; // this 
+                currentChunkX = (int) (playerPosition.x / lengthOfChunk) - 1;
             }
 
             if (playerPosition.z >= 0) {

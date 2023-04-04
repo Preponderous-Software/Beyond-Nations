@@ -19,11 +19,15 @@ namespace osg {
         private TextGameObject chunkPositionText;
         private Status status;
         private NationRepository nationRepository;
-        public Player player; // must be set in Unity Editor -- TODO: make this private and set it in the constructor (will require refactoring Player.cs)
+        private Player player;
+        
+        public GameObject playerGameObject; // must be set in Unity Editor -- TODO: make this private and set it in the constructor (will require refactoring Player.cs)
+        
 
         // Initialization
         void Start() {
             gameConfig = new GameConfig();
+            player = new Player(playerGameObject, gameConfig.getPlayerWalkSpeed(), gameConfig.getPlayerRunSpeed());
             eventRepository = new EventRepository();
             eventProducer = new EventProducer(eventRepository);
             environment = new Environment(gameConfig.getChunkSize(), gameConfig.getLocationScale());
@@ -51,6 +55,8 @@ namespace osg {
                 eventProducer.produceNationCreationEvent(nation);
                 status.update("Created nation " + nation.getName() + ".");
             }
+
+            player.update();
         }
 
         // Fixed updates
@@ -61,13 +67,15 @@ namespace osg {
                 chunkPositionText.updateText("Chunk: (" + worldGenerator.getCurrentChunkX() + ", " + worldGenerator.getCurrentChunkZ() + ")");
                 status.clearStatusIfExpired();
             }
+
+            player.fixedUpdate();
         }
 
         void checkIfPlayerIsFallingIntoVoid() {
-            float ypos = player.transform.position.y;
+            float ypos = player.getGameObject().transform.position.y;
             if (ypos < -10) {
-                eventProducer.producePlayerFallingIntoVoidEvent(player.transform.position);
-                player.transform.position = new Vector3(0, 10, 0); 
+                eventProducer.producePlayerFallingIntoVoidEvent(player.getGameObject().transform.position);
+                player.getGameObject().transform.position = new Vector3(0, 10, 0); 
                 status.update("You fell into the void. You have been teleported to the surface.");
             }
         }
