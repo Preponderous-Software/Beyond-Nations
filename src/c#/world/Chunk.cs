@@ -17,6 +17,7 @@ namespace osg {
         private int zpos;
         private string name;
         private GameObject gameObject;
+        private List<Entity> entities = new List<Entity>();
 
         public Chunk(int xpos, int zpos, int size, int locationScale) {
             this.id = new ChunkId();
@@ -64,6 +65,25 @@ namespace osg {
 
         public int getLocationScale() {
             return locations[0, 0].getScale();
+        }
+
+        public void addEntity(Entity entity, Location location) {
+            entities.Add(entity);
+            location.addEntityId(entity.getId());
+        }
+
+        public bool isEntityPresent(Entity entity) {
+            return entities.Contains(entity);
+        }
+
+        public int getNumberOfEntities() {
+            return entities.Count;
+        }
+
+        public Location getRandomLocation() {
+            int x = Random.Range(0, size);
+            int z = Random.Range(0, size);
+            return locations[x, z];
         }
 
         private Vector3 calculatePosition(int locationScale) {

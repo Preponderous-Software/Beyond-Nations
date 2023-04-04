@@ -12,6 +12,7 @@ namespace osg {
         private EnvironmentId id;
         private List<Chunk> chunks = new List<Chunk>();
         private GameObject gameObject;
+        private List<EntityId> entityIds = new List<EntityId>();
 
         public Environment(int chunkSize, int locationScale) {
             this.id = new EnvironmentId();
@@ -52,6 +53,15 @@ namespace osg {
 
         public int getLocationScale() {
             return chunks[0].getLocationScale();
+        }
+
+        public bool isEntityPresent(Entity entity) {
+            for (int i = 0; i < chunks.Count; i++) {
+                if (chunks[i].isEntityPresent(entity)) {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

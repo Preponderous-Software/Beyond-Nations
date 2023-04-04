@@ -14,20 +14,24 @@ namespace osg {
         private EventRepository eventRepository;
         private EventProducer eventProducer;
         private Environment environment;
-        private LandGenerator landGenerator;
+        private WorldGenerator worldGenerator;
         private TickCounter tickCounter;
         private TextGameObject chunkPositionText;
         private Status status;
         private NationRepository nationRepository;
-        public Player player; // must be set in Unity Editor -- TODO: make this private and set it in the constructor (will require refactoring Player.cs)
+        private Player player;
+        
+        public GameObject playerGameObject; // must be set in Unity Editor -- TODO: make this private and set it in the constructor (will require refactoring Player.cs)
+        
 
         // Initialization
         void Start() {
             gameConfig = new GameConfig();
+            player = new Player(playerGameObject, gameConfig.getPlayerWalkSpeed(), gameConfig.getPlayerRunSpeed());
             eventRepository = new EventRepository();
             eventProducer = new EventProducer(eventRepository);
             environment = new Environment(gameConfig.getChunkSize(), gameConfig.getLocationScale());
-            landGenerator = new LandGenerator(environment, player, eventProducer);
+            worldGenerator = new WorldGenerator(environment, player, eventProducer);
             tickCounter = new TickCounter(gameConfig.getUpdateInterval());
             chunkPositionText = new TextGameObject("Chunk: (0, 0)", 20, 0, Screen.height / 4);
             status = new Status(tickCounter, gameConfig.getStatusExpirationTicks());
@@ -39,12 +43,6 @@ namespace osg {
         // Per-frame updates
         void Update() {
             tickCounter.increment();
-            if (tickCounter.shouldUpdate()) {
-                landGenerator.update();
-                checkIfPlayerIsFallingIntoVoid();
-                chunkPositionText.updateText("Chunk: (" + landGenerator.getCurrentChunkX() + ", " + landGenerator.getCurrentChunkZ() + ")");
-                status.clearStatusIfExpired();
-            }
 
             // if N pressed, create nation
             if (Input.GetKeyDown(KeyCode.N)) {
@@ -57,13 +55,27 @@ namespace osg {
                 eventProducer.produceNationCreationEvent(nation);
                 status.update("Created nation " + nation.getName() + ".");
             }
+
+            player.update();
+        }
+
+        // Fixed updates
+        void FixedUpdate() {
+            if (tickCounter.shouldUpdate()) {
+                worldGenerator.update();
+                checkIfPlayerIsFallingIntoVoid();
+                chunkPositionText.updateText("Chunk: (" + worldGenerator.getCurrentChunkX() + ", " + worldGenerator.getCurrentChunkZ() + ")");
+                status.clearStatusIfExpired();
+            }
+
+            player.fixedUpdate();
         }
 
         void checkIfPlayerIsFallingIntoVoid() {
-            float ypos = player.transform.position.y;
+            float ypos = player.getGameObject().transform.position.y;
             if (ypos < -10) {
-                eventProducer.producePlayerFallingIntoVoidEvent(player.transform.position);
-                player.transform.position = new Vector3(0, 10, 0); 
+                eventProducer.producePlayerFallingIntoVoidEvent(player.getGameObject().transform.position);
+                player.getGameObject().transform.position = new Vector3(0, 10, 0); 
                 status.update("You fell into the void. You have been teleported to the surface.");
             }
         }

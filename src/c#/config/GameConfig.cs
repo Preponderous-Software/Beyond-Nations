@@ -5,12 +5,16 @@ namespace osg {
         private int locationScale;
         private int updateInterval;
         private int statusExpirationTicks;
+        private int playerWalkSpeed;
+        private int playerRunSpeed;
 
         public GameConfig() {
             chunkSize = 9;
             locationScale = 9;
             updateInterval = 10;
             statusExpirationTicks = 500;
+            playerWalkSpeed = 20;
+            playerRunSpeed = 50;
         }
 
         public int getChunkSize() {
@@ -27,6 +31,14 @@ namespace osg {
 
         public int getStatusExpirationTicks() {
             return statusExpirationTicks;
+        }
+
+        public int getPlayerWalkSpeed() {
+            return playerWalkSpeed;
+        }
+
+        public int getPlayerRunSpeed() {
+            return playerRunSpeed;
         }
     }
 }
