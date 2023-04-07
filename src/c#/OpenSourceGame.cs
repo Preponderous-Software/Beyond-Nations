@@ -66,6 +66,28 @@ namespace osg {
                 checkIfPlayerIsFallingIntoVoid();
                 chunkPositionText.updateText("Chunk: (" + worldGenerator.getCurrentChunkX() + ", " + worldGenerator.getCurrentChunkZ() + ")");
                 status.clearStatusIfExpired();
+
+                
+                foreach (Chunk chunk in environment.getChunks()) {
+                    // move living entities
+                    foreach (Entity entity in chunk.getEntities()) {
+                        if (entity.getType() == EntityType.LIVING) {
+                            LivingEntity livingEntity = (LivingEntity)entity;
+                            
+                            livingEntity.setTargetObject(player.getGameObject());
+                            if (!livingEntity.isAtTargetObject()) {
+                                livingEntity.moveTowardsTargetObject();
+                            }
+                            else {
+                                // stop
+                                livingEntity.getGameObject().GetComponent<Rigidbody>().velocity = Vector3.zero;
+
+                                // change color to blue
+                                livingEntity.getGameObject().GetComponent<Renderer>().material.color = Color.blue;
+                            }
+                        }
+                    }
+                }
             }
 
             player.fixedUpdate();

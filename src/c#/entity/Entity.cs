@@ -1,6 +1,6 @@
 namespace osg {
 
-    public class Entity {
+    abstract public class Entity {
         private EntityId id;
         private EntityType type;
         private ChunkId chunkId;
@@ -15,8 +15,8 @@ namespace osg {
             return id;
         }
 
-        public string getType() {
-            return type.ToString();
+        public EntityType getType() {
+            return type;
         }
 
         public ChunkId getChunkId() {

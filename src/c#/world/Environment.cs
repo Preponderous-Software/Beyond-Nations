@@ -63,5 +63,32 @@ namespace osg {
             }
             return false;
         }
+
+        public List<Chunk> getChunks() {
+            return chunks;
+        }
+
+        public List<EntityId> getEntityIds() {
+            return entityIds;
+        }
+
+        public Entity getEntity(EntityId entityId) {
+            foreach (Chunk chunk in chunks) {
+                try {
+                    return chunk.getEntity(entityId);
+                } catch (System.Exception e) {
+                    // do nothing
+                }
+            }
+            throw new System.Exception("Entity not found in environment");
+        }
+
+        public void addEntityId(EntityId entityId) {
+            entityIds.Add(entityId);
+        }
+
+        public void removeEntityId(EntityId entityId) {
+            entityIds.Remove(entityId);
+        }
     }
 }

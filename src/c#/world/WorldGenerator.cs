@@ -93,6 +93,7 @@ namespace osg {
             environment.addChunk(chunk);
             spawnTreeEntities(chunk);
             spawnRockEntities(chunk);
+            spawnLivingEntities(chunk);
         }
 
         private void spawnTreeEntities(Chunk chunk) {
@@ -111,6 +112,7 @@ namespace osg {
 
                 // add tree to chunk
                 chunk.addEntity(tree, randomLocation);
+                environment.addEntityId(tree.getId());
                 tree.getGameObject().transform.parent = randomLocation.getGameObject().transform;
             }
         }
@@ -131,7 +133,28 @@ namespace osg {
 
                 // add rock to chunk if location is not occupied
                 chunk.addEntity(rock, randomLocation);
+                environment.addEntityId(rock.getId());
                 rock.getGameObject().transform.parent = randomLocation.getGameObject().transform;
+            }
+        }
+
+        private void spawnLivingEntities(Chunk chunk) {
+            int numberOfLivingEntities = 1;
+            for (int i = 0; i < numberOfLivingEntities; i++) {
+                Location randomLocation = chunk.getRandomLocation();
+                if (randomLocation.getNumberOfEntities() > 0) {
+                    continue;
+                }
+
+                Vector3 locationPosition = randomLocation.getPosition();
+
+                // create living entity
+                Vector3 position = new Vector3(locationPosition.x, (float)(locationPosition.y + 1.5), locationPosition.z);
+                LivingEntity livingEntity = new LivingEntity(position, chunk.getId());
+
+                chunk.addEntity(livingEntity, randomLocation);
+                environment.addEntityId(livingEntity.getId());
+                livingEntity.getGameObject().transform.parent = randomLocation.getGameObject().transform;
             }
         }
     }
