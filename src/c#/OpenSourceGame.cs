@@ -23,9 +23,19 @@ namespace osg {
         private TextGameObject numWoodText;
         public GameObject playerGameObject; // must be set in Unity Editor -- TODO: make this private and set it in the constructor (will require refactoring Player.cs)
         
+        private bool runTests = false;
 
         // Initialization
         void Start() {
+            if (runTests) {
+                Debug.Log("Running tests...");
+                Tests.runTests();
+                Debug.Break();
+            }
+            else {
+                Debug.Log("Not running tests. Set `runTests` to true to run tests.");
+            }
+
             gameConfig = new GameConfig();
             player = new Player(playerGameObject, gameConfig.getPlayerWalkSpeed(), gameConfig.getPlayerRunSpeed(), new ChunkId());
             eventRepository = new EventRepository();
