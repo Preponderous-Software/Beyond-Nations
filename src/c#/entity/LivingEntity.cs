@@ -52,13 +52,8 @@ namespace osg {
             gameObject.GetComponent<Renderer>().material.color = Color.gray;
             gameObject.transform.position = position;
             gameObject.name = "LivingEntity";
-
-            // add rigidbody
             Rigidbody rigidbody = gameObject.AddComponent<Rigidbody>();
-
-            // lock rotation
             rigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
-
             setGameObject(gameObject);
         }
 
@@ -68,7 +63,6 @@ namespace osg {
 
         public void fixedUpdate(Environment environment) {
             if (inventory.getNumWood() < 3) {
-                // target nearest tree
                 Entity nearestTree = environment.getNearestTree(getGameObject().transform.position);
                 if (nearestTree == null) {
                     return;
@@ -83,13 +77,14 @@ namespace osg {
                 else {
                     getGameObject().GetComponent<Rigidbody>().velocity = Vector3.zero;
                     getGameObject().GetComponent<Renderer>().material.color = Color.blue;
-                    getTargetEntity().markForDeletion();
-                    setTargetEntity(null);
-                    inventory.addWood(1);
+                    if (targetEntity.getType() == EntityType.TREE) {
+                        getTargetEntity().markForDeletion();
+                        setTargetEntity(null);
+                        inventory.addWood(1);
+                    }
                 }
             }
             else {
-                // move forward and rotate
                 getGameObject().GetComponent<Rigidbody>().velocity = getGameObject().transform.forward * getSpeed();
                 getGameObject().transform.Rotate(0, 10, 0);
             }
