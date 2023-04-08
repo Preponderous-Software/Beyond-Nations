@@ -76,19 +76,22 @@ namespace osg {
                 setTargetEntity(nearestTree);
             }
 
-            if (!hasTargetEntity()) {
-                return;
-            }
-
-            if (!isAtTargetEntity()) {
-                moveTowardsTargetEntity();
+            if (hasTargetEntity()) {
+                if (!isAtTargetEntity()) {
+                    moveTowardsTargetEntity();
+                }
+                else {
+                    getGameObject().GetComponent<Rigidbody>().velocity = Vector3.zero;
+                    getGameObject().GetComponent<Renderer>().material.color = Color.blue;
+                    getTargetEntity().markForDeletion();
+                    setTargetEntity(null);
+                    inventory.addWood(1);
+                }
             }
             else {
-                getGameObject().GetComponent<Rigidbody>().velocity = Vector3.zero;
-                getGameObject().GetComponent<Renderer>().material.color = Color.blue;
-                getTargetEntity().markForDeletion();
-                setTargetEntity(null);
-                inventory.addWood(1);
+                // move forward and rotate
+                getGameObject().GetComponent<Rigidbody>().velocity = getGameObject().transform.forward * getSpeed();
+                getGameObject().transform.Rotate(0, 10, 0);
             }
         }
     }
