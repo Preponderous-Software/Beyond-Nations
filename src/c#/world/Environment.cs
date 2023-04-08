@@ -108,5 +108,15 @@ namespace osg {
             }
             return nearestTree;
         }
+
+        public void removeEntity(Entity entity) {
+            foreach (Chunk chunk in chunks) {
+                if (chunk.isEntityPresent(entity)) {
+                    chunk.removeEntity(entity);
+                    break;
+                }
+            }
+            removeEntityId(entity.getId());
+        }
     }
 }

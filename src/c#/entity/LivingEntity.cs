@@ -67,19 +67,28 @@ namespace osg {
         }
 
         public void fixedUpdate(Environment environment) {
-            // target nearest tree
-            Entity nearestTree = environment.getNearestTree(getGameObject().transform.position);
-            if (nearestTree == null) {
+            if (inventory.getNumWood() < 3) {
+                // target nearest tree
+                Entity nearestTree = environment.getNearestTree(getGameObject().transform.position);
+                if (nearestTree == null) {
+                    return;
+                }
+                setTargetEntity(nearestTree);
+            }
+
+            if (!hasTargetEntity()) {
                 return;
             }
 
-            setTargetEntity(nearestTree);
             if (!isAtTargetEntity()) {
                 moveTowardsTargetEntity();
             }
             else {
                 getGameObject().GetComponent<Rigidbody>().velocity = Vector3.zero;
                 getGameObject().GetComponent<Renderer>().material.color = Color.blue;
+                getTargetEntity().markForDeletion();
+                setTargetEntity(null);
+                inventory.addWood(1);
             }
         }
     }

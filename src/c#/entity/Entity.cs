@@ -7,6 +7,7 @@ namespace osg {
         private EntityType type;
         private ChunkId chunkId;
         private GameObject gameObject;
+        private bool markedForDeletion = false;
 
         public Entity(EntityType type, ChunkId chunkId) {
             this.id = new EntityId();
@@ -42,6 +43,13 @@ namespace osg {
         
         public abstract void destroyGameObject();
 
+        public void markForDeletion() {
+            markedForDeletion = true;
+        }
+
+        public bool isMarkedForDeletion() {
+            return markedForDeletion;
+        }
     }
 
 }

@@ -80,6 +80,20 @@ namespace osg {
             }
 
             player.fixedUpdate();
+
+            // delete entities marked for deletion
+            List<Entity> entitiesToDelete = new List<Entity>();
+            foreach (Chunk chunk in environment.getChunks()) {
+                foreach (Entity entity in chunk.getEntities()) {
+                    if (entity.isMarkedForDeletion()) {
+                        entitiesToDelete.Add(entity);
+                    }
+                }
+            }
+            foreach (Entity entity in entitiesToDelete) {
+                entity.destroyGameObject();
+                environment.removeEntity(entity);
+            }
         }
 
         void checkIfPlayerIsFallingIntoVoid() {
