@@ -21,9 +21,9 @@ namespace osg {
         private NationRepository nationRepository;
         private Player player;
         private TextGameObject numWoodText;
+
         public GameObject playerGameObject; // must be set in Unity Editor -- TODO: make this private and set it in the constructor (will require refactoring Player.cs)
-        
-        private bool runTests = false;
+        public bool runTests = false;
 
         // Initialization
         void Start() {
