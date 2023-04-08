@@ -6,6 +6,7 @@ namespace osgtests {
         
         public static void runTests() {
             TestTickCounter.runTests();
+            TestGameConfig.runTests();
         }
     }
 }

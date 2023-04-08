@@ -334,6 +334,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 3245935288003537136, guid: aff1b62650802494a80c4cdf1afcfa7a, type: 3}
+      propertyPath: runTests
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3245935288003537136, guid: aff1b62650802494a80c4cdf1afcfa7a, type: 3}
       propertyPath: chunkSize
       value: 9
       objectReference: {fileID: 0}
