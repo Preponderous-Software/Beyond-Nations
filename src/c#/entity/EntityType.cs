@@ -4,5 +4,6 @@ namespace osg {
         TREE,
         ROCK,
         LIVING,
+        PLAYER,
     }
 }

@@ -3,7 +3,7 @@ using UnityEngine;
 namespace osg {
 
     class LivingEntity : Entity {
-        private GameObject targetObject;
+        private Entity targetEntity;
         private Inventory inventory = new Inventory();
 
         public LivingEntity(Vector3 position, ChunkId chunkId) : base(EntityType.LIVING, chunkId) {
@@ -14,28 +14,28 @@ namespace osg {
             return 20;
         }
 
-        public bool hasTargetObject() {
-            return targetObject != null;
+        public bool hasTargetEntity() {
+            return targetEntity != null;
         }
 
-        public GameObject getTargetObject() {
-            return targetObject;
+        public Entity getTargetEntity() {
+            return targetEntity;
         }
 
-        public void setTargetObject(GameObject targetObject) {
-            this.targetObject = targetObject;
+        public void setTargetEntity(Entity targetEntity) {
+            this.targetEntity = targetEntity;
         }
 
-        public void moveTowardsTargetObject() {
-            Vector3 targetPosition = targetObject.transform.position;
+        public void moveTowardsTargetEntity() {
+            Vector3 targetPosition = targetEntity.getGameObject().transform.position;
             Vector3 currentPosition = getGameObject().transform.position;
             Vector3 direction = targetPosition - currentPosition;
             direction.Normalize();
             getGameObject().GetComponent<Rigidbody>().velocity = direction * getSpeed();
         }
 
-        public bool isAtTargetObject() {
-            Vector3 targetPosition = targetObject.transform.position;
+        public bool isAtTargetEntity() {
+            Vector3 targetPosition = targetEntity.getGameObject().transform.position;
             Vector3 currentPosition = getGameObject().transform.position;
             Vector3 direction = targetPosition - currentPosition;
             return direction.magnitude < 10;

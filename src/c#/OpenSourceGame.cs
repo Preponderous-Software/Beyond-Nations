@@ -27,7 +27,7 @@ namespace osg {
         // Initialization
         void Start() {
             gameConfig = new GameConfig();
-            player = new Player(playerGameObject, gameConfig.getPlayerWalkSpeed(), gameConfig.getPlayerRunSpeed());
+            player = new Player(playerGameObject, gameConfig.getPlayerWalkSpeed(), gameConfig.getPlayerRunSpeed(), new ChunkId());
             eventRepository = new EventRepository();
             eventProducer = new EventProducer(eventRepository);
             environment = new Environment(gameConfig.getChunkSize(), gameConfig.getLocationScale());
@@ -76,9 +76,9 @@ namespace osg {
                         if (entity.getType() == EntityType.LIVING) {
                             LivingEntity livingEntity = (LivingEntity)entity;
                             
-                            livingEntity.setTargetObject(player.getGameObject());
-                            if (!livingEntity.isAtTargetObject()) {
-                                livingEntity.moveTowardsTargetObject();
+                            livingEntity.setTargetEntity(player);
+                            if (!livingEntity.isAtTargetEntity()) {
+                                livingEntity.moveTowardsTargetEntity();
                             }
                             else {
                                 // stop

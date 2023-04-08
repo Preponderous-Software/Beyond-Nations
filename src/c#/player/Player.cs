@@ -4,9 +4,8 @@ using UnityEngine;
 
 namespace osg {
 
-    public class Player {
+    public class Player : Entity {
         private PlayerId id = new PlayerId();
-        private GameObject gameObject = null;
         private Rigidbody rigidBody = null;
         private bool jumpKeyWasPressed = false;
         private float horizontalInput = 0;
@@ -17,8 +16,8 @@ namespace osg {
         private Camera playerCamera = null;
         private Inventory inventory = new Inventory();
 
-        public Player(GameObject gameObject, int walkSpeed, int runSpeed) {
-            this.gameObject = gameObject;
+        public Player(GameObject gameObject, int walkSpeed, int runSpeed, ChunkId chunkId) : base(EntityType.PLAYER, chunkId){
+            setGameObject(gameObject);
             this.rigidBody = gameObject.GetComponent<Rigidbody>();
             this.walkSpeed = walkSpeed;
             this.runSpeed = runSpeed;
@@ -71,10 +70,6 @@ namespace osg {
             return id;
         }
 
-        public GameObject getGameObject() {
-            return gameObject;
-        }
-
         public Camera getCamera() {
             return playerCamera;
         }
@@ -82,11 +77,19 @@ namespace osg {
         public bool isGrounded() {
             int minY = 0;
             int maxY = 2;
-            return gameObject.transform.position.y > minY && gameObject.transform.position.y < maxY;
+            return getGameObject().transform.position.y > minY && getGameObject().transform.position.y < maxY;
         }
 
         public Inventory getInventory() {
             return inventory;
+        }
+
+        public override void createGameObject(Vector3 position) {
+            throw new System.NotImplementedException();
+        }
+
+        public override void destroyGameObject() {
+            UnityEngine.Object.Destroy(getGameObject());
         }
     }
 }
