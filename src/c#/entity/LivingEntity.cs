@@ -76,11 +76,13 @@ namespace osg {
                 }
                 else {
                     getGameObject().GetComponent<Rigidbody>().velocity = Vector3.zero;
-                    getGameObject().GetComponent<Renderer>().material.color = Color.blue;
                     if (targetEntity.getType() == EntityType.TREE) {
                         getTargetEntity().markForDeletion();
                         setTargetEntity(null);
                         inventory.addWood(1);
+                        if (inventory.getNumWood() == 3) {
+                            getGameObject().GetComponent<Renderer>().material.color = Color.blue;
+                        }
                     }
                 }
             }
