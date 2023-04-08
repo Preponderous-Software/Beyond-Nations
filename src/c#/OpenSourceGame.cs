@@ -29,7 +29,7 @@ namespace osg {
         void Start() {
             if (runTests) {
                 Debug.Log("Running tests...");
-                Tests.runTests();
+                osgtests.Tests.runTests();
                 Debug.Break();
             }
             else {

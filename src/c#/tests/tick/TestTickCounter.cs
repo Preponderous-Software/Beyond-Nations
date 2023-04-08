@@ -1,6 +1,8 @@
 using UnityEngine;
 
-namespace osg {
+using osg;
+
+namespace osgtests {
 
     public static class TestTickCounter {
 

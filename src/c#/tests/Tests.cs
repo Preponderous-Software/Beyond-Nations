@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace osg {
+namespace osgtests {
 
     public static class Tests {
         
