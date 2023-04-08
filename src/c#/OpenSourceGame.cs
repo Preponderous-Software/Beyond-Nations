@@ -30,6 +30,7 @@ namespace osg {
             if (runTests) {
                 Debug.Log("Running tests...");
                 osgtests.Tests.runTests();
+                Debug.Log("Tests complete. Pausing.");
                 Debug.Break();
             }
             else {

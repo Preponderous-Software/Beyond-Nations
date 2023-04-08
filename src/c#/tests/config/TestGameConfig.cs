@@ -7,7 +7,6 @@ namespace osgtests {
     public static class TestGameConfig {
 
         public static void runTests() {
-            Debug.Log("Running GameConfig tests...");
             testInstantiation();
         }
 

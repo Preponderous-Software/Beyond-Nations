@@ -7,7 +7,6 @@ namespace osgtests {
     public static class TestTickCounter {
 
         public static void runTests() {
-            Debug.Log("Running TickCounter tests...");
             testInstantiation();
             testIncrement();
             testShouldUpdate();

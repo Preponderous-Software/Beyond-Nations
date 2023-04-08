@@ -7,7 +7,6 @@ namespace osgtests {
     public static class TestRockEntity {
 
         public static void runTests() {
-            Debug.Log("Running RockEntity tests...");
             testInstantiation();
         }
 

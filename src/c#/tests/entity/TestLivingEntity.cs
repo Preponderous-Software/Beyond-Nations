@@ -7,9 +7,11 @@ namespace osgtests {
     public static class TestLivingEntity {
 
         public static void runTests() {
-            Debug.Log("Running LivingEntity tests...");
             testInstantiation();
             testGetSpeed();
+            testHasTargetEntity();
+            testGetTargetEntity();
+            testSetTargetEntity();
         }
 
         public static void testInstantiation() {

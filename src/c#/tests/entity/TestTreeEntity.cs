@@ -7,7 +7,6 @@ namespace osgtests {
     public static class TestTreeEntity {
 
         public static void runTests() {
-            Debug.Log("Running TreeEntity tests...");
             testInstantiation();
         }
 
