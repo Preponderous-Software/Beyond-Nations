@@ -69,7 +69,14 @@ namespace osg {
                 numWoodText.updateText("Wood: " + player.getInventory().getNumWood());
                 status.clearStatusIfExpired();
 
-                moveLivingEntitiesTowardsPlayer();
+                foreach (Chunk chunk in environment.getChunks()) {
+                    foreach (Entity entity in chunk.getEntities()) {
+                        if (entity.getType() == EntityType.LIVING) {
+                            LivingEntity livingEntity = (LivingEntity)entity;
+                            livingEntity.fixedUpdate(environment);
+                        }
+                    }
+                }
             }
 
             player.fixedUpdate();
@@ -81,24 +88,6 @@ namespace osg {
                 eventProducer.producePlayerFallingIntoVoidEvent(player.getGameObject().transform.position);
                 player.getGameObject().transform.position = new Vector3(0, 10, 0); 
                 status.update("You fell into the void. You have been teleported to the surface.");
-            }
-        }
-
-        void moveLivingEntitiesTowardsPlayer() {
-            foreach (Chunk chunk in environment.getChunks()) {
-                foreach (Entity entity in chunk.getEntities()) {
-                    if (entity.getType() == EntityType.LIVING) {
-                        LivingEntity livingEntity = (LivingEntity)entity;
-                        livingEntity.setTargetEntity(player);
-                        if (!livingEntity.isAtTargetEntity()) {
-                            livingEntity.moveTowardsTargetEntity();
-                        }
-                        else {
-                            livingEntity.getGameObject().GetComponent<Rigidbody>().velocity = Vector3.zero;
-                            livingEntity.getGameObject().GetComponent<Renderer>().material.color = Color.blue;
-                        }
-                    }
-                }
             }
         }
     }

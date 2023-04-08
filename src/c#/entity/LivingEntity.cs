@@ -38,7 +38,8 @@ namespace osg {
             Vector3 targetPosition = targetEntity.getGameObject().transform.position;
             Vector3 currentPosition = getGameObject().transform.position;
             Vector3 direction = targetPosition - currentPosition;
-            return direction.magnitude < 10;
+            int threshold = 5;
+            return direction.magnitude < threshold;
         }
 
         public Inventory getInventory() {
@@ -63,6 +64,23 @@ namespace osg {
 
         public override void destroyGameObject() {
             UnityEngine.Object.Destroy(getGameObject());
+        }
+
+        public void fixedUpdate(Environment environment) {
+            // target nearest tree
+            Entity nearestTree = environment.getNearestTree(getGameObject().transform.position);
+            if (nearestTree == null) {
+                return;
+            }
+
+            setTargetEntity(nearestTree);
+            if (!isAtTargetEntity()) {
+                moveTowardsTargetEntity();
+            }
+            else {
+                getGameObject().GetComponent<Rigidbody>().velocity = Vector3.zero;
+                getGameObject().GetComponent<Renderer>().material.color = Color.blue;
+            }
         }
     }
 }

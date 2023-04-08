@@ -90,5 +90,23 @@ namespace osg {
         public void removeEntityId(EntityId entityId) {
             entityIds.Remove(entityId);
         }
+
+        public TreeEntity getNearestTree(Vector3 position) {
+            TreeEntity nearestTree = null;
+            float nearestDistance = float.MaxValue;
+            foreach (Chunk chunk in chunks) {
+                foreach (Entity entity in chunk.getEntities()) {
+                    if (entity.getType() == EntityType.TREE) {
+                        TreeEntity tree = (TreeEntity) entity;
+                        float distance = Vector3.Distance(position, tree.getGameObject().transform.position);
+                        if (distance < nearestDistance) {
+                            nearestDistance = distance;
+                            nearestTree = tree;
+                        }
+                    }
+                }
+            }
+            return nearestTree;
+        }
     }
 }
