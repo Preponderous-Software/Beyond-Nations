@@ -15,6 +15,7 @@ namespace osg {
         private int runSpeed;
         private int currentSpeed;
         private Camera playerCamera = null;
+        private Inventory inventory = new Inventory();
 
         public Player(GameObject gameObject, int walkSpeed, int runSpeed) {
             this.gameObject = gameObject;
@@ -82,6 +83,10 @@ namespace osg {
             int minY = 0;
             int maxY = 2;
             return gameObject.transform.position.y > minY && gameObject.transform.position.y < maxY;
+        }
+
+        public Inventory getInventory() {
+            return inventory;
         }
     }
 }

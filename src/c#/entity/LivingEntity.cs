@@ -5,6 +5,7 @@ namespace osg {
     class LivingEntity : Entity {
         private GameObject gameObject;
         private GameObject targetObject;
+        private Inventory inventory = new Inventory();
 
         public LivingEntity(Vector3 position, ChunkId chunkId) : base(EntityType.LIVING, chunkId) {
             gameObject = GameObject.CreatePrimitive(PrimitiveType.Capsule);
@@ -53,6 +54,10 @@ namespace osg {
             Vector3 currentPosition = gameObject.transform.position;
             Vector3 direction = targetPosition - currentPosition;
             return direction.magnitude < 10;
+        }
+
+        public Inventory getInventory() {
+            return inventory;
         }
     }
 }

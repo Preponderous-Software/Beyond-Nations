@@ -20,7 +20,7 @@ namespace osg {
         private Status status;
         private NationRepository nationRepository;
         private Player player;
-        
+        private TextGameObject numWoodText;
         public GameObject playerGameObject; // must be set in Unity Editor -- TODO: make this private and set it in the constructor (will require refactoring Player.cs)
         
 
@@ -36,6 +36,7 @@ namespace osg {
             chunkPositionText = new TextGameObject("Chunk: (0, 0)", 20, 0, Screen.height / 4);
             status = new Status(tickCounter, gameConfig.getStatusExpirationTicks());
             nationRepository = new NationRepository();
+            numWoodText = new TextGameObject("Wood: 0", 20, 0, 0);
 
             status.update("Entered world.");
         }
@@ -65,6 +66,7 @@ namespace osg {
                 worldGenerator.update();
                 checkIfPlayerIsFallingIntoVoid();
                 chunkPositionText.updateText("Chunk: (" + worldGenerator.getCurrentChunkX() + ", " + worldGenerator.getCurrentChunkZ() + ")");
+                numWoodText.updateText("Wood: " + player.getInventory().getNumWood());
                 status.clearStatusIfExpired();
 
                 
