@@ -84,7 +84,7 @@ namespace osg {
                     foreach (Entity entity in chunk.getEntities()) {
                         if (entity.getType() == EntityType.LIVING) {
                             LivingEntity livingEntity = (LivingEntity)entity;
-                            livingEntity.fixedUpdate(environment, player);
+                            livingEntity.fixedUpdate(environment, nationRepository);
                             if (livingEntity.getNationId() == null) {
                                 createOrJoinNation(livingEntity);
                             }

@@ -110,9 +110,9 @@ namespace osg {
             UnityEngine.Object.Destroy(getGameObject());
         }
 
-        public void fixedUpdate(Environment environment, Player player) {
-            int targetNumWood = 5;
-            int targetNumStone = 3;
+        public void fixedUpdate(Environment environment, NationRepository nationRepository) {
+            int targetNumWood = 3;
+            int targetNumStone = 2;
             if (inventory.getNumWood() < targetNumWood) {
                 Entity nearestTree = environment.getNearestTree(getGameObject().transform.position);
                 if (nearestTree == null) {
@@ -128,7 +128,13 @@ namespace osg {
                 setTargetEntity(nearestRock);
             }
             else {
-                setTargetEntity(player);
+                Nation nation = nationRepository.getNation(nationId);
+                if (nation == null) {
+                    return;
+                }
+                EntityId leaderId = nation.getLeaderId();
+                Entity leader = environment.getEntity(leaderId);
+                setTargetEntity(leader);
             }
 
             if (hasTargetEntity()) {
