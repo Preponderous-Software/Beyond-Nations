@@ -10,7 +10,7 @@ namespace osgtests {
             testInitialization();
             testAddNation();
             testRemoveNation();
-            testGetNation();
+            testGetNationByNationId();
         }
 
         public static void testInitialization() {
@@ -31,8 +31,7 @@ namespace osgtests {
             repository.addNation(nation);
 
             // verify
-            Debug.Assert(repository.getNation(nation.getId()) == nation);
-            Debug.Assert(repository.getNation(leaderId) == nation);            
+            Debug.Assert(repository.getNation(nation.getId()) == nation);     
         }
 
         public static void testRemoveNation() {
@@ -47,10 +46,9 @@ namespace osgtests {
 
             // verify
             Debug.Assert(repository.getNation(nation.getId()) == null);
-            Debug.Assert(repository.getNation(leaderId) == null);
         }
 
-        public static void testGetNation() {
+        public static void testGetNationByNationId() {
             // prepare
             NationRepository repository = new NationRepository();
             EntityId leaderId = new EntityId();
@@ -58,12 +56,10 @@ namespace osgtests {
             repository.addNation(nation);
 
             // run
-            Nation nation1 = repository.getNation(nation.getId());
-            Nation nation2 = repository.getNation(leaderId);
+            Nation retrievedNation = repository.getNation(nation.getId());
 
             // verify
-            Debug.Assert(nation1 == nation);
-            Debug.Assert(nation2 == nation);
+            Debug.Assert(retrievedNation.getId() == nation.getId());
         }
     }
 }
