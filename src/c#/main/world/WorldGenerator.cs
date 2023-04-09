@@ -151,11 +151,11 @@ namespace osg {
 
                 // create living entity
                 Vector3 position = new Vector3(locationPosition.x, (float)(locationPosition.y + 1.5), locationPosition.z);
-                LivingEntity livingEntity = new LivingEntity(position, chunk.getId());
+                Pawn pawn = new Pawn(position, chunk.getId());
 
-                chunk.addEntity(livingEntity, randomLocation);
-                environment.addEntityId(livingEntity.getId());
-                livingEntity.getGameObject().transform.parent = randomLocation.getGameObject().transform;
+                chunk.addEntity(pawn, randomLocation);
+                environment.addEntityId(pawn.getId());
+                pawn.getGameObject().transform.parent = randomLocation.getGameObject().transform;
             }
         }
     }

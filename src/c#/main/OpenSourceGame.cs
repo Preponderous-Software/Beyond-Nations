@@ -78,10 +78,10 @@ namespace osg {
                 foreach (Chunk chunk in environment.getChunks()) {
                     foreach (Entity entity in chunk.getEntities()) {
                         if (entity.getType() == EntityType.LIVING) {
-                            LivingEntity livingEntity = (LivingEntity)entity;
-                            livingEntity.fixedUpdate(environment, nationRepository);
-                            if (livingEntity.getNationId() == null) {
-                                createOrJoinNation(livingEntity);
+                            Pawn pawn = (Pawn)entity;
+                            pawn.fixedUpdate(environment, nationRepository);
+                            if (pawn.getNationId() == null) {
+                                createOrJoinNation(pawn);
                             }
                         }
                     }
@@ -142,8 +142,8 @@ namespace osg {
                 foreach (Chunk chunk in environment.getChunks()) {
                     foreach (Entity entity in chunk.getEntities()) {
                         if (entity.getType() == EntityType.LIVING) {
-                            LivingEntity livingEntity = (LivingEntity)entity;
-                            livingEntity.getGameObject().transform.position = player.getGameObject().transform.position;
+                            Pawn pawn = (Pawn)entity;
+                            pawn.getGameObject().transform.position = player.getGameObject().transform.position;
                         }
                     }
                 }
@@ -159,24 +159,24 @@ namespace osg {
             }
         }
 
-        void createOrJoinNation(LivingEntity livingEntity) {
+        void createOrJoinNation(Pawn pawn) {
             // if less than 4 nations, create a new nation
             if (nationRepository.getNumberOfNations() < 4) {
-                Nation nation = new Nation(NationNameGenerator.generate(), livingEntity.getId());
+                Nation nation = new Nation(NationNameGenerator.generate(), pawn.getId());
                 nationRepository.addNation(nation);
-                livingEntity.setNationId(nation.getId());
-                livingEntity.setColor(nation.getColor());
+                pawn.setNationId(nation.getId());
+                pawn.setColor(nation.getColor());
                 eventProducer.produceNationCreationEvent(nation);
-                status.update(livingEntity.getName() + " created nation " + nation.getName() + ".");
+                status.update(pawn.getName() + " created nation " + nation.getName() + ".");
             }
             else {
                 // join a random nation
                 Nation nation = nationRepository.getRandomNation();
-                nation.addMember(livingEntity.getId());
-                livingEntity.setNationId(nation.getId());
-                livingEntity.setColor(nation.getColor());
-                eventProducer.produceNationJoinEvent(nation, livingEntity.getId());
-                status.update(livingEntity.getName() + " joined nation " + nation.getName() + ". Members: " + nation.getNumberOfMembers() + ".");
+                nation.addMember(pawn.getId());
+                pawn.setNationId(nation.getId());
+                pawn.setColor(nation.getColor());
+                eventProducer.produceNationJoinEvent(nation, pawn.getId());
+                status.update(pawn.getName() + " joined nation " + nation.getName() + ". Members: " + nation.getNumberOfMembers() + ".");
             }
         }
 
