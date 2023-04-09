@@ -60,6 +60,39 @@ namespace osg {
         void Update() {
             tickCounter.increment();
 
+            handleCommands();
+
+            player.update();
+        }
+
+        // Fixed updates
+        void FixedUpdate() {
+            if (tickCounter.shouldUpdate()) {
+                worldGenerator.update();
+                checkIfPlayerIsFallingIntoVoid();
+                chunkPositionText.updateText("Chunk: (" + worldGenerator.getCurrentChunkX() + ", " + worldGenerator.getCurrentChunkZ() + ")");
+                numWoodText.updateText("Wood: " + player.getInventory().getNumWood());
+                numStoneText.updateText("Stone: " + player.getInventory().getNumStone());
+                status.clearStatusIfExpired();
+
+                foreach (Chunk chunk in environment.getChunks()) {
+                    foreach (Entity entity in chunk.getEntities()) {
+                        if (entity.getType() == EntityType.LIVING) {
+                            LivingEntity livingEntity = (LivingEntity)entity;
+                            livingEntity.fixedUpdate(environment, nationRepository);
+                            if (livingEntity.getNationId() == null) {
+                                createOrJoinNation(livingEntity);
+                            }
+                        }
+                    }
+                }
+            }
+            
+            player.fixedUpdate();
+            deleteEntitiesMarkedForDeletion();
+        }
+
+        void handleCommands() {
             // if N pressed, create nation
             if (Input.GetKeyDown(KeyCode.N)) {
                 if (player.getNationId() != null) {
@@ -115,35 +148,6 @@ namespace osg {
                     }
                 }
             }
-
-            player.update();
-        }
-
-        // Fixed updates
-        void FixedUpdate() {
-            if (tickCounter.shouldUpdate()) {
-                worldGenerator.update();
-                checkIfPlayerIsFallingIntoVoid();
-                chunkPositionText.updateText("Chunk: (" + worldGenerator.getCurrentChunkX() + ", " + worldGenerator.getCurrentChunkZ() + ")");
-                numWoodText.updateText("Wood: " + player.getInventory().getNumWood());
-                numStoneText.updateText("Stone: " + player.getInventory().getNumStone());
-                status.clearStatusIfExpired();
-
-                foreach (Chunk chunk in environment.getChunks()) {
-                    foreach (Entity entity in chunk.getEntities()) {
-                        if (entity.getType() == EntityType.LIVING) {
-                            LivingEntity livingEntity = (LivingEntity)entity;
-                            livingEntity.fixedUpdate(environment, nationRepository);
-                            if (livingEntity.getNationId() == null) {
-                                createOrJoinNation(livingEntity);
-                            }
-                        }
-                    }
-                }
-            }
-            
-            player.fixedUpdate();
-            deleteEntitiesMarkedForDeletion();
         }
 
         void checkIfPlayerIsFallingIntoVoid() {
