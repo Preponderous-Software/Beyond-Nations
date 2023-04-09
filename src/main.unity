@@ -228,6 +228,34 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 271296955938083140, guid: 0d90c357d5d32684aab1bae68cb79675, type: 3}
+      propertyPath: far clip plane
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 271296955938083146, guid: 0d90c357d5d32684aab1bae68cb79675, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 271296955938083146, guid: 0d90c357d5d32684aab1bae68cb79675, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.9945219
+      objectReference: {fileID: 0}
+    - target: {fileID: 271296955938083146, guid: 0d90c357d5d32684aab1bae68cb79675, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.10452846
+      objectReference: {fileID: 0}
+    - target: {fileID: 271296955938083146, guid: 0d90c357d5d32684aab1bae68cb79675, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 271296955938083146, guid: 0d90c357d5d32684aab1bae68cb79675, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 271296955938083146, guid: 0d90c357d5d32684aab1bae68cb79675, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 12
+      objectReference: {fileID: 0}
     - target: {fileID: 271296956358218551, guid: 0d90c357d5d32684aab1bae68cb79675, type: 3}
       propertyPath: m_RootOrder
       value: 1
@@ -332,6 +360,10 @@ PrefabInstance:
     - target: {fileID: 3245935288003537136, guid: aff1b62650802494a80c4cdf1afcfa7a, type: 3}
       propertyPath: player
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3245935288003537136, guid: aff1b62650802494a80c4cdf1afcfa7a, type: 3}
+      propertyPath: runTests
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3245935288003537136, guid: aff1b62650802494a80c4cdf1afcfa7a, type: 3}
       propertyPath: chunkSize

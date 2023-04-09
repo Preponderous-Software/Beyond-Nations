@@ -4,9 +4,7 @@ using UnityEngine;
 
 namespace osg {
 
-    public class Player {
-        private PlayerId id = new PlayerId();
-        private GameObject gameObject = null;
+    public class Player : Entity {
         private Rigidbody rigidBody = null;
         private bool jumpKeyWasPressed = false;
         private float horizontalInput = 0;
@@ -15,9 +13,11 @@ namespace osg {
         private int runSpeed;
         private int currentSpeed;
         private Camera playerCamera = null;
+        private Inventory inventory = new Inventory();
+        private NationId nationId = null;
 
-        public Player(GameObject gameObject, int walkSpeed, int runSpeed) {
-            this.gameObject = gameObject;
+        public Player(GameObject gameObject, int walkSpeed, int runSpeed, ChunkId chunkId) : base(EntityType.PLAYER, chunkId){
+            setGameObject(gameObject);
             this.rigidBody = gameObject.GetComponent<Rigidbody>();
             this.walkSpeed = walkSpeed;
             this.runSpeed = runSpeed;
@@ -66,14 +66,6 @@ namespace osg {
             }
         }
 
-        public PlayerId getId() {
-            return id;
-        }
-
-        public GameObject getGameObject() {
-            return gameObject;
-        }
-
         public Camera getCamera() {
             return playerCamera;
         }
@@ -81,7 +73,31 @@ namespace osg {
         public bool isGrounded() {
             int minY = 0;
             int maxY = 2;
-            return gameObject.transform.position.y > minY && gameObject.transform.position.y < maxY;
+            return getGameObject().transform.position.y > minY && getGameObject().transform.position.y < maxY;
+        }
+
+        public Inventory getInventory() {
+            return inventory;
+        }
+
+        public override void createGameObject(Vector3 position) {
+            throw new System.NotImplementedException();
+        }
+
+        public override void destroyGameObject() {
+            UnityEngine.Object.Destroy(getGameObject());
+        }
+
+        public void setColor(Color color) {
+            getGameObject().GetComponent<Renderer>().material.color = color;
+        }
+
+        public NationId getNationId() {
+            return nationId;
+        }
+
+        public void setNationId(NationId nationId) {
+            this.nationId = nationId;
         }
     }
 }

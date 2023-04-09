@@ -6,7 +6,7 @@ namespace osg {
         private Guid id;
 
         public EntityId() {
-            this.id = new Guid();
+            this.id = Guid.NewGuid();
         }
 
         public Guid getId() {
@@ -28,6 +28,10 @@ namespace osg {
 
         public override int GetHashCode() {
             return id.GetHashCode();
+        }
+
+        public override string ToString() {
+            return id.ToString();
         }
     }
 }

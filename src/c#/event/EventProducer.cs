@@ -27,5 +27,11 @@ namespace osg {
             eventRepository.addEvent(nationCreationEvent);
             Debug.Log("Produced event: " + nationCreationEvent);
         }
+
+        public void produceNationJoinEvent(Nation nation, EntityId entityId) {
+            NationJoinEvent nationJoinEvent = new NationJoinEvent(nation, entityId);
+            eventRepository.addEvent(nationJoinEvent);
+            Debug.Log("Produced event: " + nationJoinEvent);
+        }
     }
 }

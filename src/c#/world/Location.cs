@@ -44,6 +44,10 @@ namespace osg {
             entityIds.Add(entityId);
         }
 
+        public void removeEntityId(EntityId entityId) {
+            entityIds.Remove(entityId);
+        }
+
         public bool isEntityPresent(Entity entity) {
             return entityIds.Contains(entity.getId());
         }
