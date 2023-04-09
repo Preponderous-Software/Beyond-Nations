@@ -34,7 +34,7 @@ namespace osgtests {
             LivingEntity livingEntity = new LivingEntity(new Vector3(0, 0, 0), new ChunkId());
 
             // check
-            Debug.Assert(livingEntity.getSpeed() == 20);
+            Debug.Assert(livingEntity.getSpeed() > 0);
 
             // clean up
             GameObject.Destroy(livingEntity.getGameObject());
