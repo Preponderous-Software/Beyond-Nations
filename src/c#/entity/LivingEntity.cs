@@ -62,12 +62,21 @@ namespace osg {
         }
 
         public void fixedUpdate(Environment environment) {
-            if (inventory.getNumWood() < 3) {
+            int targetNumWood = 10;
+            int targetNumStone = 5;
+            if (inventory.getNumWood() < targetNumWood) {
                 Entity nearestTree = environment.getNearestTree(getGameObject().transform.position);
                 if (nearestTree == null) {
                     return;
                 }
                 setTargetEntity(nearestTree);
+            }
+            else if (inventory.getNumStone() < targetNumStone) {
+                Entity nearestRock = environment.getNearestRock(getGameObject().transform.position);
+                if (nearestRock == null) {
+                    return;
+                }
+                setTargetEntity(nearestRock);
             }
 
             if (hasTargetEntity()) {
@@ -80,8 +89,16 @@ namespace osg {
                         getTargetEntity().markForDeletion();
                         setTargetEntity(null);
                         inventory.addWood(1);
-                        if (inventory.getNumWood() == 3) {
+                        if (inventory.getNumWood() == targetNumWood) {
                             getGameObject().GetComponent<Renderer>().material.color = Color.blue;
+                        }
+                    }
+                    else if (targetEntity.getType() == EntityType.ROCK) {
+                        getTargetEntity().markForDeletion();
+                        setTargetEntity(null);
+                        inventory.addStone(1);
+                        if (inventory.getNumStone() == targetNumStone) {
+                            getGameObject().GetComponent<Renderer>().material.color = Color.red;
                         }
                     }
                 }

@@ -97,7 +97,7 @@ namespace osg {
         }
 
         private void spawnTreeEntities(Chunk chunk) {
-            int numberOfTrees = Random.Range(5, 10);
+            int numberOfTrees = Random.Range(chunk.getSize()/2, chunk.getSize());
             for (int i = 0; i < numberOfTrees; i++) {
                 Location randomLocation = chunk.getRandomLocation();
                 if (randomLocation.getNumberOfEntities() > 0) {
@@ -118,7 +118,7 @@ namespace osg {
         }
 
         private void spawnRockEntities(Chunk chunk) {
-            int numberOfRocks = Random.Range(3, 6);
+            int numberOfRocks = Random.Range(chunk.getSize()/4, chunk.getSize()/2);
             for (int i = 0; i < numberOfRocks; i++) {
                 Location randomLocation = chunk.getRandomLocation();
                 if (randomLocation.getNumberOfEntities() > 0) {
@@ -139,7 +139,8 @@ namespace osg {
         }
 
         private void spawnLivingEntities(Chunk chunk) {
-            int numberOfLivingEntities = 1;
+            // 0 or 1
+            int numberOfLivingEntities = Random.Range(0, 2);
             for (int i = 0; i < numberOfLivingEntities; i++) {
                 Location randomLocation = chunk.getRandomLocation();
                 if (randomLocation.getNumberOfEntities() > 0) {

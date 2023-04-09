@@ -95,6 +95,10 @@ namespace osg {
             return (TreeEntity)getNearestEntityOfType(position, EntityType.TREE);
         }
 
+        public RockEntity getNearestRock(Vector3 position) {
+            return (RockEntity)getNearestEntityOfType(position, EntityType.ROCK);
+        }
+
         public Entity getNearestEntityOfType(Vector3 position, EntityType type) {
             Entity nearestEntity = null;
             float nearestDistance = float.MaxValue;
