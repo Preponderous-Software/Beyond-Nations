@@ -20,6 +20,7 @@ The following controls are available in the game:
 | `Space` | Jump |
 | `Left Shift` | Sprint |
 | `N` | Create a new nation |
+| `T` | Teleport all living entities to you |
 
 ## Game Systems
 There are a number of systems that will be implemented in the game. These systems will be used to create a rich and engaging gameplay experience. Details can be found in the [Systems Document](./docs/SYSTEMS.md).

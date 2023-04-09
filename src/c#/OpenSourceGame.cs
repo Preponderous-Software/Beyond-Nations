@@ -73,6 +73,18 @@ namespace osg {
                 status.update("Created nation " + nation.getName() + ".");
             }
 
+            // if T pressed, teleport all living entities to player
+            if (Input.GetKeyDown(KeyCode.T)) {
+                foreach (Chunk chunk in environment.getChunks()) {
+                    foreach (Entity entity in chunk.getEntities()) {
+                        if (entity.getType() == EntityType.LIVING) {
+                            LivingEntity livingEntity = (LivingEntity)entity;
+                            livingEntity.getGameObject().transform.position = player.getGameObject().transform.position;
+                        }
+                    }
+                }
+            }
+
             player.update();
         }
 
