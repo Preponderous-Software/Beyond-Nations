@@ -85,8 +85,6 @@ namespace osg {
                         if (entity.getType() == EntityType.LIVING) {
                             LivingEntity livingEntity = (LivingEntity)entity;
                             livingEntity.fixedUpdate(environment, player);
-
-                            
                             if (livingEntity.getNationId() == null) {
                                 createOrJoinNation(livingEntity);
                             }
@@ -94,22 +92,9 @@ namespace osg {
                     }
                 }
             }
-
+            
             player.fixedUpdate();
-
-            // delete entities marked for deletion
-            List<Entity> entitiesToDelete = new List<Entity>();
-            foreach (Chunk chunk in environment.getChunks()) {
-                foreach (Entity entity in chunk.getEntities()) {
-                    if (entity.isMarkedForDeletion()) {
-                        entitiesToDelete.Add(entity);
-                    }
-                }
-            }
-            foreach (Entity entity in entitiesToDelete) {
-                entity.destroyGameObject();
-                environment.removeEntity(entity);
-            }
+            deleteEntitiesMarkedForDeletion();
         }
 
         void checkIfPlayerIsFallingIntoVoid() {
@@ -139,6 +124,21 @@ namespace osg {
                 livingEntity.setColor(nation.getColor());
                 eventProducer.produceNationJoinEvent(nation, livingEntity.getId());
                 status.update(livingEntity.getName() + " joined nation " + nation.getName() + ". Members: " + nation.getNumberOfMembers() + ".");
+            }
+        }
+
+        void deleteEntitiesMarkedForDeletion() {
+            List<Entity> entitiesToDelete = new List<Entity>();
+            foreach (Chunk chunk in environment.getChunks()) {
+                foreach (Entity entity in chunk.getEntities()) {
+                    if (entity.isMarkedForDeletion()) {
+                        entitiesToDelete.Add(entity);
+                    }
+                }
+            }
+            foreach (Entity entity in entitiesToDelete) {
+                entity.destroyGameObject();
+                environment.removeEntity(entity);
             }
         }
     }
