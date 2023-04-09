@@ -13,6 +13,9 @@ namespace osgtests {
             TestRockEntity.runTests();
             TestTreeEntity.runTests();
 
+            // inventory
+            TestInventory.runTests();
+
             // tick
             TestTickCounter.runTests();
         }
