@@ -16,6 +16,12 @@ namespace osgtests {
             // inventory
             TestInventory.runTests();
 
+            // nation
+            TestNation.runTests();
+            TestNationId.runTests();
+            TestNationNameGenerator.runTests();
+            TestNationRepository.runTests();
+
             // tick
             TestTickCounter.runTests();
         }
