@@ -9,7 +9,7 @@ namespace osgtests {
             TestGameConfig.runTests();
 
             // entity
-            TestLivingEntity.runTests();    
+            TestPawn.runTests();    
             TestRockEntity.runTests();
             TestTreeEntity.runTests();
 

@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace osg {
 
-    class LivingEntity : Entity {
+    class Pawn : Entity {
         private string name;
         private int speed = Random.Range(5, 20);
         private NationId nationId;
@@ -39,7 +39,7 @@ namespace osg {
             "Zach"
         };
 
-        public LivingEntity(Vector3 position, ChunkId chunkId) : base(EntityType.LIVING, chunkId) {
+        public Pawn(Vector3 position, ChunkId chunkId) : base(EntityType.LIVING, chunkId) {
             createGameObject(position);
             name = names[Random.Range(0, names.Length)];
         }
@@ -100,7 +100,7 @@ namespace osg {
             gameObject.transform.localScale = new Vector3(1, 1, 1);
             gameObject.GetComponent<Renderer>().material.color = Color.gray;
             gameObject.transform.position = position;
-            gameObject.name = "LivingEntity";
+            gameObject.name = "Pawn";
             Rigidbody rigidbody = gameObject.AddComponent<Rigidbody>();
             rigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
             setGameObject(gameObject);
@@ -155,9 +155,9 @@ namespace osg {
                     }
                     else if (targetEntity.getType() == EntityType.LIVING) {
                         // deposit resources
-                        LivingEntity livingEntity = (LivingEntity)targetEntity;
-                        livingEntity.getInventory().addWood(inventory.getNumWood());
-                        livingEntity.getInventory().addStone(inventory.getNumStone());
+                        Pawn pawn = (Pawn)targetEntity;
+                        pawn.getInventory().addWood(inventory.getNumWood());
+                        pawn.getInventory().addStone(inventory.getNumStone());
                         inventory.setNumWood(0);
                         inventory.setNumStone(0);
                         setTargetEntity(null);
