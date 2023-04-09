@@ -5,11 +5,16 @@ namespace osgtests {
     public static class Tests {
         
         public static void runTests() {
-            TestTickCounter.runTests();
+            // config
             TestGameConfig.runTests();
+
+            // entity
+            TestLivingEntity.runTests();    
             TestRockEntity.runTests();
             TestTreeEntity.runTests();
-            TestLivingEntity.runTests();
+
+            // tick
+            TestTickCounter.runTests();
         }
     }
 }
