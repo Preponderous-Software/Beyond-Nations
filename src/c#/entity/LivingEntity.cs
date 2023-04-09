@@ -3,15 +3,30 @@ using UnityEngine;
 namespace osg {
 
     class LivingEntity : Entity {
+        private string name;
+        private NationId nationId;
         private Entity targetEntity;
         private Inventory inventory = new Inventory();
 
         public LivingEntity(Vector3 position, ChunkId chunkId) : base(EntityType.LIVING, chunkId) {
             createGameObject(position);
+            name = "LivingEntity";
+        }
+
+        public string getName() {
+            return name;
         }
 
         public int getSpeed() {
             return 20;
+        }
+
+        public NationId getNationId() {
+            return nationId;
+        }
+
+        public void setNationId(NationId nationId) {
+            this.nationId = nationId;
         }
 
         public bool hasTargetEntity() {
@@ -35,6 +50,9 @@ namespace osg {
         }
 
         public bool isAtTargetEntity() {
+            if (targetEntity == null) {
+                return false;
+            }
             Vector3 targetPosition = targetEntity.getGameObject().transform.position;
             Vector3 currentPosition = getGameObject().transform.position;
             Vector3 direction = targetPosition - currentPosition;
@@ -61,9 +79,9 @@ namespace osg {
             UnityEngine.Object.Destroy(getGameObject());
         }
 
-        public void fixedUpdate(Environment environment) {
-            int targetNumWood = 10;
-            int targetNumStone = 5;
+        public void fixedUpdate(Environment environment, Player player) {
+            int targetNumWood = 5;
+            int targetNumStone = 3;
             if (inventory.getNumWood() < targetNumWood) {
                 Entity nearestTree = environment.getNearestTree(getGameObject().transform.position);
                 if (nearestTree == null) {
@@ -78,6 +96,9 @@ namespace osg {
                 }
                 setTargetEntity(nearestRock);
             }
+            else {
+                setTargetEntity(player);
+            }
 
             if (hasTargetEntity()) {
                 if (!isAtTargetEntity()) {
@@ -89,24 +110,21 @@ namespace osg {
                         getTargetEntity().markForDeletion();
                         setTargetEntity(null);
                         inventory.addWood(1);
-                        if (inventory.getNumWood() == targetNumWood) {
-                            getGameObject().GetComponent<Renderer>().material.color = Color.blue;
-                        }
                     }
                     else if (targetEntity.getType() == EntityType.ROCK) {
                         getTargetEntity().markForDeletion();
                         setTargetEntity(null);
                         inventory.addStone(1);
-                        if (inventory.getNumStone() == targetNumStone) {
-                            getGameObject().GetComponent<Renderer>().material.color = Color.red;
-                        }
                     }
                 }
             }
             else {
-                getGameObject().GetComponent<Rigidbody>().velocity = getGameObject().transform.forward * getSpeed();
-                getGameObject().transform.Rotate(0, 10, 0);
+                getGameObject().GetComponent<Rigidbody>().velocity = Vector3.zero;
             }
+        }
+
+        public void setColor(Color color) {
+            getGameObject().GetComponent<Renderer>().material.color = color;
         }
     }
 }

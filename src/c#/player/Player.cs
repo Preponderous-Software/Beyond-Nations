@@ -5,7 +5,6 @@ using UnityEngine;
 namespace osg {
 
     public class Player : Entity {
-        private PlayerId id = new PlayerId();
         private Rigidbody rigidBody = null;
         private bool jumpKeyWasPressed = false;
         private float horizontalInput = 0;
@@ -64,10 +63,6 @@ namespace osg {
             if (isGrounded()) {
                 rigidBody.AddForce(Vector3.up * 10, ForceMode.Impulse);
             }
-        }
-
-        public PlayerId getId() {
-            return id;
         }
 
         public Camera getCamera() {

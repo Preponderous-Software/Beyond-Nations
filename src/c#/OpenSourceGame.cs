@@ -62,7 +62,7 @@ namespace osg {
                     status.update("You already have a nation.");
                     return;
                 }
-                Nation nation = new Nation("Test Nation", player.getId());
+                Nation nation = new Nation(NationNameGenerator.generate(), player.getId());
                 nationRepository.addNation(nation);
                 eventProducer.produceNationCreationEvent(nation);
                 status.update("Created nation " + nation.getName() + ".");
@@ -84,7 +84,28 @@ namespace osg {
                     foreach (Entity entity in chunk.getEntities()) {
                         if (entity.getType() == EntityType.LIVING) {
                             LivingEntity livingEntity = (LivingEntity)entity;
-                            livingEntity.fixedUpdate(environment);
+                            livingEntity.fixedUpdate(environment, player);
+
+                            if (livingEntity.getNationId() == null) {
+                                // if less than 4 nations, create a new nation
+                                if (nationRepository.getNumberOfNations() < 4) {
+                                    Nation nation = new Nation(NationNameGenerator.generate(), livingEntity.getId());
+                                    nationRepository.addNation(nation);
+                                    livingEntity.setNationId(nation.getId());
+                                    livingEntity.setColor(nation.getColor());
+                                    eventProducer.produceNationCreationEvent(nation);
+                                    status.update(livingEntity.getName() + " created nation " + nation.getName() + ".");
+                                }
+                                else {
+                                    // join a random nation
+                                    Nation nation = nationRepository.getRandomNation();
+                                    nation.addMember(livingEntity.getId());
+                                    livingEntity.setNationId(nation.getId());
+                                    livingEntity.setColor(nation.getColor());
+                                    eventProducer.produceNationJoinEvent(nation, livingEntity.getId());
+                                    status.update(livingEntity.getName() + " joined nation " + nation.getName() + ". Members: " + nation.getNumberOfMembers() + ".");
+                                }
+                            }
                         }
                     }
                 }
