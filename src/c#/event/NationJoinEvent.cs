@@ -4,7 +4,7 @@ namespace osg {
         private Nation nation;
         private EntityId entityId;
 
-        public NationJoinEvent(Nation nation, EntityId entityId) : base(EventType.NationJoin, "The entity " + entityId + " has joined the nation " + nation.getName() + ".") {
+        public NationJoinEvent(Nation nation, EntityId entityId) : base(EventType.NationJoin, "The entity " + entityId.ToString() + " has joined the nation " + nation.getName() + ".") {
             this.nation = nation;
             this.entityId = entityId;
         }
@@ -18,7 +18,7 @@ namespace osg {
         }
 
         public override string ToString() {
-            return "NationJoinEvent [" + "nation=" + nation.getName() + ", entityId=" + entityId + ", type=" + getType() + ", description=" + getDescription() + ", date=" + getDate() + "]";
+            return "NationJoinEvent [" + "nation=" + nation.getName() + ", entityId=" + entityId.ToString() + ", type=" + getType() + ", description=" + getDescription() + ", date=" + getDate() + "]";
         }
     }
 }

@@ -4,6 +4,7 @@ namespace osg {
 
     class LivingEntity : Entity {
         private string name;
+        private int speed = Random.Range(5, 20);
         private NationId nationId;
         private Entity targetEntity;
         private Inventory inventory = new Inventory();
@@ -48,7 +49,7 @@ namespace osg {
         }
 
         public int getSpeed() {
-            return 20;
+            return speed;
         }
 
         public NationId getNationId() {
