@@ -86,25 +86,9 @@ namespace osg {
                             LivingEntity livingEntity = (LivingEntity)entity;
                             livingEntity.fixedUpdate(environment, player);
 
+                            
                             if (livingEntity.getNationId() == null) {
-                                // if less than 4 nations, create a new nation
-                                if (nationRepository.getNumberOfNations() < 4) {
-                                    Nation nation = new Nation(NationNameGenerator.generate(), livingEntity.getId());
-                                    nationRepository.addNation(nation);
-                                    livingEntity.setNationId(nation.getId());
-                                    livingEntity.setColor(nation.getColor());
-                                    eventProducer.produceNationCreationEvent(nation);
-                                    status.update(livingEntity.getName() + " created nation " + nation.getName() + ".");
-                                }
-                                else {
-                                    // join a random nation
-                                    Nation nation = nationRepository.getRandomNation();
-                                    nation.addMember(livingEntity.getId());
-                                    livingEntity.setNationId(nation.getId());
-                                    livingEntity.setColor(nation.getColor());
-                                    eventProducer.produceNationJoinEvent(nation, livingEntity.getId());
-                                    status.update(livingEntity.getName() + " joined nation " + nation.getName() + ". Members: " + nation.getNumberOfMembers() + ".");
-                                }
+                                createOrJoinNation(livingEntity);
                             }
                         }
                     }
@@ -134,6 +118,27 @@ namespace osg {
                 eventProducer.producePlayerFallingIntoVoidEvent(player.getGameObject().transform.position);
                 player.getGameObject().transform.position = new Vector3(0, 10, 0); 
                 status.update("You fell into the void. You have been teleported to the surface.");
+            }
+        }
+
+        void createOrJoinNation(LivingEntity livingEntity) {
+            // if less than 4 nations, create a new nation
+            if (nationRepository.getNumberOfNations() < 4) {
+                Nation nation = new Nation(NationNameGenerator.generate(), livingEntity.getId());
+                nationRepository.addNation(nation);
+                livingEntity.setNationId(nation.getId());
+                livingEntity.setColor(nation.getColor());
+                eventProducer.produceNationCreationEvent(nation);
+                status.update(livingEntity.getName() + " created nation " + nation.getName() + ".");
+            }
+            else {
+                // join a random nation
+                Nation nation = nationRepository.getRandomNation();
+                nation.addMember(livingEntity.getId());
+                livingEntity.setNationId(nation.getId());
+                livingEntity.setColor(nation.getColor());
+                eventProducer.produceNationJoinEvent(nation, livingEntity.getId());
+                status.update(livingEntity.getName() + " joined nation " + nation.getName() + ". Members: " + nation.getNumberOfMembers() + ".");
             }
         }
     }

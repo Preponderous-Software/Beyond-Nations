@@ -8,9 +8,39 @@ namespace osg {
         private Entity targetEntity;
         private Inventory inventory = new Inventory();
 
+        // names
+        public static string[] names = new string[] {
+            "Bob",
+            "Alice",
+            "Charlie",
+            "Dave",
+            "Eve",
+            "Frank",
+            "Grace",
+            "Hank",
+            "Irene",
+            "Judy",
+            "Karl",
+            "Linda",
+            "Mike",
+            "Nancy",
+            "Oscar",
+            "Peggy",
+            "Quinn",
+            "Ruth",
+            "Stan",
+            "Tina",
+            "Ursula",
+            "Victor",
+            "Wendy",
+            "Xavier",
+            "Yvonne",
+            "Zach"
+        };
+
         public LivingEntity(Vector3 position, ChunkId chunkId) : base(EntityType.LIVING, chunkId) {
             createGameObject(position);
-            name = "LivingEntity";
+            name = names[Random.Range(0, names.Length)];
         }
 
         public string getName() {
