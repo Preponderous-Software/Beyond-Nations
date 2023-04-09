@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace osg {
 
-    class NationNameGenerator {
+    public static class NationNameGenerator {
 
         private static string[] prefixes = new string[] {
             "New",

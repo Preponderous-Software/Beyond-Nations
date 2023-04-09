@@ -13,7 +13,11 @@ namespace osg {
         }
 
         public Nation getNation(NationId id) {
-            return nations[id];
+            try {
+                return nations[id];
+            } catch (KeyNotFoundException) {
+                return null;
+            }
         }
 
         public void addNation(Nation nation) {
