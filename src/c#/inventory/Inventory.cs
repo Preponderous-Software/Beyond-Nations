@@ -12,6 +12,10 @@ namespace osg {
             return numWood;
         }
 
+        public void setNumWood(int numWood) {
+            this.numWood = numWood;
+        }
+
         public void removeWood(int amount) {
             numWood -= amount;
         }
@@ -22,6 +26,10 @@ namespace osg {
 
         public int getNumStone() {
             return numStone;
+        }
+
+        public void setNumStone(int numStone) {
+            this.numStone = numStone;
         }
 
         public void removeStone(int amount) {

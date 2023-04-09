@@ -86,5 +86,9 @@ namespace osg {
         public override void destroyGameObject() {
             UnityEngine.Object.Destroy(getGameObject());
         }
+
+        public void setColor(Color color) {
+            getGameObject().GetComponent<Renderer>().material.color = color;
+        }
     }
 }

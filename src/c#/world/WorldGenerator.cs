@@ -97,7 +97,7 @@ namespace osg {
         }
 
         private void spawnTreeEntities(Chunk chunk) {
-            int numberOfTrees = Random.Range(chunk.getSize()/2, chunk.getSize());
+            int numberOfTrees = Random.Range(chunk.getSize(), chunk.getSize() * 2);
             for (int i = 0; i < numberOfTrees; i++) {
                 Location randomLocation = chunk.getRandomLocation();
                 if (randomLocation.getNumberOfEntities() > 0) {

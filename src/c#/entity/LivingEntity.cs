@@ -153,6 +153,27 @@ namespace osg {
                         setTargetEntity(null);
                         inventory.addStone(1);
                     }
+                    else if (targetEntity.getType() == EntityType.LIVING) {
+                        // deposit resources
+                        LivingEntity livingEntity = (LivingEntity)targetEntity;
+                        livingEntity.getInventory().addWood(inventory.getNumWood());
+                        livingEntity.getInventory().addStone(inventory.getNumStone());
+                        inventory.setNumWood(0);
+                        inventory.setNumStone(0);
+                        setTargetEntity(null);
+                    }
+                    else if (targetEntity.getType() == EntityType.PLAYER) {
+                        // deposit resources
+                        Player player = (Player)targetEntity;
+                        player.getInventory().addWood(inventory.getNumWood());
+                        player.getInventory().addStone(inventory.getNumStone());
+                        inventory.setNumWood(0);
+                        inventory.setNumStone(0);
+                        setTargetEntity(null);
+                    }
+                    else {
+                        setTargetEntity(null);
+                    }
                 }
             }
             else {

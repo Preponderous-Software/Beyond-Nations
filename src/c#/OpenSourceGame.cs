@@ -21,6 +21,7 @@ namespace osg {
         private NationRepository nationRepository;
         private Player player;
         private TextGameObject numWoodText;
+        private TextGameObject numStoneText;
 
         public GameObject playerGameObject; // must be set in Unity Editor -- TODO: make this private and set it in the constructor (will require refactoring Player.cs)
         public bool runTests = false;
@@ -47,9 +48,12 @@ namespace osg {
             chunkPositionText = new TextGameObject("Chunk: (0, 0)", 20, 0, Screen.height / 4);
             status = new Status(tickCounter, gameConfig.getStatusExpirationTicks());
             nationRepository = new NationRepository();
-            numWoodText = new TextGameObject("Wood: 0", 20, 0, 0);
+            numWoodText = new TextGameObject("Wood: 0", 20, -Screen.width / 4, 0);
+            numStoneText = new TextGameObject("Stone: 0", 20, Screen.width / 4, 0);
 
-            status.update("Entered world.");
+            environment.getChunk(0, 0).addEntity(player);
+            environment.addEntityId(player.getId());
+            status.update("Press N to create a nation.");
         }
 
         // Per-frame updates
@@ -59,11 +63,12 @@ namespace osg {
             // if N pressed, create nation
             if (Input.GetKeyDown(KeyCode.N)) {
                 if (nationRepository.getNation(player.getId()) != null) {
-                    status.update("You already have a nation.");
+                    status.update("You already lead the nation of " + nationRepository.getNation(player.getId()).getName() + ".");
                     return;
                 }
                 Nation nation = new Nation(NationNameGenerator.generate(), player.getId());
                 nationRepository.addNation(nation);
+                player.setColor(nation.getColor());
                 eventProducer.produceNationCreationEvent(nation);
                 status.update("Created nation " + nation.getName() + ".");
             }
@@ -78,6 +83,7 @@ namespace osg {
                 checkIfPlayerIsFallingIntoVoid();
                 chunkPositionText.updateText("Chunk: (" + worldGenerator.getCurrentChunkX() + ", " + worldGenerator.getCurrentChunkZ() + ")");
                 numWoodText.updateText("Wood: " + player.getInventory().getNumWood());
+                numStoneText.updateText("Stone: " + player.getInventory().getNumStone());
                 status.clearStatusIfExpired();
 
                 foreach (Chunk chunk in environment.getChunks()) {
