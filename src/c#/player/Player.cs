@@ -14,6 +14,7 @@ namespace osg {
         private int currentSpeed;
         private Camera playerCamera = null;
         private Inventory inventory = new Inventory();
+        private NationId nationId = null;
 
         public Player(GameObject gameObject, int walkSpeed, int runSpeed, ChunkId chunkId) : base(EntityType.PLAYER, chunkId){
             setGameObject(gameObject);
@@ -89,6 +90,14 @@ namespace osg {
 
         public void setColor(Color color) {
             getGameObject().GetComponent<Renderer>().material.color = color;
+        }
+
+        public NationId getNationId() {
+            return nationId;
+        }
+
+        public void setNationId(NationId nationId) {
+            this.nationId = nationId;
         }
     }
 }

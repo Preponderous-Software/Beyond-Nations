@@ -62,15 +62,46 @@ namespace osg {
 
             // if N pressed, create nation
             if (Input.GetKeyDown(KeyCode.N)) {
-                if (nationRepository.getNation(player.getId()) != null) {
-                    status.update("You already lead the nation of " + nationRepository.getNation(player.getId()).getName() + ".");
+                if (player.getNationId() != null) {
+                    Nation playerNation = nationRepository.getNation(player.getNationId());
+                    if (playerNation.getLeaderId() == player.getId()) {
+                        status.update("You are already the leader of " + playerNation.getName() + ".");
+                    }
+                    else {
+                        status.update("You are already a member of " + playerNation.getName() + ".");
+                    }
                     return;
                 }
                 Nation nation = new Nation(NationNameGenerator.generate(), player.getId());
                 nationRepository.addNation(nation);
+                player.setNationId(nation.getId());
                 player.setColor(nation.getColor());
                 eventProducer.produceNationCreationEvent(nation);
                 status.update("Created nation " + nation.getName() + ".");
+            }
+
+            // if J pressed, join nation
+            if (Input.GetKeyDown(KeyCode.J)) {
+                if (player.getNationId() != null) {
+                    Nation playerNation = nationRepository.getNation(player.getNationId());
+                    if (playerNation.getLeaderId() == player.getId()) {
+                        status.update("You are already the leader of " + playerNation.getName() + ".");
+                    }
+                    else {
+                        status.update("You are already a member of " + playerNation.getName() + ".");
+                    }
+                    return;
+                }
+                Nation nation = nationRepository.getRandomNation();
+                if (nation == null) {
+                    status.update("There are no nations to join.");
+                    return;
+                }
+                nation.addMember(player.getId());
+                player.setNationId(nation.getId());
+                player.setColor(nation.getColor());
+                eventProducer.produceNationJoinEvent(nation, player.getId());
+                status.update("You joined nation " + nation.getName() + ". Members: " + nation.getNumberOfMembers() + ".");
             }
 
             // if T pressed, teleport all living entities to player
