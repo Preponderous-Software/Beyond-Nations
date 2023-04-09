@@ -1,4 +1,4 @@
-# ![Open Source Game](https://raw.githubusercontent.com/Preponderous-Software/osg-project/master/.github/media/banner-4-9-2023.png)
+# ![Open Source Game](https://raw.githubusercontent.com/Preponderous-Software/osg-project/master/.github/media/banner.png)
 The Open Source Game Project is a collaborative effort between Preponderous Software and the Fairfield Programming Association. It aims to create an open-source game that can serve as a reference for aspiring developers.
 
 ## Game Concept
