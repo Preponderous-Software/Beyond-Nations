@@ -8,6 +8,12 @@ namespace osgtests {
 
         public static void runTests() {
             testInitialization();
+            testAddWood();
+            testRemoveWood();
+            testAddStone();
+            testRemoveStone();
+            testSetNumWood();
+            testSetNumStone();
         }
 
         public static void testInitialization() {
