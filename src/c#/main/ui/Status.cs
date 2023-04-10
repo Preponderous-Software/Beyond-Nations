@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace osg {
 
-    class Status {
+    public class Status {
         private TickCounter tickCounter;
         private int ticksToExpire;
         private TextGameObject statusText;

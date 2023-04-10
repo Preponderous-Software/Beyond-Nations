@@ -9,39 +9,9 @@ namespace osg {
         private Entity targetEntity;
         private Inventory inventory = new Inventory();
 
-        // names
-        public static string[] names = new string[] {
-            "Bob",
-            "Alice",
-            "Charlie",
-            "Dave",
-            "Eve",
-            "Frank",
-            "Grace",
-            "Hank",
-            "Irene",
-            "Judy",
-            "Karl",
-            "Linda",
-            "Mike",
-            "Nancy",
-            "Oscar",
-            "Peggy",
-            "Quinn",
-            "Ruth",
-            "Stan",
-            "Tina",
-            "Ursula",
-            "Victor",
-            "Wendy",
-            "Xavier",
-            "Yvonne",
-            "Zach"
-        };
-
-        public Pawn(Vector3 position, ChunkId chunkId) : base(EntityType.LIVING, chunkId) {
+        public Pawn(Vector3 position, ChunkId chunkId, string name) : base(EntityType.LIVING, chunkId) {
             createGameObject(position);
-            name = names[Random.Range(0, names.Length)];
+            this.name = name;
         }
 
         public string getName() {
@@ -113,6 +83,7 @@ namespace osg {
         public void fixedUpdate(Environment environment, NationRepository nationRepository) {
             int targetNumWood = 3;
             int targetNumStone = 2;
+
             if (inventory.getNumWood() < targetNumWood) {
                 Entity nearestTree = environment.getNearestTree(getGameObject().transform.position);
                 if (nearestTree == null) {
@@ -128,7 +99,10 @@ namespace osg {
                 setTargetEntity(nearestRock);
             }
             else {
-                Nation nation = nationRepository.getNation(nationId);
+                if (getNationId() == null) {
+                    return;
+                }
+                Nation nation = nationRepository.getNation(getNationId());
                 if (nation == null) {
                     return;
                 }
@@ -167,9 +141,10 @@ namespace osg {
                         Player player = (Player)targetEntity;
                         player.getInventory().addWood(inventory.getNumWood());
                         player.getInventory().addStone(inventory.getNumStone());
+                        player.getStatus().update(getName() + " gave you " + inventory.getNumWood() + " wood and " + inventory.getNumStone() + " stone.");
                         inventory.setNumWood(0);
                         inventory.setNumStone(0);
-                        setTargetEntity(null);
+                        setTargetEntity(null);   
                     }
                     else {
                         setTargetEntity(null);

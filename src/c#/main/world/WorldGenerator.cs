@@ -151,7 +151,7 @@ namespace osg {
 
                 // create living entity
                 Vector3 position = new Vector3(locationPosition.x, (float)(locationPosition.y + 1.5), locationPosition.z);
-                Pawn pawn = new Pawn(position, chunk.getId());
+                Pawn pawn = new Pawn(position, chunk.getId(), PawnNameGenerator.generate());
 
                 chunk.addEntity(pawn, randomLocation);
                 environment.addEntityId(pawn.getId());

@@ -15,12 +15,14 @@ namespace osg {
         private Camera playerCamera = null;
         private Inventory inventory = new Inventory();
         private NationId nationId = null;
+        private Status status = null;
 
-        public Player(GameObject gameObject, int walkSpeed, int runSpeed, ChunkId chunkId) : base(EntityType.PLAYER, chunkId){
+        public Player(GameObject gameObject, int walkSpeed, int runSpeed, ChunkId chunkId, Status status) : base(EntityType.PLAYER, chunkId){
             setGameObject(gameObject);
             this.rigidBody = gameObject.GetComponent<Rigidbody>();
             this.walkSpeed = walkSpeed;
             this.runSpeed = runSpeed;
+            this.status = status;
             this.currentSpeed = walkSpeed;
             GameObject childCameraObject = gameObject.transform.GetChild(0).gameObject;
             this.playerCamera = childCameraObject.GetComponent<Camera>();
@@ -98,6 +100,10 @@ namespace osg {
 
         public void setNationId(NationId nationId) {
             this.nationId = nationId;
+        }
+
+        public Status getStatus() {
+            return status;
         }
     }
 }

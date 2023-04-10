@@ -39,14 +39,14 @@ namespace osg {
             }
 
             gameConfig = new GameConfig();
-            player = new Player(playerGameObject, gameConfig.getPlayerWalkSpeed(), gameConfig.getPlayerRunSpeed(), new ChunkId());
+            tickCounter = new TickCounter(gameConfig.getUpdateInterval());
+            status = new Status(tickCounter, gameConfig.getStatusExpirationTicks());
+            player = new Player(playerGameObject, gameConfig.getPlayerWalkSpeed(), gameConfig.getPlayerRunSpeed(), new ChunkId(), status);
             eventRepository = new EventRepository();
             eventProducer = new EventProducer(eventRepository);
             environment = new Environment(gameConfig.getChunkSize(), gameConfig.getLocationScale());
             worldGenerator = new WorldGenerator(environment, player, eventProducer);
-            tickCounter = new TickCounter(gameConfig.getUpdateInterval());
             chunkPositionText = new TextGameObject("Chunk: (0, 0)", 20, 0, Screen.height / 4);
-            status = new Status(tickCounter, gameConfig.getStatusExpirationTicks());
             nationRepository = new NationRepository();
             numWoodText = new TextGameObject("Wood: 0", 20, -Screen.width / 4, 0);
             numStoneText = new TextGameObject("Stone: 0", 20, Screen.width / 4, 0);
@@ -79,9 +79,17 @@ namespace osg {
                     foreach (Entity entity in chunk.getEntities()) {
                         if (entity.getType() == EntityType.LIVING) {
                             Pawn pawn = (Pawn)entity;
+
                             pawn.fixedUpdate(environment, nationRepository);
+
                             if (pawn.getNationId() == null) {
                                 createOrJoinNation(pawn);
+                            }
+
+                            float ypos = pawn.getGameObject().transform.position.y;
+                            if (ypos < -10) {
+                                Debug.Log("Entity " + pawn.getId() + " fell into void. Teleporting to spawn.");
+                                pawn.getGameObject().transform.position = new Vector3(0, 10, 0);
                             }
                         }
                     }
