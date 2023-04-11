@@ -4,7 +4,7 @@ namespace osg {
 
     public class RockEntity : Entity {
             
-        public RockEntity(Vector3 position, ChunkId chunkId) : base(EntityType.ROCK, chunkId) {
+        public RockEntity(Vector3 position) : base(EntityType.ROCK) {
             createGameObject(position);
         }
 

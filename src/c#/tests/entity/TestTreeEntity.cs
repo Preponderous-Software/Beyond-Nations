@@ -13,7 +13,7 @@ namespace osgtests {
         public static void testInstantiation() {
             // run
             int height = 5;
-            TreeEntity treeEntity = new TreeEntity(new Vector3(0, 0, 0), height, new ChunkId());
+            TreeEntity treeEntity = new TreeEntity(new Vector3(0, 0, 0), height);
 
             // check
             Debug.Assert(treeEntity.getType() == EntityType.TREE);

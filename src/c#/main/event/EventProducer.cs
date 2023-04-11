@@ -33,5 +33,11 @@ namespace osg {
             eventRepository.addEvent(nationJoinEvent);
             Debug.Log("Produced event: " + nationJoinEvent);
         }
+
+        public void producePawnSpawnEvent(Vector3 position, Pawn pawn) {
+            PawnSpawnEvent pawnSpawnEvent = new PawnSpawnEvent(position, pawn);
+            eventRepository.addEvent(pawnSpawnEvent);
+            Debug.Log("Produced event: " + pawnSpawnEvent);
+        }
     }
 }

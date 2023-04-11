@@ -12,7 +12,7 @@ namespace osgtests {
 
         public static void testInstantiation() {
             // run
-            RockEntity rockEntity = new RockEntity(new Vector3(0, 0, 0), new ChunkId());
+            RockEntity rockEntity = new RockEntity(new Vector3(0, 0, 0));
 
             // check
             Debug.Assert(rockEntity.getType() == EntityType.ROCK);

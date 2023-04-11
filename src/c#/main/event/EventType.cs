@@ -5,6 +5,7 @@ namespace osg {
         ChunkGenerate,
         PlayerFallingIntoVoid,
         NationCreation,
-        NationJoin
+        NationJoin,
+        PawnSpawn,
     }
 }

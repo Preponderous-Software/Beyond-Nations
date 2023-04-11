@@ -125,5 +125,13 @@ namespace osg {
             }
             removeEntityId(entity.getId());
         }
+
+        public Chunk getChunkAtPosition(Vector3 position) {
+            int chunkSize = getChunkSize();
+            int locationScale = getLocationScale();
+            int xpos = (int)(position.x / (chunkSize * locationScale));
+            int zpos = (int)(position.z / (chunkSize * locationScale));
+            return getChunk(xpos, zpos);
+        }
     }
 }

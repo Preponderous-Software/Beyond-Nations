@@ -2,14 +2,14 @@ using UnityEngine;
 
 namespace osg {
 
-    class Pawn : Entity {
+    public class Pawn : Entity {
         private string name;
         private int speed = Random.Range(5, 20);
         private NationId nationId;
         private Entity targetEntity;
         private Inventory inventory = new Inventory();
 
-        public Pawn(Vector3 position, ChunkId chunkId, string name) : base(EntityType.LIVING, chunkId) {
+        public Pawn(Vector3 position, string name) : base(EntityType.LIVING) {
             createGameObject(position);
             this.name = name;
         }
@@ -70,7 +70,7 @@ namespace osg {
             gameObject.transform.localScale = new Vector3(1, 1, 1);
             gameObject.GetComponent<Renderer>().material.color = Color.gray;
             gameObject.transform.position = position;
-            gameObject.name = "Pawn";
+            gameObject.name = getName();
             Rigidbody rigidbody = gameObject.AddComponent<Rigidbody>();
             rigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
             setGameObject(gameObject);

@@ -7,7 +7,7 @@ namespace osg {
         private GameObject leaves;
         private int height;
         
-        public TreeEntity(Vector3 position, int height, ChunkId chunkId) : base(EntityType.TREE, chunkId) {
+        public TreeEntity(Vector3 position, int height) : base(EntityType.TREE) {
             this.height = height;
             createGameObject(position);
         }

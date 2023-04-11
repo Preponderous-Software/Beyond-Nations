@@ -5,14 +5,12 @@ namespace osg {
     abstract public class Entity {
         private EntityId id;
         private EntityType type;
-        private ChunkId chunkId;
         private GameObject gameObject;
         private bool markedForDeletion = false;
 
-        public Entity(EntityType type, ChunkId chunkId) {
+        public Entity(EntityType type) {
             this.id = new EntityId();
             this.type = type;
-            this.chunkId = chunkId;
         }
 
         public EntityId getId() {
@@ -21,10 +19,6 @@ namespace osg {
 
         public EntityType getType() {
             return type;
-        }
-
-        public ChunkId getChunkId() {
-            return chunkId;
         }
 
         public GameObject getGameObject() {
