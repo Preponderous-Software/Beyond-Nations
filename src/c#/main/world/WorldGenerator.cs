@@ -2,13 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace osg
-{
+namespace osg {
+
     /**
     * The WorldGenerator class is responsible for generating the land.
     */
-    public class WorldGenerator
-    {
+    public class WorldGenerator {
         private Environment environment;
         private Player player;
         private EventProducer eventProducer;
@@ -17,8 +16,7 @@ namespace osg
         private int currentChunkX = 0;
         private int currentChunkZ = 0;
 
-        public WorldGenerator(Environment environment, Player player, EventProducer eventProducer)
-        {
+        public WorldGenerator(Environment environment, Player player, EventProducer eventProducer) {
             this.environment = environment;
             this.player = player;
             this.eventProducer = eventProducer;
@@ -26,30 +24,25 @@ namespace osg
             this.locationScale = environment.getLocationScale();
         }
 
-        public void update()
-        {
+        public void update() {
             calculateCurrentChunk();
             generateCurrentChunk();
             generateSurroundingChunks();
         }
 
-        public int getCurrentChunkX()
-        {
+        public int getCurrentChunkX() {
             return currentChunkX;
         }
 
-        public int getCurrentChunkZ()
-        {
+        public int getCurrentChunkZ() {
             return currentChunkZ;
         }
 
-        private void generateCurrentChunk()
-        {
+        private void generateCurrentChunk() {
             generateChunkIfNotExistent(currentChunkX, currentChunkZ);
         }
 
-        private void generateSurroundingChunks()
-        {
+        private void generateSurroundingChunks() {
             // sides
             generateChunkIfNotExistent(currentChunkX + 1, currentChunkZ);
             generateChunkIfNotExistent(currentChunkX - 1, currentChunkZ);
@@ -63,12 +56,10 @@ namespace osg
             generateChunkIfNotExistent(currentChunkX - 1, currentChunkZ - 1);
         }
 
-        private void generateChunkIfNotExistent(int chunkX, int chunkZ)
-        {
+        private void generateChunkIfNotExistent(int chunkX, int chunkZ) {
             // check if chunk exists
             Chunk chunk = environment.getChunk(chunkX, chunkZ);
-            if (chunk == null)
-            {
+            if (chunk == null) {
                 createNewChunkAt(chunkX, chunkZ);
             }
         }
@@ -76,32 +67,24 @@ namespace osg
         /**
         * Calculates the current chunk based on the player position.
         */
-        private void calculateCurrentChunk()
-        {
+        private void calculateCurrentChunk() {
             Vector3 playerPosition = player.getGameObject().transform.position;
             int lengthOfChunk = chunkSize * locationScale;
 
-            if (playerPosition.x >= 0)
-            {
-                currentChunkX = (int)(playerPosition.x / lengthOfChunk);
-            }
-            else
-            {
-                currentChunkX = (int)(playerPosition.x / lengthOfChunk) - 1;
+            if (playerPosition.x >= 0) {
+                currentChunkX = (int) (playerPosition.x / lengthOfChunk);
+            } else {
+                currentChunkX = (int) (playerPosition.x / lengthOfChunk) - 1;
             }
 
-            if (playerPosition.z >= 0)
-            {
-                currentChunkZ = (int)(playerPosition.z / lengthOfChunk);
-            }
-            else
-            {
-                currentChunkZ = (int)(playerPosition.z / lengthOfChunk) - 1;
+            if (playerPosition.z >= 0) {
+                currentChunkZ = (int) (playerPosition.z / lengthOfChunk);
+            } else {
+                currentChunkZ = (int) (playerPosition.z / lengthOfChunk) - 1;
             }
         }
 
-        private void createNewChunkAt(int chunkX, int chunkZ)
-        {
+        private void createNewChunkAt(int chunkX, int chunkZ) {
             // produce event
             eventProducer.produceChunkGenerateEvent(chunkX, chunkZ);
 
@@ -113,25 +96,18 @@ namespace osg
             spawnPawns(chunk);
         }
 
-        private void spawnTreeEntities(Chunk chunk)
-        {
+        private void spawnTreeEntities(Chunk chunk) {
             int numberOfTrees = Random.Range(chunk.getSize(), chunk.getSize() * 2);
-            for (int i = 0; i < numberOfTrees; i++)
-            {
+            for (int i = 0; i < numberOfTrees; i++) {
                 Location randomLocation = chunk.getRandomLocation();
-                if (randomLocation.getNumberOfEntities() > 0)
-                {
+                if (randomLocation.getNumberOfEntities() > 0) {
                     continue;
                 }
 
                 Vector3 locationPosition = randomLocation.getPosition();
 
                 // create tree
-                Vector3 position = new Vector3(
-                    locationPosition.x,
-                    locationPosition.y + 1,
-                    locationPosition.z
-                );
+                Vector3 position = new Vector3(locationPosition.x, locationPosition.y + 1, locationPosition.z);
                 TreeEntity tree = new TreeEntity(position, 5);
 
                 // add tree to chunk
@@ -141,25 +117,18 @@ namespace osg
             }
         }
 
-        private void spawnRockEntities(Chunk chunk)
-        {
-            int numberOfRocks = Random.Range(chunk.getSize() / 4, chunk.getSize() / 2);
-            for (int i = 0; i < numberOfRocks; i++)
-            {
+        private void spawnRockEntities(Chunk chunk) {
+            int numberOfRocks = Random.Range(chunk.getSize()/4, chunk.getSize()/2);
+            for (int i = 0; i < numberOfRocks; i++) {
                 Location randomLocation = chunk.getRandomLocation();
-                if (randomLocation.getNumberOfEntities() > 0)
-                {
+                if (randomLocation.getNumberOfEntities() > 0) {
                     continue;
                 }
 
                 Vector3 locationPosition = randomLocation.getPosition();
 
                 // create rock
-                Vector3 position = new Vector3(
-                    locationPosition.x,
-                    locationPosition.y + 1,
-                    locationPosition.z
-                );
+                Vector3 position = new Vector3(locationPosition.x, locationPosition.y + 1, locationPosition.z);
                 RockEntity rock = new RockEntity(position);
 
                 // add rock to chunk if location is not occupied
@@ -169,21 +138,16 @@ namespace osg
             }
         }
 
-        private void spawnPawns(Chunk chunk)
-        {
+        private void spawnPawns(Chunk chunk) {
+            
             // 10% change to spawn a pawn
             bool shouldSpawnPawn = Random.Range(0, 100) < 10;
-            if (shouldSpawnPawn)
-            {
+            if (shouldSpawnPawn) {
                 Location randomLocation = chunk.getRandomLocation();
                 Vector3 locationPosition = randomLocation.getPosition();
 
                 // create pawn
-                Vector3 position = new Vector3(
-                    locationPosition.x,
-                    (float)(locationPosition.y + 1.5),
-                    locationPosition.z
-                );
+                Vector3 position = new Vector3(locationPosition.x, (float)(locationPosition.y + 1.5), locationPosition.z);
                 Pawn pawn = new Pawn(position, PawnNameGenerator.generate());
                 eventProducer.producePawnSpawnEvent(position, pawn);
 
@@ -193,28 +157,21 @@ namespace osg
             }
         }
 
-        public void generateChunkAtPosition(Vector3 position)
-        {
+        public void generateChunkAtPosition(Vector3 position) {
             int lengthOfChunk = chunkSize * locationScale;
 
             int chunkX = 0;
-            if (position.x >= 0)
-            {
-                chunkX = (int)(position.x / lengthOfChunk);
-            }
-            else
-            {
-                chunkX = (int)(position.x / lengthOfChunk) - 1;
+            if (position.x >= 0) {
+                chunkX = (int) (position.x / lengthOfChunk);
+            } else {
+                chunkX = (int) (position.x / lengthOfChunk) - 1;
             }
 
             int chunkZ = 0;
-            if (position.z >= 0)
-            {
-                chunkZ = (int)(position.z / lengthOfChunk);
-            }
-            else
-            {
-                chunkZ = (int)(position.z / lengthOfChunk) - 1;
+            if (position.z >= 0) {
+                chunkZ = (int) (position.z / lengthOfChunk);
+            } else {
+                chunkZ = (int) (position.z / lengthOfChunk) - 1;
             }
 
             generateChunkIfNotExistent(chunkX, chunkZ);

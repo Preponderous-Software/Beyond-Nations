@@ -1,44 +1,36 @@
 using System;
 
-namespace osg
-{
-    public class EntityId
-    {
+namespace osg {
+
+    public class EntityId {
         private Guid id;
 
-        public EntityId()
-        {
+        public EntityId() {
             this.id = Guid.NewGuid();
         }
 
-        public Guid getId()
-        {
+        public Guid getId() {
             return id;
         }
 
-        public override bool Equals(object obj)
-        {
-            if (obj == null)
-            {
+        public override bool Equals(object obj) {
+            if (obj == null) {
                 return false;
             }
 
             EntityId other = obj as EntityId;
-            if (other == null)
-            {
+            if (other == null) {
                 return false;
             }
 
             return id.Equals(other.id);
         }
 
-        public override int GetHashCode()
-        {
+        public override int GetHashCode() {
             return id.GetHashCode();
         }
 
-        public override string ToString()
-        {
+        public override string ToString() {
             return id.ToString();
         }
     }

@@ -1,22 +1,18 @@
 using UnityEngine;
 
-namespace osg
-{
-    public class TreeEntity : Entity
-    {
+namespace osg {
+
+    public class TreeEntity : Entity {
         private GameObject trunk;
         private GameObject leaves;
         private int height;
-
-        public TreeEntity(Vector3 position, int height)
-            : base(EntityType.TREE)
-        {
+        
+        public TreeEntity(Vector3 position, int height) : base(EntityType.TREE) {
             this.height = height;
             createGameObject(position);
         }
 
-        public override void createGameObject(Vector3 position)
-        {
+        public override void createGameObject(Vector3 position) {
             GameObject gameObject = new GameObject();
             gameObject.transform.position = position;
             gameObject.name = "Tree";
@@ -34,12 +30,11 @@ namespace osg
             leaves.transform.position = position + new Vector3(0, height - 1, 0);
             leaves.transform.parent = gameObject.transform;
             leaves.name = "Leaves";
-
+            
             setGameObject(gameObject);
         }
 
-        public override void destroyGameObject()
-        {
+        public override void destroyGameObject() {
             UnityEngine.Object.Destroy(getGameObject());
         }
     }

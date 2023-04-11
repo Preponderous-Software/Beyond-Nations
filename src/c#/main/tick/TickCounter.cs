@@ -1,35 +1,28 @@
-namespace osg
-{
-    public class TickCounter
-    {
+namespace osg {
+
+    public class TickCounter {
         private int tick = 0;
         private int updateInterval = 10;
         private int lastUpdateTick = 0;
 
-        public TickCounter(int updateInterval)
-        {
+        public TickCounter(int updateInterval) {
             this.updateInterval = updateInterval;
         }
 
-        public int getTick()
-        {
+        public int getTick() {
             return tick;
         }
-
-        public int getLastUpdateTick()
-        {
+        
+        public int getLastUpdateTick() {
             return lastUpdateTick;
         }
 
-        public void increment()
-        {
+        public void increment() {
             tick++;
         }
 
-        public bool shouldUpdate()
-        {
-            if (tick - lastUpdateTick >= updateInterval)
-            {
+        public bool shouldUpdate() {
+            if (tick - lastUpdateTick >= updateInterval) {
                 lastUpdateTick = tick;
                 return true;
             }

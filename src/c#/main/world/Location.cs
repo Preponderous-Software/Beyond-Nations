@@ -2,14 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace osg
-{
+namespace osg {
+
     /**
     * A location is a single point in the world.
     * It is a part of a chunk.
     */
-    public class Location
-    {
+    public class Location {
         private LocationId id;
         private Vector3 position;
         private int scale;
@@ -17,8 +16,7 @@ namespace osg
         private GameObject gameObject;
         private List<EntityId> entityIds = new List<EntityId>();
 
-        public Location(int xpos, int zpos, int scale)
-        {
+        public Location(int xpos, int zpos, int scale) {
             this.id = new LocationId();
             this.position = new Vector3(xpos * scale, 0, zpos * scale);
             this.scale = scale;
@@ -26,48 +24,39 @@ namespace osg
             initializeGameObject();
         }
 
-        public LocationId getId()
-        {
+        public LocationId getId() {
             return id;
         }
 
-        public Vector3 getPosition()
-        {
+        public Vector3 getPosition() {
             return position;
         }
 
-        public int getScale()
-        {
+        public int getScale() {
             return scale;
         }
 
-        public GameObject getGameObject()
-        {
+        public GameObject getGameObject() {
             return gameObject;
         }
 
-        public void addEntityId(EntityId entityId)
-        {
+        public void addEntityId(EntityId entityId) {
             entityIds.Add(entityId);
         }
 
-        public void removeEntityId(EntityId entityId)
-        {
+        public void removeEntityId(EntityId entityId) {
             entityIds.Remove(entityId);
         }
 
-        public bool isEntityPresent(Entity entity)
-        {
+        public bool isEntityPresent(Entity entity) {
             return entityIds.Contains(entity.getId());
         }
 
-        public int getNumberOfEntities()
-        {
+        public int getNumberOfEntities() {
             return entityIds.Count;
         }
 
-        private void initializeGameObject()
-        {
+        private void initializeGameObject() {
             this.gameObject = GameObject.CreatePrimitive(PrimitiveType.Cube);
             this.gameObject.name = name;
             this.gameObject.transform.position = position;
@@ -76,8 +65,7 @@ namespace osg
             setColor(new Color(0, Random.value, 0));
         }
 
-        private void setColor(Color color)
-        {
+        private void setColor(Color color) {
             this.gameObject.GetComponent<Renderer>().material.color = color;
         }
     }

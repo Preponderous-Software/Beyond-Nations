@@ -2,17 +2,15 @@ using UnityEngine;
 
 using osg;
 
-namespace osgtests
-{
-    public static class TestNationNameGenerator
-    {
-        public static void runTests()
-        {
+namespace osgtests {
+
+    public static class TestNationNameGenerator {
+
+        public static void runTests() {
             testGenerate();
         }
 
-        public static void testGenerate()
-        {
+        public static void testGenerate() {
             // run
             string name = NationNameGenerator.generate();
 

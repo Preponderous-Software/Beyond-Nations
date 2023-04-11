@@ -1,11 +1,10 @@
 using System.Collections.Generic;
 
-namespace osg
-{
-    public static class NationNameGenerator
-    {
-        private static string[] prefixes = new string[]
-        {
+namespace osg {
+
+    public static class NationNameGenerator {
+
+        private static string[] prefixes = new string[] {
             "New",
             "Old",
             "Great",
@@ -38,8 +37,7 @@ namespace osg
             "Farm"
         };
 
-        private static string[] suffixes = new string[]
-        {
+        private static string[] suffixes = new string[] {
             "shire",
             "land",
             "ton",
@@ -56,15 +54,13 @@ namespace osg
         // list of generated
         private static List<string> generated = new List<string>();
 
-        public static string generate()
-        {
+        public static string generate() {
             string prefix = prefixes[UnityEngine.Random.Range(0, prefixes.Length)];
             string suffix = suffixes[UnityEngine.Random.Range(0, suffixes.Length)];
 
             // check if name already generated
             string name = prefix + suffix;
-            if (generated.Contains(name))
-            {
+            if (generated.Contains(name)) {
                 return generate();
             }
             return name;
