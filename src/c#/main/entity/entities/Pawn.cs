@@ -81,6 +81,26 @@ namespace osg {
         }
 
         public void fixedUpdate(Environment environment, NationRepository nationRepository) {
+            selectTarget(environment, nationRepository);
+
+            if (hasTargetEntity()) {
+                if (!isAtTargetEntity()) {
+                    moveTowardsTargetEntity();
+                }
+                else {
+                    interactWithTargetEntity();
+                }
+            }
+            else {
+                getGameObject().GetComponent<Rigidbody>().velocity = Vector3.zero;
+            }
+        }
+
+        public void setColor(Color color) {
+            getGameObject().GetComponent<Renderer>().material.color = color;
+        }
+
+        private void selectTarget(Environment environment, NationRepository nationRepository) {
             int targetNumWood = 3;
             int targetNumStone = 2;
 
@@ -110,54 +130,42 @@ namespace osg {
                 Entity leader = environment.getEntity(leaderId);
                 setTargetEntity(leader);
             }
-
-            if (hasTargetEntity()) {
-                if (!isAtTargetEntity()) {
-                    moveTowardsTargetEntity();
-                }
-                else {
-                    getGameObject().GetComponent<Rigidbody>().velocity = Vector3.zero;
-                    if (targetEntity.getType() == EntityType.TREE) {
-                        getTargetEntity().markForDeletion();
-                        setTargetEntity(null);
-                        inventory.addWood(1);
-                    }
-                    else if (targetEntity.getType() == EntityType.ROCK) {
-                        getTargetEntity().markForDeletion();
-                        setTargetEntity(null);
-                        inventory.addStone(1);
-                    }
-                    else if (targetEntity.getType() == EntityType.LIVING) {
-                        // deposit resources
-                        Pawn pawn = (Pawn)targetEntity;
-                        pawn.getInventory().addWood(inventory.getNumWood());
-                        pawn.getInventory().addStone(inventory.getNumStone());
-                        inventory.setNumWood(0);
-                        inventory.setNumStone(0);
-                        setTargetEntity(null);
-                    }
-                    else if (targetEntity.getType() == EntityType.PLAYER) {
-                        // deposit resources
-                        Player player = (Player)targetEntity;
-                        player.getInventory().addWood(inventory.getNumWood());
-                        player.getInventory().addStone(inventory.getNumStone());
-                        player.getStatus().update(getName() + " gave you " + inventory.getNumWood() + " wood and " + inventory.getNumStone() + " stone.");
-                        inventory.setNumWood(0);
-                        inventory.setNumStone(0);
-                        setTargetEntity(null);   
-                    }
-                    else {
-                        setTargetEntity(null);
-                    }
-                }
-            }
-            else {
-                getGameObject().GetComponent<Rigidbody>().velocity = Vector3.zero;
-            }
         }
 
-        public void setColor(Color color) {
-            getGameObject().GetComponent<Renderer>().material.color = color;
+        private void interactWithTargetEntity() {
+            getGameObject().GetComponent<Rigidbody>().velocity = Vector3.zero;
+            if (targetEntity.getType() == EntityType.TREE) {
+                getTargetEntity().markForDeletion();
+                setTargetEntity(null);
+                inventory.addWood(1);
+            }
+            else if (targetEntity.getType() == EntityType.ROCK) {
+                getTargetEntity().markForDeletion();
+                setTargetEntity(null);
+                inventory.addStone(1);
+            }
+            else if (targetEntity.getType() == EntityType.LIVING) {
+                // deposit resources
+                Pawn pawn = (Pawn)targetEntity;
+                pawn.getInventory().addWood(inventory.getNumWood());
+                pawn.getInventory().addStone(inventory.getNumStone());
+                inventory.setNumWood(0);
+                inventory.setNumStone(0);
+                setTargetEntity(null);
+            }
+            else if (targetEntity.getType() == EntityType.PLAYER) {
+                // deposit resources
+                Player player = (Player)targetEntity;
+                player.getInventory().addWood(inventory.getNumWood());
+                player.getInventory().addStone(inventory.getNumStone());
+                player.getStatus().update(getName() + " gave you " + inventory.getNumWood() + " wood and " + inventory.getNumStone() + " stone.");
+                inventory.setNumWood(0);
+                inventory.setNumStone(0);
+                setTargetEntity(null);   
+            }
+            else {
+                setTargetEntity(null);
+            }
         }
     }
 }
