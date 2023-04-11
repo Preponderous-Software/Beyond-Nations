@@ -10,8 +10,8 @@ namespace osg {
         private Inventory inventory = new Inventory();
 
         public Pawn(Vector3 position, string name) : base(EntityType.LIVING) {
-            createGameObject(position);
             this.name = name;
+            createGameObject(position);
         }
 
         public string getName() {

@@ -146,7 +146,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerGameObject: {fileID: 117429460}
-  runTests: 0
+  runTests: 1
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
