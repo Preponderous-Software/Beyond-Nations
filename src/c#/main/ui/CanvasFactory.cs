@@ -1,12 +1,14 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace osg {
-
-    public class CanvasFactory {
+namespace osg
+{
+    public class CanvasFactory
+    {
         private static int canvasCount = 0;
-        
-        public GameObject createCanvasObject(string text, int fontSize, int x, int y) {
+
+        public GameObject createCanvasObject(string text, int fontSize, int x, int y)
+        {
             GameObject canvasObject = new GameObject("Canvas-" + canvasCount++);
             Canvas canvas = canvasObject.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;

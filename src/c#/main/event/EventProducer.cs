@@ -1,40 +1,49 @@
 using System;
 using UnityEngine;
 
-namespace osg {
-
-    public class EventProducer {
+namespace osg
+{
+    public class EventProducer
+    {
         private EventRepository eventRepository;
 
-        public EventProducer(EventRepository eventRepository) {
+        public EventProducer(EventRepository eventRepository)
+        {
             this.eventRepository = eventRepository;
         }
 
-        public void produceChunkGenerateEvent(int chunkX, int chunkZ) {
+        public void produceChunkGenerateEvent(int chunkX, int chunkZ)
+        {
             ChunkGenerateEvent chunkGenerateEvent = new ChunkGenerateEvent(chunkX, chunkZ);
             eventRepository.addEvent(chunkGenerateEvent);
             Debug.Log("Produced event: " + chunkGenerateEvent);
         }
 
-        public void producePlayerFallingIntoVoidEvent(Vector3 position) {
-            PlayerFallingIntoVoidEvent playerFallingIntoVoidEvent = new PlayerFallingIntoVoidEvent(position);
+        public void producePlayerFallingIntoVoidEvent(Vector3 position)
+        {
+            PlayerFallingIntoVoidEvent playerFallingIntoVoidEvent = new PlayerFallingIntoVoidEvent(
+                position
+            );
             eventRepository.addEvent(playerFallingIntoVoidEvent);
             Debug.Log("Produced event: " + playerFallingIntoVoidEvent);
         }
 
-        public void produceNationCreationEvent(Nation nation) {
+        public void produceNationCreationEvent(Nation nation)
+        {
             NationCreationEvent nationCreationEvent = new NationCreationEvent(nation);
             eventRepository.addEvent(nationCreationEvent);
             Debug.Log("Produced event: " + nationCreationEvent);
         }
 
-        public void produceNationJoinEvent(Nation nation, EntityId entityId) {
+        public void produceNationJoinEvent(Nation nation, EntityId entityId)
+        {
             NationJoinEvent nationJoinEvent = new NationJoinEvent(nation, entityId);
             eventRepository.addEvent(nationJoinEvent);
             Debug.Log("Produced event: " + nationJoinEvent);
         }
 
-        public void producePawnSpawnEvent(Vector3 position, Pawn pawn) {
+        public void producePawnSpawnEvent(Vector3 position, Pawn pawn)
+        {
             PawnSpawnEvent pawnSpawnEvent = new PawnSpawnEvent(position, pawn);
             eventRepository.addEvent(pawnSpawnEvent);
             Debug.Log("Produced event: " + pawnSpawnEvent);

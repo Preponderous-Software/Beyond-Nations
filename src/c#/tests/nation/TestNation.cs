@@ -2,17 +2,19 @@ using UnityEngine;
 
 using osg;
 
-namespace osgtests {
-
-    public static class TestNation {
-
-        public static void runTests() {
+namespace osgtests
+{
+    public static class TestNation
+    {
+        public static void runTests()
+        {
             testInitialization();
             testAddMember();
             testRemoveMember();
         }
 
-        public static void testInitialization() {
+        public static void testInitialization()
+        {
             // prepare
             string name = "Test Nation";
             EntityId leaderId = new EntityId();
@@ -29,7 +31,8 @@ namespace osgtests {
             Debug.Assert(nation.getColor() != null);
         }
 
-        public static void testAddMember() {
+        public static void testAddMember()
+        {
             // prepare
             string name = "Test Nation";
             EntityId leaderId = new EntityId();
@@ -44,7 +47,8 @@ namespace osgtests {
             Debug.Assert(nation.isMember(memberId));
         }
 
-        public static void testRemoveMember() {
+        public static void testRemoveMember()
+        {
             // prepare
             string name = "Test Nation";
             EntityId leaderId = new EntityId();

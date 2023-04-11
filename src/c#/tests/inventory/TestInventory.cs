@@ -2,11 +2,12 @@ using UnityEngine;
 
 using osg;
 
-namespace osgtests {
-
-    public static class TestInventory {
-
-        public static void runTests() {
+namespace osgtests
+{
+    public static class TestInventory
+    {
+        public static void runTests()
+        {
             testInitialization();
             testAddWood();
             testRemoveWood();
@@ -16,7 +17,8 @@ namespace osgtests {
             testSetNumStone();
         }
 
-        public static void testInitialization() {
+        public static void testInitialization()
+        {
             // run
             Inventory inventory = new Inventory();
 
@@ -25,7 +27,8 @@ namespace osgtests {
             Debug.Assert(inventory.getNumStone() == 0);
         }
 
-        public static void testAddWood() {
+        public static void testAddWood()
+        {
             // setup
             Inventory inventory = new Inventory();
 
@@ -36,7 +39,8 @@ namespace osgtests {
             Debug.Assert(inventory.getNumWood() == 5);
         }
 
-        public static void testRemoveWood() {
+        public static void testRemoveWood()
+        {
             // setup
             Inventory inventory = new Inventory();
             inventory.addWood(5);
@@ -48,7 +52,8 @@ namespace osgtests {
             Debug.Assert(inventory.getNumWood() == 2);
         }
 
-        public static void testAddStone() {
+        public static void testAddStone()
+        {
             // setup
             Inventory inventory = new Inventory();
 
@@ -59,7 +64,8 @@ namespace osgtests {
             Debug.Assert(inventory.getNumStone() == 5);
         }
 
-        public static void testRemoveStone() {
+        public static void testRemoveStone()
+        {
             // setup
             Inventory inventory = new Inventory();
             inventory.addStone(5);
@@ -70,8 +76,9 @@ namespace osgtests {
             // check
             Debug.Assert(inventory.getNumStone() == 2);
         }
-        
-        public static void testSetNumWood() {
+
+        public static void testSetNumWood()
+        {
             // setup
             Inventory inventory = new Inventory();
 
@@ -82,7 +89,8 @@ namespace osgtests {
             Debug.Assert(inventory.getNumWood() == 5);
         }
 
-        public static void testSetNumStone() {
+        public static void testSetNumStone()
+        {
             // setup
             Inventory inventory = new Inventory();
 

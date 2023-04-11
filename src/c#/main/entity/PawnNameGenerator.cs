@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 
-namespace osg {
-
-    public static class PawnNameGenerator {
-
-        public static string[] names = new string[] {
+namespace osg
+{
+    public static class PawnNameGenerator
+    {
+        public static string[] names = new string[]
+        {
             "Bob",
             "Alice",
             "Charlie",
@@ -52,8 +53,9 @@ namespace osg {
             "Tilly",
             "Una",
         };
-        
-        private static string[] familyNames = new string[] {
+
+        private static string[] familyNames = new string[]
+        {
             "Smith",
             "Jones",
             "Williams",
@@ -77,11 +79,13 @@ namespace osg {
         // list of generated
         private static List<string> generated = new List<string>();
 
-        public static string generate() {
+        public static string generate()
+        {
             string name = names[UnityEngine.Random.Range(0, names.Length)];
             string familyName = familyNames[UnityEngine.Random.Range(0, familyNames.Length)];
             string fullName = name + " " + familyName;
-            if (generated.Contains(fullName)) {
+            if (generated.Contains(fullName))
+            {
                 return generate();
             }
             generated.Add(fullName);

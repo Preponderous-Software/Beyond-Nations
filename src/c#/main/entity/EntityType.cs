@@ -1,6 +1,7 @@
-namespace osg {
-
-    public enum EntityType {
+namespace osg
+{
+    public enum EntityType
+    {
         TREE,
         ROCK,
         LIVING,

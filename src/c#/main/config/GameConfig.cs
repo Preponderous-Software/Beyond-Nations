@@ -1,6 +1,7 @@
-namespace osg {
-
-    class GameConfig {
+namespace osg
+{
+    class GameConfig
+    {
         private int chunkSize;
         private int locationScale;
         private int updateInterval;
@@ -8,7 +9,8 @@ namespace osg {
         private int playerWalkSpeed;
         private int playerRunSpeed;
 
-        public GameConfig() {
+        public GameConfig()
+        {
             chunkSize = 9;
             locationScale = 9;
             updateInterval = 10;
@@ -17,27 +19,33 @@ namespace osg {
             playerRunSpeed = 50;
         }
 
-        public int getChunkSize() {
+        public int getChunkSize()
+        {
             return chunkSize;
         }
 
-        public int getLocationScale() {
+        public int getLocationScale()
+        {
             return locationScale;
         }
 
-        public int getUpdateInterval() {
+        public int getUpdateInterval()
+        {
             return updateInterval;
         }
 
-        public int getStatusExpirationTicks() {
+        public int getStatusExpirationTicks()
+        {
             return statusExpirationTicks;
         }
 
-        public int getPlayerWalkSpeed() {
+        public int getPlayerWalkSpeed()
+        {
             return playerWalkSpeed;
         }
 
-        public int getPlayerRunSpeed() {
+        public int getPlayerRunSpeed()
+        {
             return playerRunSpeed;
         }
     }

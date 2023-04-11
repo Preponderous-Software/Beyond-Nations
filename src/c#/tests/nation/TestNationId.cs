@@ -2,16 +2,18 @@ using UnityEngine;
 
 using osg;
 
-namespace osgtests {
-
-    public static class TestNationId {
-
-        public static void runTests() {
+namespace osgtests
+{
+    public static class TestNationId
+    {
+        public static void runTests()
+        {
             testInitialization();
             testEquality();
         }
 
-        public static void testInitialization() {
+        public static void testInitialization()
+        {
             // run
             NationId id = new NationId();
 
@@ -19,7 +21,8 @@ namespace osgtests {
             Debug.Assert(id != null);
         }
 
-        public static void testEquality() {
+        public static void testEquality()
+        {
             // prepare
             NationId id1 = new NationId();
             NationId id2 = new NationId();

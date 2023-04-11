@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace osg {
-
+namespace osg
+{
     /**
     * The OpenSourceGame class is the main class of the game.
     * It is the entry point of the game.
     */
-    public class OpenSourceGame : MonoBehaviour {
+    public class OpenSourceGame : MonoBehaviour
+    {
         private GameConfig gameConfig;
         private EventRepository eventRepository;
         private EventProducer eventProducer;
@@ -27,21 +28,29 @@ namespace osg {
         public bool runTests = false;
 
         // Initialization
-        void Start() {
-            if (runTests) {
+        void Start()
+        {
+            if (runTests)
+            {
                 Debug.Log("Running tests...");
                 osgtests.Tests.runTests();
                 Debug.Log("Tests complete. Pausing.");
                 Debug.Break();
             }
-            else {
+            else
+            {
                 Debug.Log("Not running tests. Set `runTests` to true to run tests.");
             }
 
             gameConfig = new GameConfig();
             tickCounter = new TickCounter(gameConfig.getUpdateInterval());
             status = new Status(tickCounter, gameConfig.getStatusExpirationTicks());
-            player = new Player(playerGameObject, gameConfig.getPlayerWalkSpeed(), gameConfig.getPlayerRunSpeed(), status);
+            player = new Player(
+                playerGameObject,
+                gameConfig.getPlayerWalkSpeed(),
+                gameConfig.getPlayerRunSpeed(),
+                status
+            );
             eventRepository = new EventRepository();
             eventProducer = new EventProducer(eventRepository);
             environment = new Environment(gameConfig.getChunkSize(), gameConfig.getLocationScale());
@@ -57,7 +66,8 @@ namespace osg {
         }
 
         // Per-frame updates
-        void Update() {
+        void Update()
+        {
             tickCounter.increment();
 
             handleCommands();
@@ -66,11 +76,19 @@ namespace osg {
         }
 
         // Fixed updates
-        void FixedUpdate() {
-            if (tickCounter.shouldUpdate()) {
+        void FixedUpdate()
+        {
+            if (tickCounter.shouldUpdate())
+            {
                 worldGenerator.update();
                 checkIfPlayerIsFallingIntoVoid();
-                chunkPositionText.updateText("Chunk: (" + worldGenerator.getCurrentChunkX() + ", " + worldGenerator.getCurrentChunkZ() + ")");
+                chunkPositionText.updateText(
+                    "Chunk: ("
+                        + worldGenerator.getCurrentChunkX()
+                        + ", "
+                        + worldGenerator.getCurrentChunkZ()
+                        + ")"
+                );
                 numWoodText.updateText("Wood: " + player.getInventory().getNumWood());
                 numStoneText.updateText("Stone: " + player.getInventory().getNumStone());
                 status.clearStatusIfExpired();
@@ -78,50 +96,74 @@ namespace osg {
                 // list of positions to generate chunks at
                 List<Vector3> positionsToGenerateChunksAt = new List<Vector3>();
 
-                foreach (Chunk chunk in environment.getChunks()) {
-                    foreach (Entity entity in chunk.getEntities()) {
-                        if (entity.getType() == EntityType.LIVING) {
+                foreach (Chunk chunk in environment.getChunks())
+                {
+                    foreach (Entity entity in chunk.getEntities())
+                    {
+                        if (entity.getType() == EntityType.LIVING)
+                        {
                             Pawn pawn = (Pawn)entity;
 
                             pawn.fixedUpdate(environment, nationRepository);
 
-                            if (pawn.getNationId() == null) {
+                            if (pawn.getNationId() == null)
+                            {
                                 createOrJoinNation(pawn);
                             }
 
                             float ypos = pawn.getGameObject().transform.position.y;
-                            if (ypos < -10) {
-                                Debug.Log("Entity " + pawn.getId() + " fell into void. Teleporting to spawn.");
+                            if (ypos < -10)
+                            {
+                                Debug.Log(
+                                    "Entity "
+                                        + pawn.getId()
+                                        + " fell into void. Teleporting to spawn."
+                                );
                                 pawn.getGameObject().transform.position = new Vector3(0, 10, 0);
                             }
 
-                            Chunk retrievedChunk = environment.getChunkAtPosition(pawn.getGameObject().transform.position);
-                            if (retrievedChunk == null) {
-                                positionsToGenerateChunksAt.Add(pawn.getGameObject().transform.position);
+                            Chunk retrievedChunk = environment.getChunkAtPosition(
+                                pawn.getGameObject().transform.position
+                            );
+                            if (retrievedChunk == null)
+                            {
+                                positionsToGenerateChunksAt.Add(
+                                    pawn.getGameObject().transform.position
+                                );
                             }
                         }
                     }
                 }
 
-                foreach (Vector3 position in positionsToGenerateChunksAt) {
+                foreach (Vector3 position in positionsToGenerateChunksAt)
+                {
                     worldGenerator.generateChunkAtPosition(position);
                 }
             }
-            
+
             player.fixedUpdate();
             deleteEntitiesMarkedForDeletion();
         }
 
-        void handleCommands() {
+        void handleCommands()
+        {
             // if N pressed, create nation
-            if (Input.GetKeyDown(KeyCode.N)) {
-                if (player.getNationId() != null) {
+            if (Input.GetKeyDown(KeyCode.N))
+            {
+                if (player.getNationId() != null)
+                {
                     Nation playerNation = nationRepository.getNation(player.getNationId());
-                    if (playerNation.getLeaderId() == player.getId()) {
-                        status.update("You are already the leader of " + playerNation.getName() + ".");
+                    if (playerNation.getLeaderId() == player.getId())
+                    {
+                        status.update(
+                            "You are already the leader of " + playerNation.getName() + "."
+                        );
                     }
-                    else {
-                        status.update("You are already a member of " + playerNation.getName() + ".");
+                    else
+                    {
+                        status.update(
+                            "You are already a member of " + playerNation.getName() + "."
+                        );
                     }
                     return;
                 }
@@ -134,19 +176,28 @@ namespace osg {
             }
 
             // if J pressed, join nation
-            if (Input.GetKeyDown(KeyCode.J)) {
-                if (player.getNationId() != null) {
+            if (Input.GetKeyDown(KeyCode.J))
+            {
+                if (player.getNationId() != null)
+                {
                     Nation playerNation = nationRepository.getNation(player.getNationId());
-                    if (playerNation.getLeaderId() == player.getId()) {
-                        status.update("You are already the leader of " + playerNation.getName() + ".");
+                    if (playerNation.getLeaderId() == player.getId())
+                    {
+                        status.update(
+                            "You are already the leader of " + playerNation.getName() + "."
+                        );
                     }
-                    else {
-                        status.update("You are already a member of " + playerNation.getName() + ".");
+                    else
+                    {
+                        status.update(
+                            "You are already a member of " + playerNation.getName() + "."
+                        );
                     }
                     return;
                 }
                 Nation nation = nationRepository.getRandomNation();
-                if (nation == null) {
+                if (nation == null)
+                {
                     status.update("There are no nations to join.");
                     return;
                 }
@@ -154,39 +205,58 @@ namespace osg {
                 player.setNationId(nation.getId());
                 player.setColor(nation.getColor());
                 eventProducer.produceNationJoinEvent(nation, player.getId());
-                status.update("You joined nation " + nation.getName() + ". Members: " + nation.getNumberOfMembers() + ".");
+                status.update(
+                    "You joined nation "
+                        + nation.getName()
+                        + ". Members: "
+                        + nation.getNumberOfMembers()
+                        + "."
+                );
             }
 
             // if T pressed, teleport all living entities to player
-            if (Input.GetKeyDown(KeyCode.T)) {
-                foreach (Chunk chunk in environment.getChunks()) {
-                    foreach (Entity entity in chunk.getEntities()) {
-                        if (entity.getType() == EntityType.LIVING) {
+            if (Input.GetKeyDown(KeyCode.T))
+            {
+                foreach (Chunk chunk in environment.getChunks())
+                {
+                    foreach (Entity entity in chunk.getEntities())
+                    {
+                        if (entity.getType() == EntityType.LIVING)
+                        {
                             Pawn pawn = (Pawn)entity;
-                            pawn.getGameObject().transform.position = player.getGameObject().transform.position;
+                            pawn.getGameObject().transform.position = player
+                                .getGameObject()
+                                .transform.position;
                         }
                     }
                 }
             }
 
             // if num lock pressed, toggle auto walk
-            if (Input.GetKeyDown(KeyCode.Numlock)) {
+            if (Input.GetKeyDown(KeyCode.Numlock))
+            {
                 player.toggleAutoWalk();
             }
         }
 
-        void checkIfPlayerIsFallingIntoVoid() {
+        void checkIfPlayerIsFallingIntoVoid()
+        {
             float ypos = player.getGameObject().transform.position.y;
-            if (ypos < -10) {
-                eventProducer.producePlayerFallingIntoVoidEvent(player.getGameObject().transform.position);
-                player.getGameObject().transform.position = new Vector3(0, 10, 0); 
+            if (ypos < -10)
+            {
+                eventProducer.producePlayerFallingIntoVoidEvent(
+                    player.getGameObject().transform.position
+                );
+                player.getGameObject().transform.position = new Vector3(0, 10, 0);
                 status.update("You fell into the void. You have been teleported to the surface.");
             }
         }
 
-        void createOrJoinNation(Pawn pawn) {
+        void createOrJoinNation(Pawn pawn)
+        {
             // if less than 4 nations, create a new nation
-            if (nationRepository.getNumberOfNations() < 4) {
+            if (nationRepository.getNumberOfNations() < 4)
+            {
                 Nation nation = new Nation(NationNameGenerator.generate(), pawn.getId());
                 nationRepository.addNation(nation);
                 pawn.setNationId(nation.getId());
@@ -194,27 +264,40 @@ namespace osg {
                 eventProducer.produceNationCreationEvent(nation);
                 status.update(pawn.getName() + " created nation " + nation.getName() + ".");
             }
-            else {
+            else
+            {
                 // join a random nation
                 Nation nation = nationRepository.getRandomNation();
                 nation.addMember(pawn.getId());
                 pawn.setNationId(nation.getId());
                 pawn.setColor(nation.getColor());
                 eventProducer.produceNationJoinEvent(nation, pawn.getId());
-                status.update(pawn.getName() + " joined nation " + nation.getName() + ". Members: " + nation.getNumberOfMembers() + ".");
+                status.update(
+                    pawn.getName()
+                        + " joined nation "
+                        + nation.getName()
+                        + ". Members: "
+                        + nation.getNumberOfMembers()
+                        + "."
+                );
             }
         }
 
-        void deleteEntitiesMarkedForDeletion() {
+        void deleteEntitiesMarkedForDeletion()
+        {
             List<Entity> entitiesToDelete = new List<Entity>();
-            foreach (Chunk chunk in environment.getChunks()) {
-                foreach (Entity entity in chunk.getEntities()) {
-                    if (entity.isMarkedForDeletion()) {
+            foreach (Chunk chunk in environment.getChunks())
+            {
+                foreach (Entity entity in chunk.getEntities())
+                {
+                    if (entity.isMarkedForDeletion())
+                    {
                         entitiesToDelete.Add(entity);
                     }
                 }
             }
-            foreach (Entity entity in entitiesToDelete) {
+            foreach (Entity entity in entitiesToDelete)
+            {
                 entity.destroyGameObject();
                 environment.removeEntity(entity);
             }

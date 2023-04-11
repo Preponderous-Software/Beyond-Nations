@@ -1,48 +1,59 @@
 using UnityEngine;
 
-namespace osg {
-
-    public class Pawn : Entity {
+namespace osg
+{
+    public class Pawn : Entity
+    {
         private string name;
         private int speed = Random.Range(5, 20);
         private NationId nationId;
         private Entity targetEntity;
         private Inventory inventory = new Inventory();
 
-        public Pawn(Vector3 position, string name) : base(EntityType.LIVING) {
+        public Pawn(Vector3 position, string name)
+            : base(EntityType.LIVING)
+        {
             this.name = name;
             createGameObject(position);
         }
 
-        public string getName() {
+        public string getName()
+        {
             return name;
         }
 
-        public int getSpeed() {
+        public int getSpeed()
+        {
             return speed;
         }
 
-        public NationId getNationId() {
+        public NationId getNationId()
+        {
             return nationId;
         }
 
-        public void setNationId(NationId nationId) {
+        public void setNationId(NationId nationId)
+        {
             this.nationId = nationId;
         }
 
-        public bool hasTargetEntity() {
+        public bool hasTargetEntity()
+        {
             return targetEntity != null;
         }
 
-        public Entity getTargetEntity() {
+        public Entity getTargetEntity()
+        {
             return targetEntity;
         }
 
-        public void setTargetEntity(Entity targetEntity) {
+        public void setTargetEntity(Entity targetEntity)
+        {
             this.targetEntity = targetEntity;
         }
 
-        public void moveTowardsTargetEntity() {
+        public void moveTowardsTargetEntity()
+        {
             Vector3 targetPosition = targetEntity.getGameObject().transform.position;
             Vector3 currentPosition = getGameObject().transform.position;
             Vector3 direction = targetPosition - currentPosition;
@@ -50,8 +61,10 @@ namespace osg {
             getGameObject().GetComponent<Rigidbody>().velocity = direction * getSpeed();
         }
 
-        public bool isAtTargetEntity() {
-            if (targetEntity == null) {
+        public bool isAtTargetEntity()
+        {
+            if (targetEntity == null)
+            {
                 return false;
             }
             Vector3 targetPosition = targetEntity.getGameObject().transform.position;
@@ -61,69 +74,89 @@ namespace osg {
             return direction.magnitude < threshold;
         }
 
-        public Inventory getInventory() {
+        public Inventory getInventory()
+        {
             return inventory;
         }
 
-        public override void createGameObject(Vector3 position) {
+        public override void createGameObject(Vector3 position)
+        {
             GameObject gameObject = GameObject.CreatePrimitive(PrimitiveType.Capsule);
             gameObject.transform.localScale = new Vector3(1, 1, 1);
             gameObject.GetComponent<Renderer>().material.color = Color.gray;
             gameObject.transform.position = position;
             gameObject.name = getName();
             Rigidbody rigidbody = gameObject.AddComponent<Rigidbody>();
-            rigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
+            rigidbody.constraints =
+                RigidbodyConstraints.FreezeRotationX
+                | RigidbodyConstraints.FreezeRotationY
+                | RigidbodyConstraints.FreezeRotationZ;
             setGameObject(gameObject);
         }
 
-        public override void destroyGameObject() {
+        public override void destroyGameObject()
+        {
             UnityEngine.Object.Destroy(getGameObject());
         }
 
-        public void fixedUpdate(Environment environment, NationRepository nationRepository) {
+        public void fixedUpdate(Environment environment, NationRepository nationRepository)
+        {
             selectTarget(environment, nationRepository);
 
-            if (hasTargetEntity()) {
-                if (!isAtTargetEntity()) {
+            if (hasTargetEntity())
+            {
+                if (!isAtTargetEntity())
+                {
                     moveTowardsTargetEntity();
                 }
-                else {
+                else
+                {
                     interactWithTargetEntity();
                 }
             }
-            else {
+            else
+            {
                 getGameObject().GetComponent<Rigidbody>().velocity = Vector3.zero;
             }
         }
 
-        public void setColor(Color color) {
+        public void setColor(Color color)
+        {
             getGameObject().GetComponent<Renderer>().material.color = color;
         }
 
-        private void selectTarget(Environment environment, NationRepository nationRepository) {
+        private void selectTarget(Environment environment, NationRepository nationRepository)
+        {
             int targetNumWood = 3;
             int targetNumStone = 2;
 
-            if (inventory.getNumWood() < targetNumWood) {
+            if (inventory.getNumWood() < targetNumWood)
+            {
                 Entity nearestTree = environment.getNearestTree(getGameObject().transform.position);
-                if (nearestTree == null) {
+                if (nearestTree == null)
+                {
                     return;
                 }
                 setTargetEntity(nearestTree);
             }
-            else if (inventory.getNumStone() < targetNumStone) {
+            else if (inventory.getNumStone() < targetNumStone)
+            {
                 Entity nearestRock = environment.getNearestRock(getGameObject().transform.position);
-                if (nearestRock == null) {
+                if (nearestRock == null)
+                {
                     return;
                 }
                 setTargetEntity(nearestRock);
             }
-            else {
-                if (getNationId() == null) {
+            else
+            {
+                if (getNationId() == null)
+                {
                     return;
                 }
                 Nation nation = nationRepository.getNation(getNationId());
-                if (nation == null) {
+                if (nation == null)
+                {
                     return;
                 }
                 EntityId leaderId = nation.getLeaderId();
@@ -132,19 +165,23 @@ namespace osg {
             }
         }
 
-        private void interactWithTargetEntity() {
+        private void interactWithTargetEntity()
+        {
             getGameObject().GetComponent<Rigidbody>().velocity = Vector3.zero;
-            if (targetEntity.getType() == EntityType.TREE) {
+            if (targetEntity.getType() == EntityType.TREE)
+            {
                 getTargetEntity().markForDeletion();
                 setTargetEntity(null);
                 inventory.addWood(1);
             }
-            else if (targetEntity.getType() == EntityType.ROCK) {
+            else if (targetEntity.getType() == EntityType.ROCK)
+            {
                 getTargetEntity().markForDeletion();
                 setTargetEntity(null);
                 inventory.addStone(1);
             }
-            else if (targetEntity.getType() == EntityType.LIVING) {
+            else if (targetEntity.getType() == EntityType.LIVING)
+            {
                 // deposit resources
                 Pawn pawn = (Pawn)targetEntity;
                 pawn.getInventory().addWood(inventory.getNumWood());
@@ -153,17 +190,28 @@ namespace osg {
                 inventory.setNumStone(0);
                 setTargetEntity(null);
             }
-            else if (targetEntity.getType() == EntityType.PLAYER) {
+            else if (targetEntity.getType() == EntityType.PLAYER)
+            {
                 // deposit resources
                 Player player = (Player)targetEntity;
                 player.getInventory().addWood(inventory.getNumWood());
                 player.getInventory().addStone(inventory.getNumStone());
-                player.getStatus().update(getName() + " gave you " + inventory.getNumWood() + " wood and " + inventory.getNumStone() + " stone.");
+                player
+                    .getStatus()
+                    .update(
+                        getName()
+                            + " gave you "
+                            + inventory.getNumWood()
+                            + " wood and "
+                            + inventory.getNumStone()
+                            + " stone."
+                    );
                 inventory.setNumWood(0);
                 inventory.setNumStone(0);
-                setTargetEntity(null);   
+                setTargetEntity(null);
             }
-            else {
+            else
+            {
                 setTargetEntity(null);
             }
         }

@@ -2,18 +2,20 @@ using UnityEngine;
 
 using osg;
 
-namespace osgtests {
-
-    public static class TestNationRepository {
-
-        public static void runTests() {
+namespace osgtests
+{
+    public static class TestNationRepository
+    {
+        public static void runTests()
+        {
             testInitialization();
             testAddNation();
             testRemoveNation();
             testGetNationByNationId();
         }
 
-        public static void testInitialization() {
+        public static void testInitialization()
+        {
             // run
             NationRepository repository = new NationRepository();
 
@@ -21,7 +23,8 @@ namespace osgtests {
             Debug.Assert(repository != null);
         }
 
-        public static void testAddNation() {
+        public static void testAddNation()
+        {
             // prepare
             NationRepository repository = new NationRepository();
             EntityId leaderId = new EntityId();
@@ -31,10 +34,11 @@ namespace osgtests {
             repository.addNation(nation);
 
             // verify
-            Debug.Assert(repository.getNation(nation.getId()) == nation);     
+            Debug.Assert(repository.getNation(nation.getId()) == nation);
         }
 
-        public static void testRemoveNation() {
+        public static void testRemoveNation()
+        {
             // prepare
             NationRepository repository = new NationRepository();
             EntityId leaderId = new EntityId();
@@ -48,7 +52,8 @@ namespace osgtests {
             Debug.Assert(repository.getNation(nation.getId()) == null);
         }
 
-        public static void testGetNationByNationId() {
+        public static void testGetNationByNationId()
+        {
             // prepare
             NationRepository repository = new NationRepository();
             EntityId leaderId = new EntityId();
