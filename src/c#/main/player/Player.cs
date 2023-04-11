@@ -16,8 +16,9 @@ namespace osg {
         private Inventory inventory = new Inventory();
         private NationId nationId = null;
         private Status status = null;
+        private bool autoWalk = false;
 
-        public Player(GameObject gameObject, int walkSpeed, int runSpeed, ChunkId chunkId, Status status) : base(EntityType.PLAYER, chunkId){
+        public Player(GameObject gameObject, int walkSpeed, int runSpeed, Status status) : base(EntityType.PLAYER){
             setGameObject(gameObject);
             this.rigidBody = gameObject.GetComponent<Rigidbody>();
             this.walkSpeed = walkSpeed;
@@ -52,13 +53,17 @@ namespace osg {
             }
 
             // move forward and backward
-            if (verticalInput != 0) {
+            if (verticalInput != 0 && !autoWalk) {
                 rigidBody.transform.Translate(Vector3.forward * verticalInput * currentSpeed * Time.deltaTime);
             }
 
             if (jumpKeyWasPressed) {
                 jump();
                 jumpKeyWasPressed = false;
+            }
+
+            if (autoWalk) {
+                rigidBody.transform.Translate(Vector3.forward * currentSpeed * Time.deltaTime);
             }
         }
 
@@ -104,6 +109,10 @@ namespace osg {
 
         public Status getStatus() {
             return status;
+        }
+
+        public void toggleAutoWalk() {
+            autoWalk = !autoWalk;
         }
     }
 }

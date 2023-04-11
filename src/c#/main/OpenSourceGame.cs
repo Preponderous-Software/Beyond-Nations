@@ -41,7 +41,7 @@ namespace osg {
             gameConfig = new GameConfig();
             tickCounter = new TickCounter(gameConfig.getUpdateInterval());
             status = new Status(tickCounter, gameConfig.getStatusExpirationTicks());
-            player = new Player(playerGameObject, gameConfig.getPlayerWalkSpeed(), gameConfig.getPlayerRunSpeed(), new ChunkId(), status);
+            player = new Player(playerGameObject, gameConfig.getPlayerWalkSpeed(), gameConfig.getPlayerRunSpeed(), status);
             eventRepository = new EventRepository();
             eventProducer = new EventProducer(eventRepository);
             environment = new Environment(gameConfig.getChunkSize(), gameConfig.getLocationScale());
@@ -75,6 +75,9 @@ namespace osg {
                 numStoneText.updateText("Stone: " + player.getInventory().getNumStone());
                 status.clearStatusIfExpired();
 
+                // list of positions to generate chunks at
+                List<Vector3> positionsToGenerateChunksAt = new List<Vector3>();
+
                 foreach (Chunk chunk in environment.getChunks()) {
                     foreach (Entity entity in chunk.getEntities()) {
                         if (entity.getType() == EntityType.LIVING) {
@@ -91,8 +94,17 @@ namespace osg {
                                 Debug.Log("Entity " + pawn.getId() + " fell into void. Teleporting to spawn.");
                                 pawn.getGameObject().transform.position = new Vector3(0, 10, 0);
                             }
+
+                            Chunk retrievedChunk = environment.getChunkAtPosition(pawn.getGameObject().transform.position);
+                            if (retrievedChunk == null) {
+                                positionsToGenerateChunksAt.Add(pawn.getGameObject().transform.position);
+                            }
                         }
                     }
+                }
+
+                foreach (Vector3 position in positionsToGenerateChunksAt) {
+                    worldGenerator.generateChunkAtPosition(position);
                 }
             }
             
@@ -155,6 +167,11 @@ namespace osg {
                         }
                     }
                 }
+            }
+
+            // if num lock pressed, toggle auto walk
+            if (Input.GetKeyDown(KeyCode.Numlock)) {
+                player.toggleAutoWalk();
             }
         }
 

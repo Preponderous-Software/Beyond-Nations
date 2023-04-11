@@ -93,7 +93,7 @@ namespace osg {
             environment.addChunk(chunk);
             spawnTreeEntities(chunk);
             spawnRockEntities(chunk);
-            spawnLivingEntities(chunk);
+            spawnPawns(chunk);
         }
 
         private void spawnTreeEntities(Chunk chunk) {
@@ -108,7 +108,7 @@ namespace osg {
 
                 // create tree
                 Vector3 position = new Vector3(locationPosition.x, locationPosition.y + 1, locationPosition.z);
-                TreeEntity tree = new TreeEntity(position, 5, chunk.getId());
+                TreeEntity tree = new TreeEntity(position, 5);
 
                 // add tree to chunk
                 chunk.addEntity(tree, randomLocation);
@@ -129,7 +129,7 @@ namespace osg {
 
                 // create rock
                 Vector3 position = new Vector3(locationPosition.x, locationPosition.y + 1, locationPosition.z);
-                RockEntity rock = new RockEntity(position, chunk.getId());
+                RockEntity rock = new RockEntity(position);
 
                 // add rock to chunk if location is not occupied
                 chunk.addEntity(rock, randomLocation);
@@ -138,25 +138,43 @@ namespace osg {
             }
         }
 
-        private void spawnLivingEntities(Chunk chunk) {
-            // 0 or 1
-            int numberOfLivingEntities = Random.Range(0, 2);
-            for (int i = 0; i < numberOfLivingEntities; i++) {
+        private void spawnPawns(Chunk chunk) {
+            
+            // 10% change to spawn a pawn
+            bool shouldSpawnPawn = Random.Range(0, 100) < 10;
+            if (shouldSpawnPawn) {
                 Location randomLocation = chunk.getRandomLocation();
-                if (randomLocation.getNumberOfEntities() > 0) {
-                    continue;
-                }
-
                 Vector3 locationPosition = randomLocation.getPosition();
 
-                // create living entity
+                // create pawn
                 Vector3 position = new Vector3(locationPosition.x, (float)(locationPosition.y + 1.5), locationPosition.z);
-                Pawn pawn = new Pawn(position, chunk.getId(), PawnNameGenerator.generate());
+                Pawn pawn = new Pawn(position, PawnNameGenerator.generate());
+                eventProducer.producePawnSpawnEvent(position, pawn);
 
                 chunk.addEntity(pawn, randomLocation);
                 environment.addEntityId(pawn.getId());
                 pawn.getGameObject().transform.parent = randomLocation.getGameObject().transform;
             }
+        }
+
+        public void generateChunkAtPosition(Vector3 position) {
+            int lengthOfChunk = chunkSize * locationScale;
+
+            int chunkX = 0;
+            if (position.x >= 0) {
+                chunkX = (int) (position.x / lengthOfChunk);
+            } else {
+                chunkX = (int) (position.x / lengthOfChunk) - 1;
+            }
+
+            int chunkZ = 0;
+            if (position.z >= 0) {
+                chunkZ = (int) (position.z / lengthOfChunk);
+            } else {
+                chunkZ = (int) (position.z / lengthOfChunk) - 1;
+            }
+
+            generateChunkIfNotExistent(chunkX, chunkZ);
         }
     }
 }

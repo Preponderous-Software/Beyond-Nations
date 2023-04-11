@@ -16,7 +16,7 @@ namespace osgtests {
 
         public static void testInstantiation() {
             // run
-            Pawn pawn = new Pawn(new Vector3(0, 0, 0), new ChunkId(), "Pawn");
+            Pawn pawn = new Pawn(new Vector3(0, 0, 0), "Pawn");
 
             // check
             Debug.Assert(pawn.getType() == EntityType.LIVING);
@@ -31,7 +31,7 @@ namespace osgtests {
 
         public static void testGetSpeed() {
             // run
-            Pawn pawn = new Pawn(new Vector3(0, 0, 0), new ChunkId(), "Pawn");
+            Pawn pawn = new Pawn(new Vector3(0, 0, 0), "Pawn");
 
             // check
             Debug.Assert(pawn.getSpeed() > 0);
@@ -42,7 +42,7 @@ namespace osgtests {
 
         public static void testHasTargetEntity() {
             // run
-            Pawn pawn = new Pawn(new Vector3(0, 0, 0), new ChunkId(), "Pawn");
+            Pawn pawn = new Pawn(new Vector3(0, 0, 0), "Pawn");
 
             // check
             Debug.Assert(!pawn.hasTargetEntity());
@@ -53,7 +53,7 @@ namespace osgtests {
 
         public static void testGetTargetEntity() {
             // run
-            Pawn pawn = new Pawn(new Vector3(0, 0, 0), new ChunkId(), "Pawn");
+            Pawn pawn = new Pawn(new Vector3(0, 0, 0), "Pawn");
 
             // check
             Debug.Assert(pawn.getTargetEntity() == null);
@@ -64,8 +64,8 @@ namespace osgtests {
 
         public static void testSetTargetEntity() {
             // run
-            Pawn pawn = new Pawn(new Vector3(0, 0, 0), new ChunkId(), "Pawn");
-            Pawn targetEntity = new Pawn(new Vector3(0, 0, 0), new ChunkId(), "Target Entity");
+            Pawn pawn = new Pawn(new Vector3(0, 0, 0), "Pawn");
+            Pawn targetEntity = new Pawn(new Vector3(0, 0, 0), "Target Entity");
             pawn.setTargetEntity(targetEntity);
 
             // check
