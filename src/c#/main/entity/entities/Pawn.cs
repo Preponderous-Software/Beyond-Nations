@@ -7,11 +7,13 @@ namespace osg {
         private int speed = Random.Range(5, 20);
         private NationId nationId;
         private Entity targetEntity;
-        private Inventory inventory = new Inventory();
+        private Inventory inventory;
 
-        public Pawn(Vector3 position, string name) : base(EntityType.LIVING) {
+        public Pawn(Vector3 position, string name) : base(EntityType.PAWN) {
             this.name = name;
             createGameObject(position);
+            int startingGoldCoins = Random.Range(0, 100);
+            this.inventory = new Inventory(startingGoldCoins);
         }
 
         public string getName() {
@@ -104,14 +106,14 @@ namespace osg {
             int targetNumWood = 3;
             int targetNumStone = 2;
 
-            if (inventory.getNumWood() < targetNumWood) {
+            if (inventory.getNumItems(ItemType.WOOD) < targetNumWood) {
                 Entity nearestTree = environment.getNearestTree(getGameObject().transform.position);
                 if (nearestTree == null) {
                     return;
                 }
                 setTargetEntity(nearestTree);
             }
-            else if (inventory.getNumStone() < targetNumStone) {
+            else if (inventory.getNumItems(ItemType.STONE) < targetNumStone) {
                 Entity nearestRock = environment.getNearestRock(getGameObject().transform.position);
                 if (nearestRock == null) {
                     return;
@@ -137,34 +139,60 @@ namespace osg {
             if (targetEntity.getType() == EntityType.TREE) {
                 getTargetEntity().markForDeletion();
                 setTargetEntity(null);
-                inventory.addWood(1);
+                inventory.addItem(ItemType.WOOD, 2);
             }
             else if (targetEntity.getType() == EntityType.ROCK) {
                 getTargetEntity().markForDeletion();
                 setTargetEntity(null);
-                inventory.addStone(1);
+                inventory.addItem(ItemType.STONE, 1);
             }
-            else if (targetEntity.getType() == EntityType.LIVING) {
-                // deposit resources
-                Pawn pawn = (Pawn)targetEntity;
-                pawn.getInventory().addWood(inventory.getNumWood());
-                pawn.getInventory().addStone(inventory.getNumStone());
-                inventory.setNumWood(0);
-                inventory.setNumStone(0);
-                setTargetEntity(null);
+            else if (targetEntity.getType() == EntityType.PAWN) {
+                Pawn targetPawn = (Pawn) targetEntity;
+                attemptToSellResourcesTo(targetPawn);
             }
             else if (targetEntity.getType() == EntityType.PLAYER) {
-                // deposit resources
-                Player player = (Player)targetEntity;
-                player.getInventory().addWood(inventory.getNumWood());
-                player.getInventory().addStone(inventory.getNumStone());
-                player.getStatus().update(getName() + " gave you " + inventory.getNumWood() + " wood and " + inventory.getNumStone() + " stone.");
-                inventory.setNumWood(0);
-                inventory.setNumStone(0);
-                setTargetEntity(null);   
+                Player targetPlayer = (Player) targetEntity;
+                attemptToSellResourcesTo(targetPlayer);
             }
             else {
                 setTargetEntity(null);
+            }
+        }
+
+        private void attemptToSellResourcesTo(Entity targetEntity) {
+            int numWood = inventory.getNumItems(ItemType.WOOD);
+            int numStone = inventory.getNumItems(ItemType.STONE);
+
+            if (targetEntity.getType() == EntityType.PAWN) {
+                Pawn targetPawn = (Pawn) targetEntity;
+
+                int cost = numWood * 2 + numStone * 3;
+                if (targetPawn.getInventory().getNumItems(ItemType.GOLD_COIN) >= cost) {
+                    targetPawn.getInventory().removeItem(ItemType.GOLD_COIN, cost);
+                    inventory.removeItem(ItemType.WOOD, numWood);
+                    inventory.removeItem(ItemType.STONE, numStone);
+                    targetPawn.getInventory().addItem(ItemType.WOOD, numWood);
+                    targetPawn.getInventory().addItem(ItemType.STONE, numStone);
+                }
+                else {
+                    setTargetEntity(null);
+                }
+            }
+            else if (targetEntity.getType() == EntityType.PLAYER) {
+                Player targetPlayer = (Player) targetEntity;
+
+                int cost = numWood * 2 + numStone * 3;
+                if (targetPlayer.getInventory().getNumItems(ItemType.GOLD_COIN) >= cost) {
+                    targetPlayer.getInventory().removeItem(ItemType.GOLD_COIN, cost);
+                    inventory.removeItem(ItemType.WOOD, numWood);
+                    inventory.removeItem(ItemType.STONE, numStone);
+                    targetPlayer.getInventory().addItem(ItemType.WOOD, numWood);
+                    targetPlayer.getInventory().addItem(ItemType.STONE, numStone);
+                    targetPlayer.getStatus().update("You bought " + numWood + " wood and " + numStone + " stone from " + getName() + " for " + cost + " gold coins.");
+                }
+                else {
+                    setTargetEntity(null);
+                }
             }
         }
     }

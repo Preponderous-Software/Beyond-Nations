@@ -1,39 +1,34 @@
+using System.Collections.Generic;
+
 namespace osg {
 
     public class Inventory {
-        private int numWood = 0;
-        private int numStone = 0;
+        private Dictionary<ItemType, int> items = new Dictionary<ItemType, int>();
 
-        public void addWood(int amount) {
-            numWood += amount;
+        public Inventory(int numGoldCoins) {
+            items.Add(ItemType.GOLD_COIN, numGoldCoins);
+            items.Add(ItemType.WOOD, 0);
+            items.Add(ItemType.STONE, 0);
+        }
+        
+        public int getNumItems(ItemType itemType) {
+            return items[itemType];
         }
 
-        public int getNumWood() {
-            return numWood;
+        public void addItem(ItemType itemType, int numItems) {
+            items[itemType] = items[itemType] + numItems;
         }
 
-        public void setNumWood(int numWood) {
-            this.numWood = numWood;
+        public void removeItem(ItemType itemType, int numItems) {
+            items[itemType] = items[itemType] - numItems;
         }
 
-        public void removeWood(int amount) {
-            numWood -= amount;
+        public bool hasItem(ItemType itemType) {
+            return items[itemType] > 0;
         }
 
-        public void addStone(int amount) {
-            numStone += amount;
-        }
-
-        public int getNumStone() {
-            return numStone;
-        }
-
-        public void setNumStone(int numStone) {
-            this.numStone = numStone;
-        }
-
-        public void removeStone(int amount) {
-            numStone -= amount;
+        public void setNumItems(ItemType itemType, int numItems) {
+            items[itemType] = numItems;
         }
     }
 }

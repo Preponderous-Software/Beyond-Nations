@@ -18,79 +18,80 @@ namespace osgtests {
 
         public static void testInitialization() {
             // run
-            Inventory inventory = new Inventory();
+            Inventory inventory = new Inventory(0);
 
             // check
-            Debug.Assert(inventory.getNumWood() == 0);
-            Debug.Assert(inventory.getNumStone() == 0);
+            Debug.Assert(inventory.getNumItems(ItemType.GOLD_COIN) == 0);
+            Debug.Assert(inventory.getNumItems(ItemType.WOOD) == 0);
+            Debug.Assert(inventory.getNumItems(ItemType.STONE) == 0);
         }
 
         public static void testAddWood() {
             // setup
-            Inventory inventory = new Inventory();
+            Inventory inventory = new Inventory(0);
 
             // run
-            inventory.addWood(5);
+            inventory.addItem(ItemType.WOOD, 5);
 
             // check
-            Debug.Assert(inventory.getNumWood() == 5);
+            Debug.Assert(inventory.getNumItems(ItemType.WOOD) == 5);
         }
 
         public static void testRemoveWood() {
             // setup
-            Inventory inventory = new Inventory();
-            inventory.addWood(5);
+            Inventory inventory = new Inventory(0);
+            inventory.addItem(ItemType.WOOD, 5);
 
             // run
-            inventory.removeWood(3);
+            inventory.removeItem(ItemType.WOOD, 3);
 
             // check
-            Debug.Assert(inventory.getNumWood() == 2);
+            Debug.Assert(inventory.getNumItems(ItemType.WOOD) == 2);
         }
 
         public static void testAddStone() {
             // setup
-            Inventory inventory = new Inventory();
+            Inventory inventory = new Inventory(0);
 
             // run
-            inventory.addStone(5);
+            inventory.addItem(ItemType.STONE, 5);
 
             // check
-            Debug.Assert(inventory.getNumStone() == 5);
+            Debug.Assert(inventory.getNumItems(ItemType.STONE) == 5);
         }
 
         public static void testRemoveStone() {
             // setup
-            Inventory inventory = new Inventory();
-            inventory.addStone(5);
+            Inventory inventory = new Inventory(0);
+            inventory.addItem(ItemType.STONE, 5);
 
             // run
-            inventory.removeStone(3);
+            inventory.removeItem(ItemType.STONE, 3);
 
             // check
-            Debug.Assert(inventory.getNumStone() == 2);
+            Debug.Assert(inventory.getNumItems(ItemType.STONE) == 2);
         }
         
         public static void testSetNumWood() {
             // setup
-            Inventory inventory = new Inventory();
+            Inventory inventory = new Inventory(0);
 
             // run
-            inventory.setNumWood(5);
+            inventory.setNumItems(ItemType.WOOD, 5);
 
             // check
-            Debug.Assert(inventory.getNumWood() == 5);
+            Debug.Assert(inventory.getNumItems(ItemType.WOOD) == 5);
         }
 
         public static void testSetNumStone() {
             // setup
-            Inventory inventory = new Inventory();
+            Inventory inventory = new Inventory(0);
 
             // run
-            inventory.setNumStone(5);
+            inventory.setNumItems(ItemType.STONE, 5);
 
             // check
-            Debug.Assert(inventory.getNumStone() == 5);
+            Debug.Assert(inventory.getNumItems(ItemType.STONE) == 5);
         }
     }
 }

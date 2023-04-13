@@ -19,7 +19,7 @@ namespace osgtests {
             Pawn pawn = new Pawn(new Vector3(0, 0, 0), "Pawn");
 
             // check
-            Debug.Assert(pawn.getType() == EntityType.LIVING);
+            Debug.Assert(pawn.getType() == EntityType.PAWN);
             Debug.Assert(pawn.getGameObject().name == "Pawn");
             Debug.Assert(pawn.getGameObject().transform.position == new Vector3(0, 0, 0));
             Debug.Assert(pawn.getGameObject().transform.localScale == new Vector3(1, 1, 1));
