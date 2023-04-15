@@ -5,50 +5,11 @@ namespace osg {
     public static class NationNameGenerator {
 
         private static string[] prefixes = new string[] {
-            "New",
-            "Old",
-            "Great",
-            "Little",
-            "Big",
-            "Small",
-            "Red",
-            "Blue",
-            "Green",
-            "Yellow",
-            "Black",
-            "White",
-            "North",
-            "South",
-            "East",
-            "West",
-            "Upper",
-            "Lower",
-            "Northern",
-            "Southern",
-            "Eastern",
-            "Western",
-            "Fort",
-            "Fortress",
-            "Castle",
-            "City",
-            "Town",
-            "Village",
-            "Hamlet",
-            "Farm"
+            "Ald", "Alf", "Alv", "Arn", "As", "Bald", "Bj", "Borg", "Bri", "Bryn", "Dag", "Dalf", "Dj", "Dun", "Eg", "Eir", "Erl", "Fj", "Frey", "Frid", "Gard", "Gerd", "Gis", "Gj", "Gorm", "Grim", "Gud", "Gunn", "Gust", "Gutt", "Hal", "Har", "Hed", "Hel", "Her", "Hild", "Hjal", "Hjor", "Hol", "Ing", "Inge", "Ingj", "Iv", "Jalm", "Jarl", "Jof", "Jor", "Kalf", "Ket", "Kjell", "Knut", "Kol", "Koll", "Korm", "Kv", "Lamb", "Lif", "Lind", "Liv", "Magn", "Malm", "Mj", "Mun", "Nj", "Odd", "Ol", "Or", "Orn", "Ott", "Ragn", "Ran", "Rann", "Rik", "Sig", "Sigm", "Sigur", "Siv", "Skj", "Skjold", "Sv", "Svein", "Sven", "Tj", "Tor", "Torbj", "Tord", "Torg", "Torv", "Tyr", "Ulf", "Ulfr", "Vald", "Vall", "Varg", "Veg", "Vig", "Vigd", "Vil", "Vill", "Yng", "Yngv"
         };
 
         private static string[] suffixes = new string[] {
-            "shire",
-            "land",
-            "ton",
-            "ville",
-            "town",
-            "burg",
-            "port",
-            "ford",
-            "ham",
-            "field",
-            "wood"
+            "a", "bj", "bjorg", "bjorn", "borg", "d", "dis", "e", "frid", "g", "gard", "gerd", "gjerd", "gjert", "gjord", "gjurd", "gjut", "gjutt", "gjørd", "gjørt", "hild", "hildr", "hildur", "hildus", "hilduz", "hildyr", "hildyrs", "hildys", "hildyss", "hildyus", "hildyuz", "hildyr", "hildyrs", "hildys", "hildyss", "hildyus", "hildyuz", "hildyr", "hildyrs", "hildys", "hildyss", "hildyus", "hildyuz", "hildyr", "hildyrs", "hildys", "hildyss", "hildyus", "hildyuz", "hildyr", "hildyrs", "hildys", "hildyss", "hildyus", "hildyuz", "hildyr", "hildyrs", "hildys", "hildyss", "hildyus", "hildyuz", "hildyr", "hildyrs", "hildys", "hildyss", "hildyus", "hildyuz", "hildyr", "hildyrs", "hildys", "hildyss", "hildyus", "hildyuz", "hildyr", "hildyrs", "hildys", "hildyss", "hildyus", "hildyuz", "hildyr", "hildyrs", "hildys", "hildyss", "hildyus", "hildyuz", "hildyr", "hildyrs", "hildys", "hildyss", "hildyus", "hildyuz", "i", "ing", "inga", "ingr", "ingur",
         };
 
         // list of generated
