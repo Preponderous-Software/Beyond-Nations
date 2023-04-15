@@ -136,6 +136,9 @@ namespace osg {
             else if (currentBehaviorType == BehaviorType.SELL_RESOURCES) {
                 sellResources(environment, nationRepository);
             }
+            else if (currentBehaviorType == BehaviorType.WANDER) {
+                wander(environment);
+            }
             else if (currentBehaviorType == BehaviorType.NONE) {
                 // do nothing
             }
@@ -209,6 +212,12 @@ namespace osg {
             }
         }
 
+        private void wander(Environment environment) {
+            Vector3 currentPosition = getGameObject().transform.position;
+            Vector3 targetPosition = currentPosition + new Vector3(Random.Range(-1f, 1f), 0, Random.Range(-1f, 1f));
+            getGameObject().GetComponent<Rigidbody>().velocity = (targetPosition - currentPosition).normalized * getSpeed();
+        }
+
         public void setColor(Color color) {
             getGameObject().GetComponent<Renderer>().material.color = color;
         }
@@ -216,7 +225,7 @@ namespace osg {
         private void computeBehaviorType(NationRepository nationRepository) {
             // if leader
             if (getNationId() != null && nationRepository.getNation(getNationId()).getLeaderId() == getId()) {
-                currentBehaviorType = BehaviorType.NONE;
+                currentBehaviorType = BehaviorType.WANDER;
                 // setText("LEADER");
                 return;
             }
@@ -275,11 +284,5 @@ namespace osg {
         public void setText(string text) {
             textObject.GetComponent<TextMesh>().text = text;
         }
-    }
-
-    public enum BehaviorType {
-        NONE,
-        GATHER_RESOURCES,
-        SELL_RESOURCES
     }
 }
