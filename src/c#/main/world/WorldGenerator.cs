@@ -27,7 +27,7 @@ namespace osg {
         public void update() {
             calculateCurrentChunk();
             generateCurrentChunk();
-            generateSurroundingChunks();
+            generateSurroundingChunksAt(currentChunkX, currentChunkZ);
         }
 
         public int getCurrentChunkX() {
@@ -42,18 +42,16 @@ namespace osg {
             generateChunkIfNotExistent(currentChunkX, currentChunkZ);
         }
 
-        private void generateSurroundingChunks() {
-            // sides
-            generateChunkIfNotExistent(currentChunkX + 1, currentChunkZ);
-            generateChunkIfNotExistent(currentChunkX - 1, currentChunkZ);
-            generateChunkIfNotExistent(currentChunkX, currentChunkZ + 1);
-            generateChunkIfNotExistent(currentChunkX, currentChunkZ - 1);
-
-            // corners
-            generateChunkIfNotExistent(currentChunkX + 1, currentChunkZ + 1);
-            generateChunkIfNotExistent(currentChunkX - 1, currentChunkZ + 1);
-            generateChunkIfNotExistent(currentChunkX + 1, currentChunkZ - 1);
-            generateChunkIfNotExistent(currentChunkX - 1, currentChunkZ - 1);
+        public void generateSurroundingChunksAt(int chunkX, int chunkZ) {
+            generateChunkIfNotExistent(chunkX - 1, chunkZ - 1);
+            generateChunkIfNotExistent(chunkX - 1, chunkZ);
+            generateChunkIfNotExistent(chunkX - 1, chunkZ + 1);
+            generateChunkIfNotExistent(chunkX, chunkZ - 1);
+            // generateChunkIfNotExistent(chunkX, chunkZ);
+            generateChunkIfNotExistent(chunkX, chunkZ + 1);
+            generateChunkIfNotExistent(chunkX + 1, chunkZ - 1);
+            generateChunkIfNotExistent(chunkX + 1, chunkZ);
+            generateChunkIfNotExistent(chunkX + 1, chunkZ + 1);
         }
 
         private void generateChunkIfNotExistent(int chunkX, int chunkZ) {
@@ -175,6 +173,26 @@ namespace osg {
             }
 
             generateChunkIfNotExistent(chunkX, chunkZ);
+        }
+
+        public void generateSurroundingChunksAtPosition(Vector3 position) {
+            int lengthOfChunk = chunkSize * locationScale;
+
+            int chunkX = 0;
+            if (position.x >= 0) {
+                chunkX = (int) (position.x / lengthOfChunk);
+            } else {
+                chunkX = (int) (position.x / lengthOfChunk) - 1;
+            }
+
+            int chunkZ = 0;
+            if (position.z >= 0) {
+                chunkZ = (int) (position.z / lengthOfChunk);
+            } else {
+                chunkZ = (int) (position.z / lengthOfChunk) - 1;
+            }
+
+            generateSurroundingChunksAt(chunkX, chunkZ);
         }
     }
 }

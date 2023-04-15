@@ -108,6 +108,7 @@ namespace osg {
 
                 foreach (Vector3 position in positionsToGenerateChunksAt) {
                     worldGenerator.generateChunkAtPosition(position);
+                    worldGenerator.generateSurroundingChunksAtPosition(position);
                 }
             }
             

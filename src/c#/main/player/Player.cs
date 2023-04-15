@@ -27,7 +27,7 @@ namespace osg {
             this.currentSpeed = walkSpeed;
             GameObject childCameraObject = gameObject.transform.GetChild(0).gameObject;
             this.playerCamera = childCameraObject.GetComponent<Camera>();
-            this.inventory = new Inventory(100);
+            this.inventory = new Inventory(2000);
         }
 
         public void update() {

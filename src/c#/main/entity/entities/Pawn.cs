@@ -8,12 +8,26 @@ namespace osg {
         private NationId nationId;
         private Entity targetEntity;
         private Inventory inventory;
+        private BehaviorType currentBehaviorType = BehaviorType.NONE;
 
         public Pawn(Vector3 position, string name) : base(EntityType.PAWN) {
             this.name = name;
             createGameObject(position);
-            int startingGoldCoins = Random.Range(0, 100);
+            int startingGoldCoins = Random.Range(500, 2000);
             this.inventory = new Inventory(startingGoldCoins);
+
+            // create text object above head
+            GameObject textObject = new GameObject();
+            textObject.transform.parent = getGameObject().transform;
+            textObject.transform.localPosition = new Vector3(0, 2, 0);
+            TextMesh textMesh = textObject.AddComponent<TextMesh>();
+            textMesh.text = getName();
+            textMesh.fontSize = 64;
+            textMesh.color = Color.black;
+            textMesh.alignment = TextAlignment.Center;
+            textMesh.anchor = TextAnchor.MiddleCenter;
+            textMesh.characterSize = 0.1f;
+            textMesh.GetComponent<Renderer>().material.color = Color.black;
         }
 
         public string getName() {
@@ -83,18 +97,77 @@ namespace osg {
         }
 
         public void fixedUpdate(Environment environment, NationRepository nationRepository) {
-            selectTarget(environment, nationRepository);
+            if (currentBehaviorType == BehaviorType.NONE) {
+                computeBehaviorType();
+            }
+            else if (currentBehaviorType == BehaviorType.GATHER_RESOURCES) {
+                gatherResources(environment);
+            }
+            else if (currentBehaviorType == BehaviorType.SELL_RESOURCES) {
+                sellResources(environment, nationRepository);
+            }
+        }
 
-            if (hasTargetEntity()) {
-                if (!isAtTargetEntity()) {
-                    moveTowardsTargetEntity();
+        private void gatherResources(Environment environment) {
+            if (!hasTargetEntity()) {
+                // select nearest tree or rock
+                int targetNumWood = 3;
+                int targetNumStone = 2;
+
+                Entity nearestTree = environment.getNearestTree(getGameObject().transform.position);
+                Entity nearestRock = environment.getNearestRock(getGameObject().transform.position);
+                if (nearestTree == null && nearestRock == null) {
+                    return;
+                }
+                if (nearestTree == null) {
+                    setTargetEntity(nearestRock);
+                }
+                else if (nearestRock == null) {
+                    setTargetEntity(nearestTree);
                 }
                 else {
-                    interactWithTargetEntity();
+                    float distanceToTree = Vector3.Distance(getGameObject().transform.position, nearestTree.getGameObject().transform.position);
+                    float distanceToRock = Vector3.Distance(getGameObject().transform.position, nearestRock.getGameObject().transform.position);
+                    if (distanceToTree < distanceToRock) {
+                        setTargetEntity(nearestTree);
+                    }
+                    else {
+                        setTargetEntity(nearestRock);
+                    }
+                }
+            }
+            else if (isAtTargetEntity()) {
+                // gather
+                if (targetEntity.getType() == EntityType.TREE) {
+                    targetEntity.markForDeletion();
+                    setTargetEntity(null);
+                    inventory.addItem(ItemType.WOOD, 2);
+                }
+                else if (targetEntity.getType() == EntityType.ROCK) {
+                    targetEntity.markForDeletion();
+                    setTargetEntity(null);
+                    inventory.addItem(ItemType.STONE, 1);
                 }
             }
             else {
-                getGameObject().GetComponent<Rigidbody>().velocity = Vector3.zero;
+                moveTowardsTargetEntity();
+            }
+        }
+
+        private void sellResources(Environment environment, NationRepository nationRepository) {
+            if (!hasTargetEntity()) {
+                // target nation leader
+                Nation nation = nationRepository.getNation(getNationId());
+                EntityId leaderId = nation.getLeaderId();
+                Entity leader = environment.getEntity(leaderId);
+                setTargetEntity(leader);
+            }
+            else if (isAtTargetEntity()) {
+                // sell
+                attemptToSellResourcesTo(getTargetEntity());
+            }
+            else {
+                moveTowardsTargetEntity();
             }
         }
 
@@ -102,60 +175,12 @@ namespace osg {
             getGameObject().GetComponent<Renderer>().material.color = color;
         }
 
-        private void selectTarget(Environment environment, NationRepository nationRepository) {
-            int targetNumWood = 3;
-            int targetNumStone = 2;
-
-            if (inventory.getNumItems(ItemType.WOOD) < targetNumWood) {
-                Entity nearestTree = environment.getNearestTree(getGameObject().transform.position);
-                if (nearestTree == null) {
-                    return;
-                }
-                setTargetEntity(nearestTree);
-            }
-            else if (inventory.getNumItems(ItemType.STONE) < targetNumStone) {
-                Entity nearestRock = environment.getNearestRock(getGameObject().transform.position);
-                if (nearestRock == null) {
-                    return;
-                }
-                setTargetEntity(nearestRock);
+        private void computeBehaviorType() {
+            if (inventory.getNumItems(ItemType.WOOD) >= 3 && inventory.getNumItems(ItemType.STONE) >= 2) {
+                currentBehaviorType = BehaviorType.SELL_RESOURCES;
             }
             else {
-                if (getNationId() == null) {
-                    return;
-                }
-                Nation nation = nationRepository.getNation(getNationId());
-                if (nation == null) {
-                    return;
-                }
-                EntityId leaderId = nation.getLeaderId();
-                Entity leader = environment.getEntity(leaderId);
-                setTargetEntity(leader);
-            }
-        }
-
-        private void interactWithTargetEntity() {
-            getGameObject().GetComponent<Rigidbody>().velocity = Vector3.zero;
-            if (targetEntity.getType() == EntityType.TREE) {
-                getTargetEntity().markForDeletion();
-                setTargetEntity(null);
-                inventory.addItem(ItemType.WOOD, 2);
-            }
-            else if (targetEntity.getType() == EntityType.ROCK) {
-                getTargetEntity().markForDeletion();
-                setTargetEntity(null);
-                inventory.addItem(ItemType.STONE, 1);
-            }
-            else if (targetEntity.getType() == EntityType.PAWN) {
-                Pawn targetPawn = (Pawn) targetEntity;
-                attemptToSellResourcesTo(targetPawn);
-            }
-            else if (targetEntity.getType() == EntityType.PLAYER) {
-                Player targetPlayer = (Player) targetEntity;
-                attemptToSellResourcesTo(targetPlayer);
-            }
-            else {
-                setTargetEntity(null);
+                currentBehaviorType = BehaviorType.GATHER_RESOURCES;
             }
         }
 
@@ -195,5 +220,15 @@ namespace osg {
                 }
             }
         }
+
+        public bool isLeaderOfNation(Nation nation) {
+            return nation.getLeaderId() == getId();
+        }
+    }
+
+    public enum BehaviorType {
+        NONE,
+        GATHER_RESOURCES,
+        SELL_RESOURCES
     }
 }
