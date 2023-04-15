@@ -15,7 +15,7 @@ namespace osg {
         
         private int distanceThreshold = 10;
 
-        private GameObject textObject;
+        private GameObject nameTag;
 
         public Pawn(Vector3 position, string name) : base(EntityType.PAWN) {
             this.name = name;
@@ -24,10 +24,10 @@ namespace osg {
             this.inventory = new Inventory(startingGoldCoins);
 
             // create text object above head
-            textObject = new GameObject();
-            textObject.transform.parent = getGameObject().transform;
-            textObject.transform.localPosition = new Vector3(0, 2, 0);
-            TextMesh textMesh = textObject.AddComponent<TextMesh>();
+            nameTag = new GameObject();
+            nameTag.transform.parent = getGameObject().transform;
+            nameTag.transform.localPosition = new Vector3(0, 2, 0);
+            TextMesh textMesh = nameTag.AddComponent<TextMesh>();
             textMesh.text = getName();
             textMesh.fontSize = 64;
             textMesh.color = Color.black;
@@ -147,6 +147,10 @@ namespace osg {
             }
         }
 
+        public void setColor(Color color) {
+            getGameObject().GetComponent<Renderer>().material.color = color;
+        }
+
         private void gatherResources(Environment environment) {
             if (!hasTargetEntity()) {
                 // select nearest tree or rock
@@ -216,10 +220,6 @@ namespace osg {
             Vector3 currentPosition = getGameObject().transform.position;
             Vector3 targetPosition = currentPosition + new Vector3(Random.Range(-1f, 1f), 0, Random.Range(-1f, 1f));
             getGameObject().GetComponent<Rigidbody>().velocity = (targetPosition - currentPosition).normalized * getSpeed();
-        }
-
-        public void setColor(Color color) {
-            getGameObject().GetComponent<Renderer>().material.color = color;
         }
 
         private void computeBehaviorType(Environment environment, NationRepository nationRepository) {
