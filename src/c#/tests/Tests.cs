@@ -24,6 +24,14 @@ namespace osgtests {
 
             // tick
             TestTickCounter.runTests();
+
+            // world
+            TestLocationId.runTests();
+            TestLocation.runTests();
+            TestChunkId.runTests();
+            TestChunk.runTests();
+            TestEnvironmentId.runTests();
+            TestEnvironment.runTests();
         }
     }
 }
