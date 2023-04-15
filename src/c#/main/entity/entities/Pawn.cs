@@ -217,17 +217,17 @@ namespace osg {
             // if leader
             if (getNationId() != null && nationRepository.getNation(getNationId()).getLeaderId() == getId()) {
                 currentBehaviorType = BehaviorType.NONE;
-                setText("LEADER");
+                // setText("LEADER");
                 return;
             }
             
             if (inventory.getNumItems(ItemType.WOOD) >= targetNumWood && inventory.getNumItems(ItemType.STONE) >= targetNumStone) {
                 currentBehaviorType = BehaviorType.SELL_RESOURCES;
-                setText("SELL");
+                // setText("SELL");
             }
             else {
                 currentBehaviorType = BehaviorType.GATHER_RESOURCES;
-                setText("GATHER");
+                // setText("GATHER");
             }
         }
 
