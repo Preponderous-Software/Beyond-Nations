@@ -20,6 +20,7 @@ namespace osg {
         private Status status;
         private NationRepository nationRepository;
         private Player player;
+        private TextGameObject numGoldCoinsText;
         private TextGameObject numWoodText;
         private TextGameObject numStoneText;
 
@@ -48,6 +49,7 @@ namespace osg {
             worldGenerator = new WorldGenerator(environment, player, eventProducer);
             chunkPositionText = new TextGameObject("Chunk: (0, 0)", 20, 0, Screen.height / 4);
             nationRepository = new NationRepository();
+            numGoldCoinsText = new TextGameObject("Gold Coins: 0", 20, -Screen.width / 4, Screen.height / 4);
             numWoodText = new TextGameObject("Wood: 0", 20, -Screen.width / 4, 0);
             numStoneText = new TextGameObject("Stone: 0", 20, Screen.width / 4, 0);
 
@@ -71,8 +73,9 @@ namespace osg {
                 worldGenerator.update();
                 checkIfPlayerIsFallingIntoVoid();
                 chunkPositionText.updateText("Chunk: (" + worldGenerator.getCurrentChunkX() + ", " + worldGenerator.getCurrentChunkZ() + ")");
-                numWoodText.updateText("Wood: " + player.getInventory().getNumWood());
-                numStoneText.updateText("Stone: " + player.getInventory().getNumStone());
+                numGoldCoinsText.updateText("Gold Coins: " + player.getInventory().getNumItems(ItemType.GOLD_COIN));
+                numWoodText.updateText("Wood: " + player.getInventory().getNumItems(ItemType.WOOD));
+                numStoneText.updateText("Stone: " + player.getInventory().getNumItems(ItemType.STONE));
                 status.clearStatusIfExpired();
 
                 // list of positions to generate chunks at
@@ -80,7 +83,7 @@ namespace osg {
 
                 foreach (Chunk chunk in environment.getChunks()) {
                     foreach (Entity entity in chunk.getEntities()) {
-                        if (entity.getType() == EntityType.LIVING) {
+                        if (entity.getType() == EntityType.PAWN) {
                             Pawn pawn = (Pawn)entity;
 
                             pawn.fixedUpdate(environment, nationRepository);
@@ -105,6 +108,7 @@ namespace osg {
 
                 foreach (Vector3 position in positionsToGenerateChunksAt) {
                     worldGenerator.generateChunkAtPosition(position);
+                    worldGenerator.generateSurroundingChunksAtPosition(position);
                 }
             }
             
@@ -161,7 +165,7 @@ namespace osg {
             if (Input.GetKeyDown(KeyCode.T)) {
                 foreach (Chunk chunk in environment.getChunks()) {
                     foreach (Entity entity in chunk.getEntities()) {
-                        if (entity.getType() == EntityType.LIVING) {
+                        if (entity.getType() == EntityType.PAWN) {
                             Pawn pawn = (Pawn)entity;
                             pawn.getGameObject().transform.position = player.getGameObject().transform.position;
                         }

@@ -1,9 +1,10 @@
 namespace osg {
 
     public enum EntityType {
+        NONE,
         TREE,
         ROCK,
-        LIVING,
+        PAWN,
         PLAYER,
     }
 }

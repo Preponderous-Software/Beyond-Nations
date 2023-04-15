@@ -8,6 +8,7 @@ namespace osg {
         private string name;
         private EntityId leaderId;
         private List<EntityId> members = new List<EntityId>();
+        private Dictionary<EntityId, NationRole> roles = new Dictionary<EntityId, NationRole>();
         // color
         private Color color;
 
@@ -15,7 +16,8 @@ namespace osg {
             id = new NationId();
             this.name = name;
             this.leaderId = leaderId;
-            addMember(leaderId);
+            members.Add(leaderId);
+            roles[leaderId] = NationRole.LEADER;
 
             // random color
             color = new Color(Random.value, Random.value, Random.value);
@@ -35,10 +37,12 @@ namespace osg {
 
         public void addMember(EntityId memberId) {
             members.Add(memberId);
+            roles[memberId] = NationRole.CITIZEN;
         }
 
         public void removeMember(EntityId memberId) {
             members.Remove(memberId);
+            roles.Remove(memberId);
         }
 
         public bool isMember(EntityId memberId) {
@@ -51,6 +55,14 @@ namespace osg {
 
         public Color getColor() {
             return color;
+        }
+
+        public NationRole getRole(EntityId memberId) {
+            return roles[memberId];
+        }
+
+        public void setRole(EntityId memberId, NationRole role) {
+            roles[memberId] = role;
         }
     }
 }

@@ -13,7 +13,7 @@ namespace osg {
         private int runSpeed;
         private int currentSpeed;
         private Camera playerCamera = null;
-        private Inventory inventory = new Inventory();
+        private Inventory inventory;
         private NationId nationId = null;
         private Status status = null;
         private bool autoWalk = false;
@@ -27,6 +27,7 @@ namespace osg {
             this.currentSpeed = walkSpeed;
             GameObject childCameraObject = gameObject.transform.GetChild(0).gameObject;
             this.playerCamera = childCameraObject.GetComponent<Camera>();
+            this.inventory = new Inventory(200);
         }
 
         public void update() {
