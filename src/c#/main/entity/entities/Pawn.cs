@@ -10,10 +10,10 @@ namespace osg {
         private Inventory inventory;
         private BehaviorType currentBehaviorType = BehaviorType.NONE;
 
-        private int targetNumWood = 5;
-        private int targetNumStone = 5;
+        private int targetNumWood = 3;
+        private int targetNumStone = 3;
         
-        private int distanceThreshold = 5;
+        private int distanceThreshold = 10;
 
         private GameObject textObject;
 
@@ -128,7 +128,7 @@ namespace osg {
         }
 
         public void fixedUpdate(Environment environment, NationRepository nationRepository) {
-            computeBehaviorType(nationRepository);
+            computeBehaviorType(environment, nationRepository);
 
             if (currentBehaviorType == BehaviorType.GATHER_RESOURCES) {
                 gatherResources(environment);
@@ -222,22 +222,27 @@ namespace osg {
             getGameObject().GetComponent<Renderer>().material.color = color;
         }
 
-        private void computeBehaviorType(NationRepository nationRepository) {
+        private void computeBehaviorType(Environment environment, NationRepository nationRepository) {
             // if leader
-            if (getNationId() != null && nationRepository.getNation(getNationId()).getLeaderId() == getId()) {
+            if (getNationId() == null) {
                 currentBehaviorType = BehaviorType.WANDER;
-                // setText("LEADER");
                 return;
             }
-            
-            if (inventory.getNumItems(ItemType.WOOD) >= targetNumWood && inventory.getNumItems(ItemType.STONE) >= targetNumStone) {
-                currentBehaviorType = BehaviorType.SELL_RESOURCES;
-                // setText("SELL");
+            Nation nation = nationRepository.getNation(getNationId());
+            NationRole role = nation.getRole(getId());
+            if (role == NationRole.LEADER) {
+                currentBehaviorType = BehaviorType.WANDER;
+                return;
             }
-            else {
-                currentBehaviorType = BehaviorType.GATHER_RESOURCES;
-                // setText("GATHER");
+            else if (role == NationRole.CITIZEN) {
+                if (inventory.getNumItems(ItemType.WOOD) >= targetNumWood && inventory.getNumItems(ItemType.STONE) >= targetNumStone) {
+                    currentBehaviorType = BehaviorType.SELL_RESOURCES;
+                }
+                else {
+                    currentBehaviorType = BehaviorType.GATHER_RESOURCES;
+                }
             }
+
         }
 
         private void attemptToSellResourcesTo(Entity targetEntity) {
@@ -275,14 +280,6 @@ namespace osg {
                     setTargetEntity(null);
                 }
             }
-        }
-
-        public bool isLeaderOfNation(Nation nation) {
-            return nation.getLeaderId() == getId();
-        }
-
-        public void setText(string text) {
-            textObject.GetComponent<TextMesh>().text = text;
         }
     }
 }
