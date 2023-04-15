@@ -4,20 +4,27 @@ namespace osg {
 
     public class Pawn : Entity {
         private string name;
-        private int speed = Random.Range(5, 20);
+        private int speed = Random.Range(10, 20);
         private NationId nationId;
         private Entity targetEntity;
         private Inventory inventory;
         private BehaviorType currentBehaviorType = BehaviorType.NONE;
 
+        private int targetNumWood = 5;
+        private int targetNumStone = 5;
+        
+        private int distanceThreshold = 5;
+
+        private GameObject textObject;
+
         public Pawn(Vector3 position, string name) : base(EntityType.PAWN) {
             this.name = name;
             createGameObject(position);
-            int startingGoldCoins = Random.Range(500, 2000);
+            int startingGoldCoins = Random.Range(50, 200);
             this.inventory = new Inventory(startingGoldCoins);
 
             // create text object above head
-            GameObject textObject = new GameObject();
+            textObject = new GameObject();
             textObject.transform.parent = getGameObject().transform;
             textObject.transform.localPosition = new Vector3(0, 2, 0);
             TextMesh textMesh = textObject.AddComponent<TextMesh>();
@@ -59,6 +66,20 @@ namespace osg {
         }
 
         public void moveTowardsTargetEntity() {
+            if (targetEntity == null) {
+                Debug.LogWarning("target entity is null in moveTowardsTargetEntity()");
+                return;
+            }
+            if (targetEntity.isMarkedForDeletion()) {
+                Debug.LogWarning("target entity is marked for deletion in moveTowardsTargetEntity()");
+                setTargetEntity(null);
+                return;
+            }
+            if (targetEntity.getGameObject() == null) {
+                setTargetEntity(null);
+                Debug.LogWarning("target entity game object is null in moveTowardsTargetEntity()");
+                return;
+            }
             Vector3 targetPosition = targetEntity.getGameObject().transform.position;
             Vector3 currentPosition = getGameObject().transform.position;
             Vector3 direction = targetPosition - currentPosition;
@@ -68,13 +89,23 @@ namespace osg {
 
         public bool isAtTargetEntity() {
             if (targetEntity == null) {
+                Debug.LogWarning("target entity is null in isAtTargetEntity()");
+                return false;
+            }
+            if (targetEntity.isMarkedForDeletion()) {
+                Debug.LogWarning("target entity is marked for deletion in isAtTargetEntity()");
+                setTargetEntity(null);
+                return false;
+            }
+            if (targetEntity.getGameObject() == null) {
+                setTargetEntity(null);
+                Debug.LogWarning("target entity game object is null in isAtTargetEntity()");
                 return false;
             }
             Vector3 targetPosition = targetEntity.getGameObject().transform.position;
             Vector3 currentPosition = getGameObject().transform.position;
             Vector3 direction = targetPosition - currentPosition;
-            int threshold = 5;
-            return direction.magnitude < threshold;
+            return direction.magnitude < distanceThreshold;
         }
 
         public Inventory getInventory() {
@@ -97,22 +128,25 @@ namespace osg {
         }
 
         public void fixedUpdate(Environment environment, NationRepository nationRepository) {
-            if (currentBehaviorType == BehaviorType.NONE) {
-                computeBehaviorType();
-            }
-            else if (currentBehaviorType == BehaviorType.GATHER_RESOURCES) {
+            computeBehaviorType(nationRepository);
+
+            if (currentBehaviorType == BehaviorType.GATHER_RESOURCES) {
                 gatherResources(environment);
             }
             else if (currentBehaviorType == BehaviorType.SELL_RESOURCES) {
                 sellResources(environment, nationRepository);
+            }
+            else if (currentBehaviorType == BehaviorType.NONE) {
+                // do nothing
+            }
+            else {
+                Debug.LogWarning("unknown behavior type in fixedUpdate(): " + currentBehaviorType);
             }
         }
 
         private void gatherResources(Environment environment) {
             if (!hasTargetEntity()) {
                 // select nearest tree or rock
-                int targetNumWood = 3;
-                int targetNumStone = 2;
 
                 Entity nearestTree = environment.getNearestTree(getGameObject().transform.position);
                 Entity nearestRock = environment.getNearestRock(getGameObject().transform.position);
@@ -141,12 +175,16 @@ namespace osg {
                 if (targetEntity.getType() == EntityType.TREE) {
                     targetEntity.markForDeletion();
                     setTargetEntity(null);
-                    inventory.addItem(ItemType.WOOD, 2);
+                    inventory.addItem(ItemType.WOOD, 1);
                 }
                 else if (targetEntity.getType() == EntityType.ROCK) {
                     targetEntity.markForDeletion();
                     setTargetEntity(null);
                     inventory.addItem(ItemType.STONE, 1);
+                }
+                else {
+                    Debug.LogWarning("target entity is not a tree or rock");
+                    setTargetEntity(null);
                 }
             }
             else {
@@ -155,7 +193,7 @@ namespace osg {
         }
 
         private void sellResources(Environment environment, NationRepository nationRepository) {
-            if (!hasTargetEntity()) {
+            if (!hasTargetEntity() && getNationId() != null) {
                 // target nation leader
                 Nation nation = nationRepository.getNation(getNationId());
                 EntityId leaderId = nation.getLeaderId();
@@ -175,12 +213,21 @@ namespace osg {
             getGameObject().GetComponent<Renderer>().material.color = color;
         }
 
-        private void computeBehaviorType() {
-            if (inventory.getNumItems(ItemType.WOOD) >= 3 && inventory.getNumItems(ItemType.STONE) >= 2) {
+        private void computeBehaviorType(NationRepository nationRepository) {
+            // if leader
+            if (getNationId() != null && nationRepository.getNation(getNationId()).getLeaderId() == getId()) {
+                currentBehaviorType = BehaviorType.NONE;
+                setText("LEADER");
+                return;
+            }
+            
+            if (inventory.getNumItems(ItemType.WOOD) >= targetNumWood && inventory.getNumItems(ItemType.STONE) >= targetNumStone) {
                 currentBehaviorType = BehaviorType.SELL_RESOURCES;
+                setText("SELL");
             }
             else {
                 currentBehaviorType = BehaviorType.GATHER_RESOURCES;
+                setText("GATHER");
             }
         }
 
@@ -223,6 +270,10 @@ namespace osg {
 
         public bool isLeaderOfNation(Nation nation) {
             return nation.getLeaderId() == getId();
+        }
+
+        public void setText(string text) {
+            textObject.GetComponent<TextMesh>().text = text;
         }
     }
 
