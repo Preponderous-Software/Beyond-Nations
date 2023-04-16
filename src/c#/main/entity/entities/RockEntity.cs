@@ -15,6 +15,8 @@ namespace osg {
             gameObject.transform.position = position;
             gameObject.name = "Rock";
             setGameObject(gameObject);
+
+            getInventory().addItem(ItemType.STONE, 1);
         }
 
         public override void destroyGameObject() {

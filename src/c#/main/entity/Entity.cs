@@ -7,10 +7,12 @@ namespace osg {
         private EntityType type;
         private GameObject gameObject;
         private bool markedForDeletion = false;
-
+        private Inventory inventory;
+        
         public Entity(EntityType type) {
             this.id = new EntityId();
             this.type = type;
+            this.inventory = new Inventory(0);
         }
 
         public EntityId getId() {
@@ -43,6 +45,14 @@ namespace osg {
 
         public bool isMarkedForDeletion() {
             return markedForDeletion;
+        }
+
+        public Inventory getInventory() {
+            return inventory;
+        }
+
+        public void setInventory(Inventory inventory) {
+            this.inventory = inventory;
         }
     }
 

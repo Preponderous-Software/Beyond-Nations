@@ -7,7 +7,6 @@ namespace osg {
         private int speed = Random.Range(10, 20);
         private NationId nationId;
         private Entity targetEntity;
-        private Inventory inventory;
         private BehaviorType currentBehaviorType = BehaviorType.NONE;
 
         private int targetNumWood = 3;
@@ -24,7 +23,7 @@ namespace osg {
             this.name = name;
             createGameObject(position);
             int startingGoldCoins = Random.Range(50, 200);
-            this.inventory = new Inventory(startingGoldCoins);
+            getInventory().addItem(ItemType.GOLD_COIN, startingGoldCoins);
 
             // create text object above head
             nameTag = new GameObject();
@@ -111,10 +110,6 @@ namespace osg {
             return direction.magnitude < distanceThreshold;
         }
 
-        public Inventory getInventory() {
-            return inventory;
-        }
-
         public override void createGameObject(Vector3 position) {
             GameObject gameObject = GameObject.CreatePrimitive(PrimitiveType.Capsule);
             gameObject.transform.localScale = new Vector3(1, 1, 1);
@@ -149,16 +144,16 @@ namespace osg {
                 Debug.LogWarning("unknown behavior type in fixedUpdate(): " + currentBehaviorType);
             }
 
-            if (energy < 90 && inventory.getNumItems(ItemType.APPLE) > 0) {
+            if (energy < 90 && getInventory().getNumItems(ItemType.APPLE) > 0) {
                 // eat apple
-                inventory.removeItem(ItemType.APPLE, 1);
+                getInventory().removeItem(ItemType.APPLE, 1);
                 energy += 10;
             }
 
             energy -= metabolism;
             if (energy <= 0) { // TODO: move this to OpenSourceGame.cs?
                 // respawn
-                inventory.clear();
+                getInventory().clear();
                 energy = 100.00f;
                 getGameObject().transform.position = new Vector3(Random.Range(-100, 100), 10, Random.Range(-100, 100));
                 // TODO: throw event?
@@ -188,7 +183,7 @@ namespace osg {
                 else {
                     float distanceToTree = Vector3.Distance(getGameObject().transform.position, nearestTree.getGameObject().transform.position);
                     float distanceToRock = Vector3.Distance(getGameObject().transform.position, nearestRock.getGameObject().transform.position);
-                    if (distanceToTree < distanceToRock) {
+                    if (distanceToTree < distanceToRock && getInventory().getNumItems(ItemType.WOOD) < targetNumWood) {
                         setTargetEntity(nearestTree);
                     }
                     else {
@@ -198,16 +193,10 @@ namespace osg {
             }
             else if (isAtTargetEntity()) {
                 // gather
-                if (targetEntity.getType() == EntityType.TREE) {
+                if (targetEntity.getType() == EntityType.TREE || targetEntity.getType() == EntityType.ROCK) {
                     targetEntity.markForDeletion();
+                    getInventory().transferContentsOfInventory(targetEntity.getInventory());
                     setTargetEntity(null);
-                    inventory.addItem(ItemType.WOOD, 1);
-                    inventory.addItem(ItemType.APPLE, 1);
-                }
-                else if (targetEntity.getType() == EntityType.ROCK) {
-                    targetEntity.markForDeletion();
-                    setTargetEntity(null);
-                    inventory.addItem(ItemType.STONE, 1);
                 }
                 else {
                     Debug.LogWarning("target entity is not a tree or rock");
@@ -244,7 +233,7 @@ namespace osg {
 
         private void computeBehaviorType(Environment environment, NationRepository nationRepository) {
             // if hungry
-            if (energy < 80 && inventory.getNumItems(ItemType.APPLE) == 0) {
+            if (energy < 80 && getInventory().getNumItems(ItemType.APPLE) == 0) {
                 // find nearest apple tree
                 Entity nearestTree = environment.getNearestTree(getGameObject().transform.position);
                 if (nearestTree != null) {
@@ -264,7 +253,7 @@ namespace osg {
                 return;
             }
             else if (role == NationRole.CITIZEN) {
-                if (inventory.getNumItems(ItemType.WOOD) >= targetNumWood && inventory.getNumItems(ItemType.STONE) >= targetNumStone) {
+                if (getInventory().getNumItems(ItemType.WOOD) >= targetNumWood && getInventory().getNumItems(ItemType.STONE) >= targetNumStone) {
                     currentBehaviorType = BehaviorType.SELL_RESOURCES;
                 }
                 else {
@@ -275,9 +264,9 @@ namespace osg {
         }
 
         private void attemptToSellResourcesTo(Entity targetEntity) {
-            int numWood = inventory.getNumItems(ItemType.WOOD);
-            int numStone = inventory.getNumItems(ItemType.STONE);
-            int numApples = inventory.getNumItems(ItemType.APPLE);
+            int numWood = getInventory().getNumItems(ItemType.WOOD);
+            int numStone = getInventory().getNumItems(ItemType.STONE);
+            int numApples = getInventory().getNumItems(ItemType.APPLE);
 
             Inventory targetInventory;
             if (targetEntity.getType() == EntityType.PAWN) {
@@ -297,9 +286,9 @@ namespace osg {
             int cost = numWood * 2 + numStone * 3 + numApples * 1;
             if (targetInventory.getNumItems(ItemType.GOLD_COIN) >= cost) {
                 targetInventory.removeItem(ItemType.GOLD_COIN, cost);
-                inventory.removeItem(ItemType.WOOD, numWood);
-                inventory.removeItem(ItemType.STONE, numStone);
-                inventory.removeItem(ItemType.APPLE, numApples);
+                getInventory().removeItem(ItemType.WOOD, numWood);
+                getInventory().removeItem(ItemType.STONE, numStone);
+                getInventory().removeItem(ItemType.APPLE, numApples);
                 targetInventory.addItem(ItemType.WOOD, numWood);
                 targetInventory.addItem(ItemType.STONE, numStone);
                 targetInventory.addItem(ItemType.APPLE, numApples);

@@ -32,6 +32,9 @@ namespace osg {
             leaves.name = "Leaves";
             
             setGameObject(gameObject);
+
+            getInventory().addItem(ItemType.WOOD, height * 2);
+            getInventory().addItem(ItemType.APPLE, height / 2);
         }
 
         public override void destroyGameObject() {
