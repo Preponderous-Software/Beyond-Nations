@@ -9,6 +9,7 @@ namespace osg {
             items.Add(ItemType.GOLD_COIN, numGoldCoins);
             items.Add(ItemType.WOOD, 0);
             items.Add(ItemType.STONE, 0);
+            items.Add(ItemType.APPLE, 0);
         }
         
         public int getNumItems(ItemType itemType) {
@@ -29,6 +30,10 @@ namespace osg {
 
         public void setNumItems(ItemType itemType, int numItems) {
             items[itemType] = numItems;
+        }
+
+        public void clear() {
+            items.Clear();
         }
     }
 }
