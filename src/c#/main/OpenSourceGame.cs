@@ -217,6 +217,57 @@ namespace osg {
                 eventProducer.produceNationLeaveEvent(nation, player.getId());
                 status.update("You left nation " + nation.getName() + ". Members: " + nation.getNumberOfMembers() + ".");
             }
+
+            // if E pressed, gather resources from tree/rock
+            if (Input.GetKeyDown(KeyCode.E)) {
+                TreeEntity tree = environment.getNearestTree(player.getGameObject().transform.position);
+                RockEntity rock = environment.getNearestRock(player.getGameObject().transform.position);
+                Pawn pawn = (Pawn) environment.getNearestEntityOfType(player.getGameObject().transform.position, EntityType.PAWN);
+
+                // if within range of tree or rock, gather resources
+                if (tree != null && Vector3.Distance(player.getGameObject().transform.position, tree.getGameObject().transform.position) < 5) {
+                    tree.markForDeletion();
+                    player.getInventory().transferContentsOfInventory(tree.getInventory());
+                    status.update("Gathered wood from tree.");
+                }
+                else if (rock != null && Vector3.Distance(player.getGameObject().transform.position, rock.getGameObject().transform.position) < 5) {
+                    rock.markForDeletion();
+                    player.getInventory().transferContentsOfInventory(rock.getInventory());
+                    status.update("Gathered stone from rock.");
+                }
+                else if (pawn != null && Vector3.Distance(player.getGameObject().transform.position, pawn.getGameObject().transform.position) < 5) {
+                    Nation pawnsNation = nationRepository.getNation(pawn.getNationId());
+                    EntityId randomMemberId = pawnsNation.getRandomMemberId();
+
+                    // make pawn say random phrase to player
+                    List <string> phrases = new List<string>() {
+                        "Hello!",
+                        "How are you?",
+                        "Glory to " + pawnsNation.getName() + "!",
+                        "You should join " + pawnsNation.getName() + "!",
+                        "What's your name?",
+                        "I'm " + pawn.getName() + ".",
+                        "I'm a member of " + pawnsNation.getName() + ".",
+                        "Nice to meet you!",
+                        "I'm hungry.",
+                        "The weather is nice today."
+                    };
+                    if (pawnsNation.getNumberOfMembers() > 1) {
+                        phrases.Add("There are " + pawnsNation.getNumberOfMembers() + " members in " + pawnsNation.getName() + ".");
+                        while (randomMemberId == pawn.getId()) {
+                            randomMemberId = pawnsNation.getRandomMemberId();
+                        }
+                        Pawn randomMember = (Pawn)environment.getEntity(randomMemberId);
+                        phrases.Add("Have you met " + randomMember.getName() + "?");
+                        phrases.Add("Stay away from " + randomMember.getName() + ".");
+                    }
+                    string phrase = phrases[Random.Range(0, phrases.Count)];
+                    status.update(pawn.getName() + ": \"" + phrase + "\"");
+                }
+                else {
+                    status.update("No entities within range to interact with.");
+                }
+            }
         }
 
         void checkIfPlayerIsFallingIntoVoid() {

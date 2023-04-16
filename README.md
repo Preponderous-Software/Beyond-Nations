@@ -19,6 +19,7 @@ The following controls are available in the game:
 | `A` | Turn left |
 | `S` | Move backward |
 | `D` | Turn right |
+| `E` | Interact with nearest entity |
 | `Space` | Jump |
 | `Left Shift` | Sprint |
 | `N` | Create a new nation |
