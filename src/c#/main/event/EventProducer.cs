@@ -34,10 +34,22 @@ namespace osg {
             Debug.Log("Produced event: " + nationJoinEvent);
         }
 
+        public void produceNationLeaveEvent(Nation nation, EntityId entityId) {
+            NationLeaveEvent nationLeaveEvent = new NationLeaveEvent(nation, entityId);
+            eventRepository.addEvent(nationLeaveEvent);
+            Debug.Log("Produced event: " + nationLeaveEvent);
+        }
+
         public void producePawnSpawnEvent(Vector3 position, Pawn pawn) {
             PawnSpawnEvent pawnSpawnEvent = new PawnSpawnEvent(position, pawn);
             eventRepository.addEvent(pawnSpawnEvent);
             Debug.Log("Produced event: " + pawnSpawnEvent);
+        }
+
+        public void produceNationDisbandEvent(Nation nation) {
+            NationDisbandEvent nationDisbandEvent = new NationDisbandEvent(nation);
+            eventRepository.addEvent(nationDisbandEvent);
+            Debug.Log("Produced event: " + nationDisbandEvent);
         }
     }
 }
