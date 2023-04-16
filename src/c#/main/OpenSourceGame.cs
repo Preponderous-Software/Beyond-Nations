@@ -244,22 +244,24 @@ namespace osg {
                         "Hello!",
                         "How are you?",
                         "Glory to " + pawnsNation.getName() + "!",
-                        "You should join " + pawnsNation.getName() + "!",
                         "What's your name?",
                         "I'm " + pawn.getName() + ".",
-                        "I'm a member of " + pawnsNation.getName() + ".",
+                        "Have you heard of " + pawnsNation.getName() + "?",
                         "Nice to meet you!",
                         "I'm hungry.",
                         "The weather is nice today."
                     };
                     if (pawnsNation.getNumberOfMembers() > 1) {
                         phrases.Add("There are " + pawnsNation.getNumberOfMembers() + " members in " + pawnsNation.getName() + ".");
-                        while (randomMemberId == pawn.getId()) {
-                            randomMemberId = pawnsNation.getRandomMemberId();
+
+                        if (pawnsNation.getLeaderId() == player.getId()) {
+                            phrases.Add("Hey boss!");
+                            phrases.Add("How's it going boss?");
+                            phrases.Add("What's up boss?");
+                            phrases.Add("I'm glad to be a member of " + pawnsNation.getName() + ".");
+                            phrases.Add("Please don't kick me out of " + pawnsNation.getName() + ".");
+                            phrases.Add("When are we going to build more houses?");
                         }
-                        Pawn randomMember = (Pawn)environment.getEntity(randomMemberId);
-                        phrases.Add("Have you met " + randomMember.getName() + "?");
-                        phrases.Add("Stay away from " + randomMember.getName() + ".");
                     }
                     string phrase = phrases[Random.Range(0, phrases.Count)];
                     status.update(pawn.getName() + ": \"" + phrase + "\"");
