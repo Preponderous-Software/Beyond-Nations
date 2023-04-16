@@ -23,6 +23,7 @@ The following controls are available in the game:
 | `Left Shift` | Sprint |
 | `N` | Create a new nation |
 | `J` | Join a random nation |
+| `L` | Leave your current nation |
 | `T` | Teleport all living entities to you |
 | `Num Lock` | Toggle auto-walk |
 
