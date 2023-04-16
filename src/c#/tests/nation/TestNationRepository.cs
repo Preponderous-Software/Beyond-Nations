@@ -42,7 +42,7 @@ namespace osgtests {
             repository.addNation(nation);
 
             // run
-            repository.removeNation(nation.getId());
+            repository.removeNation(nation);
 
             // verify
             Debug.Assert(repository.getNation(nation.getId()) == null);

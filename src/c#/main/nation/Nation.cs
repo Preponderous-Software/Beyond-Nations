@@ -35,6 +35,10 @@ namespace osg {
             return leaderId;
         }
 
+        public void setLeaderId(EntityId leaderId) {
+            this.leaderId = leaderId;
+        }
+
         public void addMember(EntityId memberId) {
             members.Add(memberId);
             roles[memberId] = NationRole.CITIZEN;
@@ -63,6 +67,11 @@ namespace osg {
 
         public void setRole(EntityId memberId, NationRole role) {
             roles[memberId] = role;
+        }
+
+        public EntityId getRandomMemberId() {
+            int randomIndex = Random.Range(0, members.Count);
+            return members[randomIndex];
         }
     }
 }

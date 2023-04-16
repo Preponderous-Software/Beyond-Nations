@@ -25,9 +25,9 @@ namespace osg {
             nationIds.Add(nation.getId());
         }
 
-        public void removeNation(NationId id) {
-            nations.Remove(id);
-            nationIds.Remove(id);
+        public void removeNation(Nation nation) {
+            nations.Remove(nation.getId());
+            nationIds.Remove(nation.getId());
         }
 
         public Nation getNation(EntityId entityId) {
