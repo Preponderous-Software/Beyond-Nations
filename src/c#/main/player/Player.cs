@@ -16,6 +16,8 @@ namespace osg {
         private NationId nationId = null;
         private Status status = null;
         private bool autoWalk = false;
+        private float energy = 100;
+        private float metabolism = 0.01f;
 
         public Player(GameObject gameObject, int walkSpeed, int runSpeed, Status status) : base(EntityType.PLAYER){
             setGameObject(gameObject);
@@ -65,6 +67,14 @@ namespace osg {
             if (autoWalk) {
                 rigidBody.transform.Translate(Vector3.forward * currentSpeed * Time.deltaTime);
             }
+
+            if (energy < 90 && getInventory().getNumItems(ItemType.APPLE) > 0) {
+                // eat apple
+                getInventory().removeItem(ItemType.APPLE, 1);
+                energy += 10;
+            }
+
+            energy -= metabolism;
         }
 
         private void jump() {
@@ -109,6 +119,14 @@ namespace osg {
 
         public void toggleAutoWalk() {
             autoWalk = !autoWalk;
+        }
+
+        public float getEnergy() {
+            return energy;
+        }
+
+        public void setEnergy(float energy) {
+            this.energy = energy;
         }
     }
 }

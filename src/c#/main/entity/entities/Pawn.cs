@@ -151,18 +151,19 @@ namespace osg {
             }
 
             energy -= metabolism;
-            if (energy <= 0) { // TODO: move this to OpenSourceGame.cs?
-                // respawn
-                getInventory().clear();
-                energy = 100.00f;
-                getGameObject().transform.position = new Vector3(Random.Range(-100, 100), 10, Random.Range(-100, 100));
-                // TODO: throw event?
-            }
             nameTag.GetComponent<TextMesh>().text = getName() + " (e=" + energy + ")";
         }
 
         public void setColor(Color color) {
             getGameObject().GetComponent<Renderer>().material.color = color;
+        }
+
+        public float getEnergy() {
+            return energy;
+        }
+
+        public void setEnergy(float energy) {
+            this.energy = energy;
         }
 
         private void gatherResources(Environment environment) {
