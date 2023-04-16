@@ -12,10 +12,13 @@ namespace osg {
 
         private int targetNumWood = 3;
         private int targetNumStone = 3;
+        private int targetNumApples = 3;
         
         private int distanceThreshold = 10;
 
         private GameObject nameTag;
+        private float energy = 100.00f;
+        private float metabolism = Random.Range(0.01f, 0.05f);
 
         public Pawn(Vector3 position, string name) : base(EntityType.PAWN) {
             this.name = name;
@@ -145,6 +148,22 @@ namespace osg {
             else {
                 Debug.LogWarning("unknown behavior type in fixedUpdate(): " + currentBehaviorType);
             }
+
+            if (energy < 90 && inventory.getNumItems(ItemType.APPLE) > 0) {
+                // eat apple
+                inventory.removeItem(ItemType.APPLE, 1);
+                energy += 10;
+            }
+
+            energy -= metabolism;
+            if (energy <= 0) { // TODO: move this to OpenSourceGame.cs?
+                // respawn
+                inventory.clear();
+                energy = 100.00f;
+                getGameObject().transform.position = new Vector3(Random.Range(-100, 100), 10, Random.Range(-100, 100));
+                // TODO: throw event?
+            }
+            nameTag.GetComponent<TextMesh>().text = getName() + " (e=" + energy + ")";
         }
 
         public void setColor(Color color) {
@@ -183,6 +202,7 @@ namespace osg {
                     targetEntity.markForDeletion();
                     setTargetEntity(null);
                     inventory.addItem(ItemType.WOOD, 1);
+                    inventory.addItem(ItemType.APPLE, 1);
                 }
                 else if (targetEntity.getType() == EntityType.ROCK) {
                     targetEntity.markForDeletion();
@@ -223,7 +243,16 @@ namespace osg {
         }
 
         private void computeBehaviorType(Environment environment, NationRepository nationRepository) {
-            // if leader
+            // if hungry
+            if (energy < 80 && inventory.getNumItems(ItemType.APPLE) == 0) {
+                // find nearest apple tree
+                Entity nearestTree = environment.getNearestTree(getGameObject().transform.position);
+                if (nearestTree != null) {
+                    setTargetEntity(nearestTree);
+                    currentBehaviorType = BehaviorType.GATHER_RESOURCES;
+                    return;
+                }
+            }
             if (getNationId() == null) {
                 currentBehaviorType = BehaviorType.WANDER;
                 return;
@@ -248,37 +277,35 @@ namespace osg {
         private void attemptToSellResourcesTo(Entity targetEntity) {
             int numWood = inventory.getNumItems(ItemType.WOOD);
             int numStone = inventory.getNumItems(ItemType.STONE);
+            int numApples = inventory.getNumItems(ItemType.APPLE);
 
+            Inventory targetInventory;
             if (targetEntity.getType() == EntityType.PAWN) {
                 Pawn targetPawn = (Pawn) targetEntity;
-
-                int cost = numWood * 2 + numStone * 3;
-                if (targetPawn.getInventory().getNumItems(ItemType.GOLD_COIN) >= cost) {
-                    targetPawn.getInventory().removeItem(ItemType.GOLD_COIN, cost);
-                    inventory.removeItem(ItemType.WOOD, numWood);
-                    inventory.removeItem(ItemType.STONE, numStone);
-                    targetPawn.getInventory().addItem(ItemType.WOOD, numWood);
-                    targetPawn.getInventory().addItem(ItemType.STONE, numStone);
-                }
-                else {
-                    setTargetEntity(null);
-                }
+                targetInventory = targetPawn.getInventory();
             }
             else if (targetEntity.getType() == EntityType.PLAYER) {
                 Player targetPlayer = (Player) targetEntity;
+                targetInventory = targetPlayer.getInventory();
+            }
+            else {
+                Debug.LogWarning("target entity is not a pawn or player");
+                setTargetEntity(null);
+                return;
+            }
 
-                int cost = numWood * 2 + numStone * 3;
-                if (targetPlayer.getInventory().getNumItems(ItemType.GOLD_COIN) >= cost) {
-                    targetPlayer.getInventory().removeItem(ItemType.GOLD_COIN, cost);
-                    inventory.removeItem(ItemType.WOOD, numWood);
-                    inventory.removeItem(ItemType.STONE, numStone);
-                    targetPlayer.getInventory().addItem(ItemType.WOOD, numWood);
-                    targetPlayer.getInventory().addItem(ItemType.STONE, numStone);
-                    targetPlayer.getStatus().update("You bought " + numWood + " wood and " + numStone + " stone from " + getName() + " for " + cost + " gold coins.");
-                }
-                else {
-                    setTargetEntity(null);
-                }
+            int cost = numWood * 2 + numStone * 3 + numApples * 1;
+            if (targetInventory.getNumItems(ItemType.GOLD_COIN) >= cost) {
+                targetInventory.removeItem(ItemType.GOLD_COIN, cost);
+                inventory.removeItem(ItemType.WOOD, numWood);
+                inventory.removeItem(ItemType.STONE, numStone);
+                inventory.removeItem(ItemType.APPLE, numApples);
+                targetInventory.addItem(ItemType.WOOD, numWood);
+                targetInventory.addItem(ItemType.STONE, numStone);
+                targetInventory.addItem(ItemType.APPLE, numApples);
+            }
+            else {
+                setTargetEntity(null);
             }
         }
     }

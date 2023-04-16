@@ -23,6 +23,7 @@ namespace osg {
         private TextGameObject numGoldCoinsText;
         private TextGameObject numWoodText;
         private TextGameObject numStoneText;
+        private TextGameObject numApplesText;
 
         public GameObject playerGameObject; // must be set in Unity Editor -- TODO: make this private and set it in the constructor (will require refactoring Player.cs)
         public bool runTests = false;
@@ -52,6 +53,7 @@ namespace osg {
             numGoldCoinsText = new TextGameObject("Gold Coins: 0", 20, -Screen.width / 4, Screen.height / 4);
             numWoodText = new TextGameObject("Wood: 0", 20, -Screen.width / 4, 0);
             numStoneText = new TextGameObject("Stone: 0", 20, Screen.width / 4, 0);
+            numApplesText = new TextGameObject("Apples: 0", 20, Screen.width / 4, Screen.height / 4);
 
             environment.getChunk(0, 0).addEntity(player);
             environment.addEntityId(player.getId());
@@ -76,6 +78,7 @@ namespace osg {
                 numGoldCoinsText.updateText("Gold Coins: " + player.getInventory().getNumItems(ItemType.GOLD_COIN));
                 numWoodText.updateText("Wood: " + player.getInventory().getNumItems(ItemType.WOOD));
                 numStoneText.updateText("Stone: " + player.getInventory().getNumItems(ItemType.STONE));
+                numApplesText.updateText("Apples: " + player.getInventory().getNumItems(ItemType.APPLE));
                 status.clearStatusIfExpired();
 
                 // list of positions to generate chunks at
