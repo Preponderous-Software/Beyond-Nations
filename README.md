@@ -2,11 +2,13 @@
 The Open Source Game Project is a collaborative effort between Preponderous Software and the Fairfield Programming Association. It aims to create an open-source game that can serve as a reference for aspiring developers.
 
 ## Game Concept
-Embark on a journey of exploration and conquest in a vast procedurally generated world featuring multiple nations, each with its own unique culture and history. In this game, players can build their own nation from scratch or join an existing one.
+In this game, you'll be able to embark on an exciting adventure in a vast procedurally generated world filled with biomes, terrain, and other features.
 
-The game's main objective is to claim territory, develop your nation, and ensure a prosperous life for your citizens. Players will have the opportunity to forge alliances and engage in battles with their enemies as they navigate the complex relationships between nations and citizens.
+You'll be able to collect resources and use them to craft items, build structures and manage your territory. You can claim land and build your own nation, or join an existing one. Each nation will have its own unique qualities and will be able to form relations with other nations. You'll be able to interact with other entities in the world, including other players, animals, and NPCs. Citizens will have their own unique personalities and can interact with each other, the player, and the world.
 
-With sandbox-style gameplay that promotes emergent experiences, every playthrough will be a new adventure. Whether players prefer a multiplayer environment or a single-player experience with a single-player nation, this game offers something for everyone.
+As a leader, you'll need to ensure a prosperous life for your citizens, by providing them with shelter and storage in the buildings you construct. As a citizen, you'll need to provide for yourself and contribute to the nation's economy by collecting resources, crafting items and participating in trade.
+
+Join us on this exciting journey and help us create a game that will inspire and educate aspiring developers.
 
 ## Controls
 The following controls are available in the game:
@@ -17,9 +19,14 @@ The following controls are available in the game:
 | `A` | Turn left |
 | `S` | Move backward |
 | `D` | Turn right |
+| `E` | Interact with nearest entity |
 | `Space` | Jump |
 | `Left Shift` | Sprint |
 | `N` | Create a new nation |
+| `J` | Join a random nation |
+| `L` | Leave your current nation |
+| `T` | Teleport all living entities to you |
+| `Num Lock` | Toggle auto-walk |
 
 ## Game Systems
 There are a number of systems that will be implemented in the game. These systems will be used to create a rich and engaging gameplay experience. Details can be found in the [Systems Document](./docs/SYSTEMS.md).
