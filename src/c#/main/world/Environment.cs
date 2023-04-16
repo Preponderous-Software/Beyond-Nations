@@ -133,5 +133,9 @@ namespace osg {
             int zpos = (int)(position.z / (chunkSize * locationScale));
             return getChunk(xpos, zpos);
         }
+
+        public void destroyGameObject() {
+            UnityEngine.Object.Destroy(gameObject);
+        }
     }
 }

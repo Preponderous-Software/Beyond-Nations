@@ -56,6 +56,10 @@ namespace osg {
             return entityIds.Count;
         }
 
+        public void destroyGameObject() {
+            UnityEngine.Object.Destroy(gameObject);
+        }
+
         private void initializeGameObject() {
             this.gameObject = GameObject.CreatePrimitive(PrimitiveType.Cube);
             this.gameObject.name = name;

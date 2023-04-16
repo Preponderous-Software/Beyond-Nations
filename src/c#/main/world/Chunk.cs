@@ -123,6 +123,10 @@ namespace osg {
             return entities;
         }
 
+        public void destroyGameObject() {
+            UnityEngine.Object.Destroy(gameObject);
+        }
+
         private Vector3 calculatePosition(int locationScale) {
             int lengthOfChunk = size * locationScale;
             int x = xpos * lengthOfChunk;
