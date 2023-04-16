@@ -33,7 +33,10 @@ namespace osg {
         }
 
         public void clear() {
-            items.Clear();
+            items[ItemType.GOLD_COIN] = 0;
+            items[ItemType.WOOD] = 0;
+            items[ItemType.STONE] = 0;
+            items[ItemType.APPLE] = 0;
         }
     }
 }

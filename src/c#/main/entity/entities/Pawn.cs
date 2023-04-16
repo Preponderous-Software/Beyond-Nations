@@ -243,7 +243,16 @@ namespace osg {
         }
 
         private void computeBehaviorType(Environment environment, NationRepository nationRepository) {
-            // if leader
+            // if hungry
+            if (energy < 80 && inventory.getNumItems(ItemType.APPLE) == 0) {
+                // find nearest apple tree
+                Entity nearestTree = environment.getNearestTree(getGameObject().transform.position);
+                if (nearestTree != null) {
+                    setTargetEntity(nearestTree);
+                    currentBehaviorType = BehaviorType.GATHER_RESOURCES;
+                    return;
+                }
+            }
             if (getNationId() == null) {
                 currentBehaviorType = BehaviorType.WANDER;
                 return;
@@ -251,15 +260,6 @@ namespace osg {
             Nation nation = nationRepository.getNation(getNationId());
             NationRole role = nation.getRole(getId());
             if (role == NationRole.LEADER) {
-                if (energy < 80 && inventory.getNumItems(ItemType.APPLE) == 0) {
-                    // find nearest apple tree
-                    Entity nearestTree = environment.getNearestTree(getGameObject().transform.position);
-                    if (nearestTree != null) {
-                        setTargetEntity(nearestTree);
-                        currentBehaviorType = BehaviorType.GATHER_RESOURCES;
-                        return;
-                    }
-                }
                 currentBehaviorType = BehaviorType.WANDER;
                 return;
             }
