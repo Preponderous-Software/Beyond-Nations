@@ -9,5 +9,7 @@ namespace osg {
         NationJoin,
         NationLeave,
         PawnSpawn,
+        PawnDeath,
+        PlayerDeath,
     }
 }

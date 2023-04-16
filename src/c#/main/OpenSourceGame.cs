@@ -24,6 +24,7 @@ namespace osg {
         private TextGameObject numWoodText;
         private TextGameObject numStoneText;
         private TextGameObject numApplesText;
+        private TextGameObject energyText;
 
         public GameObject playerGameObject; // must be set in Unity Editor -- TODO: make this private and set it in the constructor (will require refactoring Player.cs)
         public bool runTests = false;
@@ -54,6 +55,7 @@ namespace osg {
             numWoodText = new TextGameObject("Wood: 0", 20, -Screen.width / 4, 0);
             numStoneText = new TextGameObject("Stone: 0", 20, Screen.width / 4, 0);
             numApplesText = new TextGameObject("Apples: 0", 20, Screen.width / 4, Screen.height / 4);
+            energyText = new TextGameObject("Energy: 100", 20, Screen.width / 4, -Screen.height / 4);
 
             environment.getChunk(0, 0).addEntity(player);
             environment.addEntityId(player.getId());
@@ -79,6 +81,7 @@ namespace osg {
                 numWoodText.updateText("Wood: " + player.getInventory().getNumItems(ItemType.WOOD));
                 numStoneText.updateText("Stone: " + player.getInventory().getNumItems(ItemType.STONE));
                 numApplesText.updateText("Apples: " + player.getInventory().getNumItems(ItemType.APPLE));
+                energyText.updateText("Energy: " + player.getEnergy());
                 status.clearStatusIfExpired();
 
                 // list of positions to generate chunks at
@@ -105,6 +108,14 @@ namespace osg {
                             if (retrievedChunk == null) {
                                 positionsToGenerateChunksAt.Add(pawn.getGameObject().transform.position);
                             }
+                            
+                            if (pawn.getEnergy() <= 0) {
+                                eventProducer.producePawnDeathEvent(pawn.getGameObject().transform.position, pawn);
+                                pawn.setEnergy(100);
+                                pawn.getInventory().clear();
+                                status.update(pawn.getName() + " has died.");
+                                pawn.getGameObject().transform.position = new Vector3(Random.Range(-100, 100), 10, Random.Range(-100, 100));
+                            }
                         }
                     }
                 }
@@ -116,6 +127,13 @@ namespace osg {
             }
             
             player.fixedUpdate();
+            if (player.getEnergy() <= 0) {
+                eventProducer.producePlayerDeathEvent(player.getGameObject().transform.position, player);
+                player.setEnergy(100);
+                player.getInventory().clear();
+                status.update("You died.");
+                player.getGameObject().transform.position = new Vector3(Random.Range(-100, 100), 10, Random.Range(-100, 100));
+            }
             deleteEntitiesMarkedForDeletion();
         }
 

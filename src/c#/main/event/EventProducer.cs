@@ -51,5 +51,17 @@ namespace osg {
             eventRepository.addEvent(nationDisbandEvent);
             Debug.Log("Produced event: " + nationDisbandEvent);
         }
+
+        public void producePlayerDeathEvent(Vector3 position, Player player) {
+            PlayerDeathEvent playerDeathEvent = new PlayerDeathEvent(position, player);
+            eventRepository.addEvent(playerDeathEvent);
+            Debug.Log("Produced event: " + playerDeathEvent);
+        }
+
+        public void producePawnDeathEvent(Vector3 position, Pawn pawn) {
+            PawnDeathEvent pawnDeathEvent = new PawnDeathEvent(position, pawn);
+            eventRepository.addEvent(pawnDeathEvent);
+            Debug.Log("Produced event: " + pawnDeathEvent);
+        }
     }
 }
