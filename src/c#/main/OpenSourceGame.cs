@@ -263,6 +263,37 @@ namespace osg {
                             phrases.Add("When are we going to build more houses?");
                         }
                     }
+                    if (player.getNationId() != null) {
+                        Nation playersNation = nationRepository.getNation(player.getNationId());
+                        if (playersNation.getLeaderId() == pawn.getId()) {
+                            // sell items to pawn
+                            int numWood = player.getInventory().getNumItems(ItemType.WOOD);
+                            int numStone = player.getInventory().getNumItems(ItemType.STONE);
+                            int numApples = player.getInventory().getNumItems(ItemType.APPLE);
+
+                            int cost = (numWood * 5) + (numStone * 10) + (numApples * 1);
+
+                            if (cost == 0) {
+                                status.update("You don't have anything to sell.");
+                                return;
+                            }
+
+                            if (pawn.getInventory().getNumItems(ItemType.GOLD_COIN) < cost) {
+                                status.update(pawn.getName() + " doesn't have enough gold coins to buy your items.");
+                                return;
+                            }
+
+                            player.getInventory().removeItem(ItemType.WOOD, numWood);
+                            player.getInventory().removeItem(ItemType.STONE, numStone);
+                            player.getInventory().removeItem(ItemType.APPLE, numApples);
+                            pawn.getInventory().addItem(ItemType.WOOD, numWood);
+                            pawn.getInventory().addItem(ItemType.STONE, numStone);
+                            pawn.getInventory().addItem(ItemType.APPLE, numApples);
+                            player.getInventory().addItem(ItemType.GOLD_COIN, cost);
+                            status.update("Sold " + numWood + " wood, " + numStone + " stone, and " + numApples + " apples to " + pawn.getName() + " for " + cost + " gold coins.");
+                            return;
+                        }
+                    }
                     string phrase = phrases[Random.Range(0, phrases.Count)];
                     status.update(pawn.getName() + ": \"" + phrase + "\"");
                 }
