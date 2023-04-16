@@ -38,5 +38,13 @@ namespace osg {
             items[ItemType.STONE] = 0;
             items[ItemType.APPLE] = 0;
         }
+
+        public void transferContentsOfInventory(Inventory otherInventory) {
+            items[ItemType.GOLD_COIN] += otherInventory.getNumItems(ItemType.GOLD_COIN);
+            items[ItemType.WOOD] += otherInventory.getNumItems(ItemType.WOOD);
+            items[ItemType.STONE] += otherInventory.getNumItems(ItemType.STONE);
+            items[ItemType.APPLE] += otherInventory.getNumItems(ItemType.APPLE);
+            otherInventory.clear();
+        }
     }
 }
