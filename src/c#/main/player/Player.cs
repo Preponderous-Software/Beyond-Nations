@@ -35,26 +35,22 @@ namespace osg {
             horizontalInput = Input.GetAxis("Horizontal");
             verticalInput = Input.GetAxis("Vertical");
 
-            // modify speed if shift pressed
             if (Input.GetKey(KeyCode.LeftShift)) {
                 currentSpeed = runSpeed;
             } else {
                 currentSpeed = walkSpeed;
             }
 
-            // jump if space pressed
             if (Input.GetKeyDown(KeyCode.Space)) {
                 jumpKeyWasPressed = true;
             }
         }
 
         public void fixedUpdate() {
-            // turn left and right
             if (horizontalInput != 0) {
                 rigidBody.transform.Rotate(Vector3.up * horizontalInput * 2);
             }
 
-            // move forward and backward
             if (verticalInput != 0 && !autoWalk) {
                 rigidBody.transform.Translate(Vector3.forward * verticalInput * currentSpeed * Time.deltaTime);
             }
@@ -69,18 +65,10 @@ namespace osg {
             }
 
             if (energy < 90 && getInventory().getNumItems(ItemType.APPLE) > 0) {
-                // eat apple
-                getInventory().removeItem(ItemType.APPLE, 1);
-                energy += 10;
+                eatApple();
             }
 
             energy -= metabolism;
-        }
-
-        private void jump() {
-            if (isGrounded()) {
-                rigidBody.AddForce(Vector3.up * 10, ForceMode.Impulse);
-            }
         }
 
         public Camera getCamera() {
@@ -127,6 +115,17 @@ namespace osg {
 
         public void setEnergy(float energy) {
             this.energy = energy;
+        }
+
+        private void jump() {
+            if (isGrounded()) {
+                rigidBody.AddForce(Vector3.up * 10, ForceMode.Impulse);
+            }
+        }
+
+        private void eatApple() {
+            getInventory().removeItem(ItemType.APPLE, 1);
+            energy += 10;
         }
     }
 }

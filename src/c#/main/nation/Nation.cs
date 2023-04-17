@@ -9,7 +9,6 @@ namespace osg {
         private EntityId leaderId;
         private List<EntityId> members = new List<EntityId>();
         private Dictionary<EntityId, NationRole> roles = new Dictionary<EntityId, NationRole>();
-        // color
         private Color color;
 
         public Nation(string name, EntityId leaderId) {
@@ -18,8 +17,6 @@ namespace osg {
             this.leaderId = leaderId;
             members.Add(leaderId);
             roles[leaderId] = NationRole.LEADER;
-
-            // random color
             color = new Color(Random.value, Random.value, Random.value);
         }
 

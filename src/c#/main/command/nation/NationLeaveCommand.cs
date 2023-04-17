@@ -19,25 +19,12 @@ namespace osg {
             }
             Nation nation = nationRepository.getNation(player.getNationId());
             if (nation.getLeaderId() == player.getId()) {
-                // if population is 1, delete nation
                 if (nation.getNumberOfMembers() == 1) {
-                    nationRepository.removeNation(nation);
-                    player.setNationId(null);
-                    player.setColor(Color.white);
-                    eventProducer.produceNationDisbandEvent(nation);
-                    status.update("You disbanded nation " + nation.getName() + ".");
+                    deleteNation(nation, player, status);
                     return;
                 }
                 else {
-                    // if population is > 1, transfer leadership to another member
-                    while (nation.getLeaderId() == player.getId()) {
-                        nation.setLeaderId(nation.getRandomMemberId());
-                    }
-                    nation.removeMember(player.getId());
-                    player.setNationId(null);
-                    player.setColor(Color.white);
-                    eventProducer.produceNationLeaveEvent(nation, player.getId());
-                    status.update("You left nation " + nation.getName() + ". Members: " + nation.getNumberOfMembers() + ".");
+                    transferLeadership(nation, player, status);
                     return;
                 }
             }
@@ -46,6 +33,27 @@ namespace osg {
             player.setColor(Color.white);
             eventProducer.produceNationLeaveEvent(nation, player.getId());
             status.update("You left nation " + nation.getName() + ". Members: " + nation.getNumberOfMembers() + ".");
+        }
+
+        private void deleteNation(Nation nation, Player player, Status status) {
+            nationRepository.removeNation(nation);
+            player.setNationId(null);
+            player.setColor(Color.white);
+            eventProducer.produceNationDisbandEvent(nation);
+            status.update("You disbanded nation " + nation.getName() + ".");
+        }
+
+        private void transferLeadership(Nation nation, Player player, Status status) {
+            while (nation.getLeaderId() == player.getId()) {
+                nation.setLeaderId(nation.getRandomMemberId());
+                nation.setRole(nation.getLeaderId(), NationRole.LEADER);
+            }
+            nation.removeMember(player.getId());
+            player.setNationId(null);
+            player.setColor(Color.white);
+            eventProducer.produceNationLeaveEvent(nation, player.getId());
+            status.update("You left nation " + nation.getName() + ". Members: " + nation.getNumberOfMembers() + ".");
+            return;
         }
     }
 }
