@@ -11,15 +11,17 @@ namespace osg {
     */
     public class OpenSourceGame : MonoBehaviour {
         private GameConfig gameConfig;
-        private EventRepository eventRepository;
-        private EventProducer eventProducer;
+
         private Environment environment;
         private WorldGenerator worldGenerator;
         private TickCounter tickCounter;
-        private TextGameObject chunkPositionText;
-        private Status status;
+        private EventRepository eventRepository;
         private NationRepository nationRepository;
+        private EventProducer eventProducer;        
         private Player player;
+
+        private Status status;
+        private TextGameObject chunkPositionText;
         private TextGameObject numGoldCoinsText;
         private TextGameObject numWoodText;
         private TextGameObject numStoneText;
@@ -30,7 +32,7 @@ namespace osg {
         public bool runTests = false;
 
         // Initialization
-        void Start() {
+        public void Start() {
             if (runTests) {
                 Debug.Log("Running tests...");
                 osgtests.Tests.runTests();
@@ -63,7 +65,7 @@ namespace osg {
         }
 
         // Per-frame updates
-        void Update() {
+        public void Update() {
             tickCounter.increment();
 
             handleCommands();
@@ -72,7 +74,7 @@ namespace osg {
         }
 
         // Fixed updates
-        void FixedUpdate() {
+        public void FixedUpdate() {
             if (tickCounter.shouldUpdate()) {
                 worldGenerator.update();
                 checkIfPlayerIsFallingIntoVoid();
@@ -137,7 +139,7 @@ namespace osg {
             deleteEntitiesMarkedForDeletion();
         }
 
-        void handleCommands() {
+        private void handleCommands() {
             if (Input.GetKeyDown(KeyCode.N)) {
                 NationCreateCommand command = new NationCreateCommand(nationRepository, eventProducer);
                 command.execute(player);
@@ -164,7 +166,7 @@ namespace osg {
             }
         }
 
-        void checkIfPlayerIsFallingIntoVoid() {
+        private void checkIfPlayerIsFallingIntoVoid() {
             float ypos = player.getGameObject().transform.position.y;
             if (ypos < -10) {
                 eventProducer.producePlayerFallingIntoVoidEvent(player.getGameObject().transform.position);
@@ -173,7 +175,7 @@ namespace osg {
             }
         }
 
-        void createOrJoinNation(Pawn pawn) {
+        private void createOrJoinNation(Pawn pawn) {
             // if less than 4 nations, create a new nation
             if (nationRepository.getNumberOfNations() < 4) {
                 Nation nation = new Nation(NationNameGenerator.generate(), pawn.getId());
@@ -194,7 +196,7 @@ namespace osg {
             }
         }
 
-        void deleteEntitiesMarkedForDeletion() {
+        private void deleteEntitiesMarkedForDeletion() {
             List<Entity> entitiesToDelete = new List<Entity>();
             foreach (Chunk chunk in environment.getChunks()) {
                 foreach (Entity entity in chunk.getEntities()) {

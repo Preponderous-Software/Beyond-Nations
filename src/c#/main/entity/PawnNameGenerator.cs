@@ -4,7 +4,7 @@ namespace osg {
 
     public static class PawnNameGenerator {
 
-        public static string[] names = new string[] {
+        private static string[] names = new string[] {
             "Bob",
             "Alice",
             "Charlie",

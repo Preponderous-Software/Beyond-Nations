@@ -26,17 +26,7 @@ namespace osg {
             getInventory().addItem(ItemType.GOLD_COIN, startingGoldCoins);
 
             // create text object above head
-            nameTag = new GameObject();
-            nameTag.transform.parent = getGameObject().transform;
-            nameTag.transform.localPosition = new Vector3(0, 2, 0);
-            TextMesh textMesh = nameTag.AddComponent<TextMesh>();
-            textMesh.text = getName();
-            textMesh.fontSize = 64;
-            textMesh.color = Color.black;
-            textMesh.alignment = TextAlignment.Center;
-            textMesh.anchor = TextAnchor.MiddleCenter;
-            textMesh.characterSize = 0.1f;
-            textMesh.GetComponent<Renderer>().material.color = Color.black;
+            initializeNameTag();
         }
 
         public string getName() {
@@ -164,6 +154,20 @@ namespace osg {
 
         public void setEnergy(float energy) {
             this.energy = energy;
+        }
+
+        private void initializeNameTag() {
+            nameTag = new GameObject();
+            nameTag.transform.parent = getGameObject().transform;
+            nameTag.transform.localPosition = new Vector3(0, 2, 0);
+            TextMesh textMesh = nameTag.AddComponent<TextMesh>();
+            textMesh.text = getName();
+            textMesh.fontSize = 64;
+            textMesh.color = Color.black;
+            textMesh.alignment = TextAlignment.Center;
+            textMesh.anchor = TextAnchor.MiddleCenter;
+            textMesh.characterSize = 0.1f;
+            textMesh.GetComponent<Renderer>().material.color = Color.black;
         }
 
         private void gatherResources(Environment environment) {
