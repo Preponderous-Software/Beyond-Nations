@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace osg {
 
@@ -18,6 +19,9 @@ namespace osg {
         private GameObject nameTag;
         private float energy = 100.00f;
         private float metabolism = Random.Range(0.01f, 0.05f);
+
+        // map of entity id to integer representing relationship strength
+        private Dictionary<EntityId, int> relationships = new Dictionary<EntityId, int>();
 
         public Pawn(Vector3 position, string name) : base(EntityType.PAWN) {
             this.name = name;
@@ -128,7 +132,7 @@ namespace osg {
                 wander(environment);
             }
             else if (currentBehaviorType == BehaviorType.NONE) {
-                // do nothing
+                Debug.LogWarning("Warning: behavior type is NONE in fixedUpdate()");
             }
             else {
                 Debug.LogWarning("unknown behavior type in fixedUpdate(): " + currentBehaviorType);
@@ -236,16 +240,12 @@ namespace osg {
             getGameObject().GetComponent<Rigidbody>().velocity = (targetPosition - currentPosition).normalized * getSpeed();
         }
 
+        // The current behavior type should only be changed in computeBehaviorType()
         private void computeBehaviorType(Environment environment, NationRepository nationRepository) {
             // if hungry
             if (energy < 80 && getInventory().getNumItems(ItemType.APPLE) == 0) {
-                // find nearest apple tree
-                Entity nearestTree = environment.getNearestTree(getGameObject().transform.position);
-                if (nearestTree != null) {
-                    setTargetEntity(nearestTree);
-                    currentBehaviorType = BehaviorType.GATHER_RESOURCES;
-                    return;
-                }
+                currentBehaviorType = BehaviorType.GATHER_RESOURCES;
+                return;
             }
             if (getNationId() == null) {
                 currentBehaviorType = BehaviorType.WANDER;
@@ -259,13 +259,21 @@ namespace osg {
             }
             else if (role == NationRole.CITIZEN) {
                 if (getInventory().getNumItems(ItemType.WOOD) >= targetNumWood && getInventory().getNumItems(ItemType.STONE) >= targetNumStone) {
+                    // if leader doesn't have enough money to buy resources, then wander
+                    Entity nationLeader = environment.getEntity(nation.getLeaderId());
+                    int numWood = getInventory().getNumItems(ItemType.WOOD);
+                    int numStone = getInventory().getNumItems(ItemType.STONE);
+                    int numApples = getInventory().getNumItems(ItemType.APPLE);
+                    if (nationLeader.getInventory().getNumItems(ItemType.GOLD_COIN) < numWood * 2 + numStone * 3 + numApples * 1) {
+                        currentBehaviorType = BehaviorType.WANDER;
+                        return;
+                    }
                     currentBehaviorType = BehaviorType.SELL_RESOURCES;
                 }
                 else {
                     currentBehaviorType = BehaviorType.GATHER_RESOURCES;
                 }
             }
-
         }
 
         private void attemptToSellResourcesTo(Entity targetEntity) {
@@ -297,6 +305,20 @@ namespace osg {
                 targetInventory.addItem(ItemType.WOOD, numWood);
                 targetInventory.addItem(ItemType.STONE, numStone);
                 targetInventory.addItem(ItemType.APPLE, numApples);
+                if (relationships.ContainsKey(getTargetEntity().getId())) {
+                    relationships[getTargetEntity().getId()] += Random.Range(1, 3);
+                }
+                else {
+                    relationships.Add(getTargetEntity().getId(), Random.Range(1, 3));
+                }
+                if (targetEntity.getType() == EntityType.PAWN) {
+                    Pawn targetPawn = (Pawn) targetEntity;
+                    Debug.Log(getName() + " has increased relationship with " + targetPawn.getName() + " to " + relationships[targetPawn.getId()] + " by selling resources");
+                }
+                else if (targetEntity.getType() == EntityType.PLAYER) {
+                    Player targetPlayer = (Player) targetEntity;
+                    Debug.Log(getName() + " has increased relationship with the player to " + relationships[targetPlayer.getId()] + " by selling resources");
+                }
             }
             else {
                 setTargetEntity(null);
