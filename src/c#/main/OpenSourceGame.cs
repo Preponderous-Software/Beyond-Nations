@@ -22,7 +22,7 @@ namespace osg {
         private Player player;
 
         private Status status;
-        private TextGameObject chunkPositionText;
+        // private TextGameObject chunkPositionText;
         private TextGameObject numGoldCoinsText;
         private TextGameObject numWoodText;
         private TextGameObject numStoneText;
@@ -65,7 +65,7 @@ namespace osg {
 
             // other UI
             energyText = new TextGameObject("Energy: 100", 20, Screen.width / 4, -Screen.height / 4);
-            chunkPositionText = new TextGameObject("Chunk: (0, 0)", 20, 0, Screen.height / 4);
+            // chunkPositionText = new TextGameObject("Chunk: (0, 0)", 20, 0, Screen.height / 4);
 
             environment.getChunk(0, 0).addEntity(player);
             environment.addEntityId(player.getId());
@@ -86,7 +86,7 @@ namespace osg {
             if (tickCounter.shouldUpdate()) {
                 worldGenerator.update();
                 checkIfPlayerIsFallingIntoVoid();
-                chunkPositionText.updateText("Chunk: (" + worldGenerator.getCurrentChunkX() + ", " + worldGenerator.getCurrentChunkZ() + ")");
+                // chunkPositionText.updateText("Chunk: (" + worldGenerator.getCurrentChunkX() + ", " + worldGenerator.getCurrentChunkZ() + ")");
                 numGoldCoinsText.updateText("Gold Coins: " + player.getInventory().getNumItems(ItemType.GOLD_COIN));
                 numWoodText.updateText("Wood: " + player.getInventory().getNumItems(ItemType.WOOD));
                 numStoneText.updateText("Stone: " + player.getInventory().getNumItems(ItemType.STONE));
