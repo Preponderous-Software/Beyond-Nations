@@ -118,7 +118,7 @@ namespace osg {
                         pawn.setEnergy(pawn.getEnergy() - pawn.getMetabolism());
 
                         // set nametag to show energy and inventory contents
-                        string nameTagText = pawn.getName() + " (" + pawn.getEnergy() + ")";
+                        string nameTagText = pawn.getName() + " (" + (int)pawn.getEnergy() + ")";
                         // show wood, stone, apples and gold coins
                         if (pawn.getInventory().getNumItems(ItemType.WOOD) > 0) {
                             nameTagText += " W:" + pawn.getInventory().getNumItems(ItemType.WOOD);
