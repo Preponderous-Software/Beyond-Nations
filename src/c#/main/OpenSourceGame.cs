@@ -116,7 +116,23 @@ namespace osg {
                             pawn.setEnergy(pawn.getEnergy() + 10);
                         }
                         pawn.setEnergy(pawn.getEnergy() - pawn.getMetabolism());
-                        pawn.setNameTag(pawn.getName() + " (" + pawn.getEnergy() + ")");
+
+                        // set nametag to show energy and inventory contents
+                        string nameTagText = pawn.getName() + " (" + pawn.getEnergy() + ")";
+                        // show wood, stone, apples and gold coins
+                        if (pawn.getInventory().getNumItems(ItemType.WOOD) > 0) {
+                            nameTagText += " W:" + pawn.getInventory().getNumItems(ItemType.WOOD);
+                        }
+                        if (pawn.getInventory().getNumItems(ItemType.STONE) > 0) {
+                            nameTagText += " S:" + pawn.getInventory().getNumItems(ItemType.STONE);
+                        }
+                        if (pawn.getInventory().getNumItems(ItemType.APPLE) > 0) {
+                            nameTagText += " A:" + pawn.getInventory().getNumItems(ItemType.APPLE);
+                        }
+                        if (pawn.getInventory().getNumItems(ItemType.GOLD_COIN) > 0) {
+                            nameTagText += " G:" + pawn.getInventory().getNumItems(ItemType.GOLD_COIN);
+                        }
+                        pawn.setNameTag(nameTagText);
 
                         // create or join nation
                         if (pawn.getNationId() == null) {

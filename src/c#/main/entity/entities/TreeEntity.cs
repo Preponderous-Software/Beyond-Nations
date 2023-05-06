@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace osg {
@@ -33,8 +34,8 @@ namespace osg {
             
             setGameObject(gameObject);
 
-            getInventory().addItem(ItemType.WOOD, height * 2);
-            getInventory().addItem(ItemType.APPLE, height / 2);
+            getInventory().addItem(ItemType.WOOD, UnityEngine.Random.Range(2, 4));
+            getInventory().addItem(ItemType.APPLE, UnityEngine.Random.Range(1, 3));
         }
 
         public override void destroyGameObject() {
