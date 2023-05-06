@@ -121,6 +121,7 @@ namespace osg {
                     pawnInventory.removeItem(ItemType.WOOD, numWood);
                     pawnInventory.removeItem(ItemType.STONE, numStone);
                     pawnInventory.removeItem(ItemType.APPLE, numApples);
+                    pawnInventory.addItem(ItemType.GOLD_COIN, cost);
 
                     int increase = Random.Range(1, 3);
                     if (pawn.getRelationships().ContainsKey(targetEntity.getId())) {
@@ -185,13 +186,15 @@ namespace osg {
 
                 int applePrice = 1;
                 int cost = applePrice;
-                if (targetInventory.getNumItems(ItemType.GOLD_COIN) >= cost) {
-                    targetInventory.removeItem(ItemType.GOLD_COIN, cost);
-                    targetInventory.addItem(ItemType.APPLE, 1);
-                    pawn.getInventory().addItem(ItemType.APPLE, 1);
+                Inventory pawnInventory = pawn.getInventory();
+                if (pawnInventory.getNumItems(ItemType.GOLD_COIN) >= cost) {
+                    pawnInventory.removeItem(ItemType.GOLD_COIN, cost);
+                    targetInventory.removeItem(ItemType.APPLE, 1);
+                    pawnInventory.addItem(ItemType.APPLE, 1);
+                    
                 }
                 else {
-                    Debug.LogWarning("Pawn " + pawn + " has target entity " + targetEntity + " but it does not have enough coins.");
+                    Debug.LogWarning("Pawn " + pawn.getName() + " has target entity " + targetEntity.getId() + " but it does not have enough coins.");
                     pawn.setTargetEntity(null);
                 }
             }
