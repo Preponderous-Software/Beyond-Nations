@@ -161,7 +161,7 @@ namespace osg {
                         currentBehaviorType = BehaviorType.PURCHASE_FOOD;
                         return;
                     }
-                }
+                } // TODO: fix this so this doesn't happen all the time
 
                 currentBehaviorType = BehaviorType.GATHER_RESOURCES;
                 return;
