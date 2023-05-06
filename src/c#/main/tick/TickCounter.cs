@@ -1,9 +1,16 @@
+using System;
+
 namespace osg {
 
     public class TickCounter {
         private int tick = 0;
         private int updateInterval = 10;
-        private int lastUpdateTick = 0;
+        
+        // measured ticks per second
+        private int mtps = 0;
+        
+        // last time tick was updated
+        private DateTime lastTickUpdate = DateTime.Now;
 
         public TickCounter(int updateInterval) {
             this.updateInterval = updateInterval;
@@ -12,21 +19,23 @@ namespace osg {
         public int getTick() {
             return tick;
         }
-        
-        public int getLastUpdateTick() {
-            return lastUpdateTick;
-        }
 
         public void increment() {
             tick++;
+
+            if (DateTime.Now - lastTickUpdate >= TimeSpan.FromSeconds(1)) {
+                mtps = tick;
+                tick = 0;
+                lastTickUpdate = DateTime.Now;
+            }
         }
 
         public bool shouldUpdate() {
-            if (tick - lastUpdateTick >= updateInterval) {
-                lastUpdateTick = tick;
-                return true;
-            }
-            return false;
+            return tick % updateInterval == 0;
+        }
+
+        public int getMtps() {
+            return mtps;
         }
     }
 }

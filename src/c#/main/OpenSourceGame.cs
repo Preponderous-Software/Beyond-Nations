@@ -28,6 +28,7 @@ namespace osg {
         private TextGameObject numStoneText;
         private TextGameObject numApplesText;
         private TextGameObject energyText;
+        private TextGameObject mtpsText;
 
         public GameObject playerGameObject; // must be set in Unity Editor -- TODO: make this private and set it in the constructor (will require refactoring Player.cs)
         public bool runTests = false;
@@ -67,6 +68,9 @@ namespace osg {
             energyText = new TextGameObject("Energy: 100", 20, Screen.width / 4, -Screen.height / 4);
             // chunkPositionText = new TextGameObject("Chunk: (0, 0)", 20, 0, Screen.height / 4);
 
+            // put in very top right corner
+            mtpsText = new TextGameObject("0mtps", 20, Screen.width / 4, Screen.height / 4);
+
             environment.getChunk(0, 0).addEntity(player);
             environment.addEntityId(player.getId());
             status.update("Press N to create a nation.");
@@ -92,6 +96,7 @@ namespace osg {
                 numStoneText.updateText("Stone: " + player.getInventory().getNumItems(ItemType.STONE));
                 numApplesText.updateText("Apples: " + player.getInventory().getNumItems(ItemType.APPLE));
                 energyText.updateText("Energy: " + player.getEnergy());
+                mtpsText.updateText(tickCounter.getMtps() + "mtps");
                 status.clearStatusIfExpired();
 
                 // list of positions to generate chunks at
@@ -186,7 +191,7 @@ namespace osg {
                 InteractCommand command = new InteractCommand(environment, nationRepository, eventProducer);
                 command.execute(player);
             }
-            else if (Input.GetKeyDown(KeyCode.Alpha1)) {
+            else if (Input.GetKeyDown(KeyCode.F1)) {
                 SpawnPawnCommand command = new SpawnPawnCommand(environment, eventProducer);
                 command.execute(player);
             }
