@@ -52,14 +52,20 @@ namespace osg {
             eventProducer = new EventProducer(eventRepository);
             environment = new Environment(gameConfig.getChunkSize(), gameConfig.getLocationScale());
             worldGenerator = new WorldGenerator(environment, player, eventProducer);
-            chunkPositionText = new TextGameObject("Chunk: (0, 0)", 20, 0, Screen.height / 4);
             nationRepository = new NationRepository();
             pawnBehaviorExecutor = new PawnBehaviorExecutor(environment, nationRepository, eventProducer);
-            numGoldCoinsText = new TextGameObject("Gold Coins: 0", 20, -Screen.width / 4, Screen.height / 4);
-            numWoodText = new TextGameObject("Wood: 0", 20, -Screen.width / 4, 0);
-            numStoneText = new TextGameObject("Stone: 0", 20, Screen.width / 4, 0);
-            numApplesText = new TextGameObject("Apples: 0", 20, Screen.width / 4, Screen.height / 4);
+
+            // resources UI
+            int resourcesX = -Screen.width / 4;
+            int resourcesY = -Screen.height / 4;
+            numGoldCoinsText = new TextGameObject("Gold Coins: 0", 20, resourcesX, resourcesY);
+            numWoodText = new TextGameObject("Wood: 0", 20, resourcesX, resourcesY - 20);
+            numStoneText = new TextGameObject("Stone: 0", 20, resourcesX, resourcesY - 40);
+            numApplesText = new TextGameObject("Apples: 0", 20, resourcesX, resourcesY - 60);
+
+            // other UI
             energyText = new TextGameObject("Energy: 100", 20, Screen.width / 4, -Screen.height / 4);
+            chunkPositionText = new TextGameObject("Chunk: (0, 0)", 20, 0, Screen.height / 4);
 
             environment.getChunk(0, 0).addEntity(player);
             environment.addEntityId(player.getId());
