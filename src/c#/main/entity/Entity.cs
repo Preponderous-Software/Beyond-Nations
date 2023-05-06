@@ -54,6 +54,9 @@ namespace osg {
         public void setInventory(Inventory inventory) {
             this.inventory = inventory;
         }
-    }
 
+        public Vector3 getPosition() {
+            return getGameObject().transform.position;
+        }
+    }
 }

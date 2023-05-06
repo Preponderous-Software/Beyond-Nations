@@ -17,7 +17,8 @@ namespace osg {
         private TickCounter tickCounter;
         private EventRepository eventRepository;
         private NationRepository nationRepository;
-        private EventProducer eventProducer;        
+        private EventProducer eventProducer;
+        private PawnBehaviorExecutor pawnBehaviorExecutor;
         private Player player;
 
         private Status status;
@@ -53,6 +54,7 @@ namespace osg {
             worldGenerator = new WorldGenerator(environment, player, eventProducer);
             chunkPositionText = new TextGameObject("Chunk: (0, 0)", 20, 0, Screen.height / 4);
             nationRepository = new NationRepository();
+            pawnBehaviorExecutor = new PawnBehaviorExecutor(environment, nationRepository, eventProducer);
             numGoldCoinsText = new TextGameObject("Gold Coins: 0", 20, -Screen.width / 4, Screen.height / 4);
             numWoodText = new TextGameObject("Wood: 0", 20, -Screen.width / 4, 0);
             numStoneText = new TextGameObject("Stone: 0", 20, Screen.width / 4, 0);
@@ -94,23 +96,37 @@ namespace osg {
                         if (entity.getType() == EntityType.PAWN) {
                             Pawn pawn = (Pawn)entity;
 
-                            pawn.fixedUpdate(environment, nationRepository);
+                            // compute and execute behavior
+                            pawn.computeBehaviorType(environment, nationRepository);
+                            pawnBehaviorExecutor.executeBehavior(pawn, pawn.getCurrentBehaviorType());
 
+                            // update energy
+                            if (pawn.getEnergy() < 90 && pawn.getInventory().getNumItems(ItemType.APPLE) > 0) {
+                                pawn.getInventory().removeItem(ItemType.APPLE, 1);
+                                pawn.setEnergy(pawn.getEnergy() + 10);
+                            }
+                            pawn.setEnergy(pawn.getEnergy() - pawn.getMetabolism());
+                            pawn.setNameTag(pawn.getName() + " (" + pawn.getEnergy() + ")");
+
+                            // create or join nation
                             if (pawn.getNationId() == null) {
                                 createOrJoinNation(pawn);
                             }
 
+                            // check if pawn is falling into void
                             float ypos = pawn.getGameObject().transform.position.y;
                             if (ypos < -10) {
                                 Debug.Log("Entity " + pawn.getId() + " fell into void. Teleporting to spawn.");
                                 pawn.getGameObject().transform.position = new Vector3(0, 10, 0);
                             }
 
+                            // check if pawn is in a new chunk
                             Chunk retrievedChunk = environment.getChunkAtPosition(pawn.getGameObject().transform.position);
                             if (retrievedChunk == null) {
                                 positionsToGenerateChunksAt.Add(pawn.getGameObject().transform.position);
                             }
                             
+                            // check if pawn is dead
                             if (pawn.getEnergy() <= 0) {
                                 eventProducer.producePawnDeathEvent(pawn.getGameObject().transform.position, pawn);
                                 pawn.setEnergy(100);
@@ -162,6 +178,10 @@ namespace osg {
             }
             else if (Input.GetKeyDown(KeyCode.E)) {
                 InteractCommand command = new InteractCommand(environment, nationRepository, eventProducer);
+                command.execute(player);
+            }
+            else if (Input.GetKeyDown(KeyCode.Alpha1)) {
+                SpawnPawnCommand command = new SpawnPawnCommand(environment, eventProducer);
                 command.execute(player);
             }
         }

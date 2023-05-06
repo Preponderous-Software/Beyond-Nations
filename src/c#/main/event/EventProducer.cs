@@ -63,5 +63,11 @@ namespace osg {
             eventRepository.addEvent(pawnDeathEvent);
             Debug.Log("Produced event: " + pawnDeathEvent);
         }
+
+        public void producePawnRelationshipIncreaseEvent(Pawn pawn1, Entity entity2, int increase) {
+            PawnRelationshipIncreaseEvent pawnRelationshipIncreaseEvent = new PawnRelationshipIncreaseEvent(pawn1, entity2, increase);
+            eventRepository.addEvent(pawnRelationshipIncreaseEvent);
+            Debug.Log("Produced event: " + pawnRelationshipIncreaseEvent);
+        }
     }
 }
