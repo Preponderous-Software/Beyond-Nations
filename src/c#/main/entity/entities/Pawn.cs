@@ -18,7 +18,7 @@ namespace osg {
 
         private GameObject nameTag;
         private float energy = 100.00f;
-        private float metabolism = Random.Range(0.01f, 0.05f);
+        private float metabolism = Random.Range(0.001f, 0.010f);
 
         // map of entity id to integer representing relationship strength
         private Dictionary<EntityId, int> relationships = new Dictionary<EntityId, int>();
@@ -151,23 +151,37 @@ namespace osg {
 
         // The current behavior type should only be changed in computeBehaviorType()
         public void computeBehaviorType(Environment environment, NationRepository nationRepository) {
-            // if hungry
+
             if (energy < 80 && getInventory().getNumItems(ItemType.APPLE) == 0) {
+                // if nation leader has apples, purchase apples from leader
+                if (getNationId() != null) {
+                    Nation nation1 = nationRepository.getNation(getNationId());
+                    Entity nationLeader = environment.getEntity(nation1.getLeaderId());
+                    if (nationLeader.getInventory().getNumItems(ItemType.APPLE) > 0 && getInventory().getNumItems(ItemType.GOLD_COIN) >= 1) {
+                        currentBehaviorType = BehaviorType.PURCHASE_FOOD;
+                        return;
+                    }
+                }
+
                 currentBehaviorType = BehaviorType.GATHER_RESOURCES;
                 return;
             }
+
             if (getNationId() == null) {
                 currentBehaviorType = BehaviorType.WANDER;
                 return;
             }
+
             Nation nation = nationRepository.getNation(getNationId());
+
             NationRole role = nation.getRole(getId());
             if (role == NationRole.LEADER) {
                 currentBehaviorType = BehaviorType.WANDER;
                 return;
             }
             else if (role == NationRole.CITIZEN) {
-                if (getInventory().getNumItems(ItemType.WOOD) >= targetNumWood && getInventory().getNumItems(ItemType.STONE) >= targetNumStone) {
+                // if pawn has at least 1 of each resource, sell resources
+                if (getInventory().getNumItems(ItemType.WOOD) >= 1 && getInventory().getNumItems(ItemType.STONE) >= 1 && getInventory().getNumItems(ItemType.APPLE) >= 1) {
                     Entity nationLeader = environment.getEntity(nation.getLeaderId());
                     int numWood = getInventory().getNumItems(ItemType.WOOD);
                     int numStone = getInventory().getNumItems(ItemType.STONE);

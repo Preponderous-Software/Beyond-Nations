@@ -5,5 +5,6 @@ namespace osg {
         GATHER_RESOURCES,
         SELL_RESOURCES,
         WANDER,
+        PURCHASE_FOOD,
     }
 }

@@ -28,6 +28,9 @@ namespace osg {
                 case BehaviorType.WANDER:
                     executeWanderBehavior(pawn);
                     break;
+                case BehaviorType.PURCHASE_FOOD:
+                    executePurchaseFoodBehavior(pawn);
+                    break;
                 default:
                     break;
             }
@@ -148,6 +151,54 @@ namespace osg {
             Vector3 currentPosition = pawn.getPosition();
             Vector3 targetPosition = currentPosition + new Vector3(Random.Range(-1f, 1f), 0, Random.Range(-1f, 1f));
             pawn.getGameObject().GetComponent<Rigidbody>().velocity = (targetPosition - currentPosition).normalized * pawn.getSpeed();
+        }
+
+        private void executePurchaseFoodBehavior(Pawn pawn) {
+            // purchase food from nation leader
+
+            if (!pawn.hasTargetEntity()) {
+                // target nation leader
+                Nation nation = nationRepository.getNation(pawn.getNationId());
+                if (nation != null) {
+                    EntityId nationLeaderId = nation.getLeaderId();
+                    Entity nationLeader = environment.getEntity(nationLeaderId);
+                    if (nationLeader != null) {
+                        pawn.setTargetEntity(nationLeader);
+                    }
+                }
+            }
+            else if (pawn.isAtTargetEntity()) {
+                Entity targetEntity = pawn.getTargetEntity();
+                EntityType targetEntityType = targetEntity.getType();
+                Inventory targetInventory = null;
+                if (targetEntityType == EntityType.PAWN) {
+                    targetInventory = ((Pawn)targetEntity).getInventory();
+                }
+                else if (targetEntityType == EntityType.PLAYER) {
+                    targetInventory = ((Player)targetEntity).getInventory();
+                }
+                else {
+                    Debug.LogWarning("Pawn " + pawn + " has target entity " + targetEntity + " but it is not a pawn or player.");
+                    pawn.setTargetEntity(null);
+                    return;
+                }
+
+                int applePrice = 1;
+                int cost = applePrice;
+                if (targetInventory.getNumItems(ItemType.GOLD_COIN) >= cost) {
+                    targetInventory.removeItem(ItemType.GOLD_COIN, cost);
+                    targetInventory.addItem(ItemType.APPLE, 1);
+                    pawn.getInventory().addItem(ItemType.APPLE, 1);
+                }
+                else {
+                    Debug.LogWarning("Pawn " + pawn + " has target entity " + targetEntity + " but it does not have enough coins.");
+                    pawn.setTargetEntity(null);
+                }
+            }
+            else {
+                // move towards target entity
+                pawn.moveTowardsTargetEntity();
+            }
         }
     }
 }
