@@ -260,8 +260,7 @@ namespace osg {
         }
 
         private void createOrJoinNation(Pawn pawn) {
-            // if less than 4 nations, create a new nation
-            if (nationRepository.getNumberOfNations() < 4) {
+            if (nationRepository.getNumberOfNations() <= gameConfig.getNumStartingNations()) {
                 Nation nation = new Nation(NationNameGenerator.generate(), pawn.getId());
                 nationRepository.addNation(nation);
                 pawn.setNationId(nation.getId());

@@ -38,7 +38,7 @@ namespace osg {
         }
 
         private void executeGatherResourcesBehavior(Pawn pawn) {
-            if (!pawn.hasTargetEntity()) {
+            if (!pawn.hasTargetEntity() || (pawn.getTargetEntity().getType() != EntityType.TREE && pawn.getTargetEntity().getType() != EntityType.ROCK)) {
                 // select nearest tree or rock
                 Entity nearestTree = environment.getNearestTree(pawn.getPosition());
                 Entity nearestRock = environment.getNearestRock(pawn.getPosition());

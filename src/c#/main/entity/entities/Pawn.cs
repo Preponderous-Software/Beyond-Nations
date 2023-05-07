@@ -67,11 +67,9 @@ namespace osg {
 
         public void moveTowardsTargetEntity() {
             if (targetEntity == null) {
-                Debug.LogWarning("target entity is null in moveTowardsTargetEntity()");
                 return;
             }
             if (targetEntity.isMarkedForDeletion()) {
-                Debug.LogWarning("target entity is marked for deletion in moveTowardsTargetEntity()");
                 setTargetEntity(null);
                 return;
             }
@@ -89,11 +87,9 @@ namespace osg {
 
         public bool isAtTargetEntity() {
             if (targetEntity == null) {
-                Debug.LogWarning("target entity is null in isAtTargetEntity()");
                 return false;
             }
             if (targetEntity.isMarkedForDeletion()) {
-                Debug.LogWarning("target entity is marked for deletion in isAtTargetEntity()");
                 setTargetEntity(null);
                 return false;
             }

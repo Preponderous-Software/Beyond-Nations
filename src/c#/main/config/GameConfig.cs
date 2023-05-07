@@ -7,6 +7,7 @@ namespace osg {
         private int playerWalkSpeed;
         private int playerRunSpeed;
         private bool respawnPawns;
+        private int numStartingNations;
 
         public GameConfig() {
             chunkSize = 9;
@@ -15,6 +16,7 @@ namespace osg {
             playerWalkSpeed = 20;
             playerRunSpeed = 50;
             respawnPawns = false;
+            numStartingNations = 2;
         }
 
         public int getChunkSize() {
@@ -39,6 +41,10 @@ namespace osg {
 
         public bool getRespawnPawns() {
             return respawnPawns;
+        }
+
+        public int getNumStartingNations() {
+            return numStartingNations;
         }
     }
 }
