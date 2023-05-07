@@ -54,12 +54,13 @@ namespace osg {
             generateChunkIfNotExistent(chunkX + 1, chunkZ + 1);
         }
 
-        private void generateChunkIfNotExistent(int chunkX, int chunkZ) {
-            // check if chunk exists
+        private bool generateChunkIfNotExistent(int chunkX, int chunkZ) {
             Chunk chunk = environment.getChunk(chunkX, chunkZ);
             if (chunk == null) {
                 createNewChunkAt(chunkX, chunkZ);
+                return true;
             }
+            return false;
         }
 
         /**
@@ -155,7 +156,7 @@ namespace osg {
             }
         }
 
-        public void generateChunkAtPosition(Vector3 position) {
+        public bool generateChunkAtPosition(Vector3 position) {
             int lengthOfChunk = chunkSize * locationScale;
 
             int chunkX = 0;
@@ -172,7 +173,7 @@ namespace osg {
                 chunkZ = (int) (position.z / lengthOfChunk) - 1;
             }
 
-            generateChunkIfNotExistent(chunkX, chunkZ);
+            return generateChunkIfNotExistent(chunkX, chunkZ);
         }
 
         public void generateSurroundingChunksAtPosition(Vector3 position) {

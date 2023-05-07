@@ -167,8 +167,8 @@ namespace osg {
         }
 
         private void executeWanderBehavior(Pawn pawn) {
-            // 90% chance to skip
-            if (Random.Range(0f, 1f) < 0.9f) {
+            // 95% chance to skip
+            if (Random.Range(0, 100) < 95) {
                 return;
             }
             Vector3 currentPosition = pawn.getPosition();

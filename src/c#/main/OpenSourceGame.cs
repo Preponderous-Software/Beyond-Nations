@@ -240,18 +240,13 @@ namespace osg {
                 SpawnPawnCommand command = new SpawnPawnCommand(environment, eventProducer);
                 command.execute(player);
             }
-            else if (Input.GetKeyDown(KeyCode.F2)) { // TODO: move this to a separate class
-                Vector3 playerPosition = player.getGameObject().transform.position;
-                Chunk playerChunk = environment.getChunkAtPosition(playerPosition);
-                if (playerChunk != null) {
-                    Vector3 chunkPosition = playerChunk.getGameObject().transform.position;
-                    for (int x = -50; x < 51; x++) {
-                        for (int z = -50; z < 51; z++) {
-                            Vector3 position = new Vector3(chunkPosition.x + x * 10, 0, chunkPosition.z + z * 10);
-                            worldGenerator.generateChunkAtPosition(position);
-                        }
-                    }
-                }
+            else if (Input.GetKeyDown(KeyCode.F2)) {
+                GenerateLandCommand command = new GenerateLandCommand(environment, worldGenerator);
+                command.execute(player);
+            }
+            else if (Input.GetKeyDown(KeyCode.F3)) {
+                SpawnMoneyCommand command = new SpawnMoneyCommand();
+                command.execute(player);
             }
         }
 
