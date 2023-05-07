@@ -116,7 +116,23 @@ namespace osg {
                             pawn.setEnergy(pawn.getEnergy() + 10);
                         }
                         pawn.setEnergy(pawn.getEnergy() - pawn.getMetabolism());
-                        pawn.setNameTag(pawn.getName() + " (" + pawn.getEnergy() + ")");
+
+                        // set nametag to show energy and inventory contents
+                        string nameTagText = pawn.getName() + " (" + (int)pawn.getEnergy() + ")";
+                        // show wood, stone, apples and gold coins
+                        if (pawn.getInventory().getNumItems(ItemType.WOOD) > 0) {
+                            nameTagText += " W:" + pawn.getInventory().getNumItems(ItemType.WOOD);
+                        }
+                        if (pawn.getInventory().getNumItems(ItemType.STONE) > 0) {
+                            nameTagText += " S:" + pawn.getInventory().getNumItems(ItemType.STONE);
+                        }
+                        if (pawn.getInventory().getNumItems(ItemType.APPLE) > 0) {
+                            nameTagText += " A:" + pawn.getInventory().getNumItems(ItemType.APPLE);
+                        }
+                        if (pawn.getInventory().getNumItems(ItemType.GOLD_COIN) > 0) {
+                            nameTagText += " G:" + pawn.getInventory().getNumItems(ItemType.GOLD_COIN);
+                        }
+                        pawn.setNameTag(nameTagText);
 
                         // create or join nation
                         if (pawn.getNationId() == null) {
@@ -142,7 +158,38 @@ namespace osg {
                             pawn.setEnergy(100);
                             pawn.getInventory().clear();
                             status.update(pawn.getName() + " has died.");
-                            pawn.getGameObject().transform.position = new Vector3(Random.Range(-100, 100), 10, Random.Range(-100, 100));
+                            if (gameConfig.getRespawnPawns()) {
+                                pawn.getGameObject().transform.position = new Vector3(Random.Range(-100, 100), 10, Random.Range(-100, 100));
+                            }
+                            else {
+                                pawn.markForDeletion();
+                                if (pawn.getNationId() != null) {
+                                    Nation nation = nationRepository.getNation(pawn.getNationId());
+                                    nation.removeMember(pawn.getId());
+                                    if (nation.getLeaderId() == pawn.getId()) {
+                                        // transfer leadership to another pawn
+                                        if (nation.getNumberOfMembers() > 0) {
+                                            nation.setLeaderId(nation.getOldestMemberId());
+                                            if (pawn.getType() == EntityType.PAWN) {
+                                                Pawn newLeader = (Pawn) environment.getEntity(nation.getLeaderId());
+                                                status.update(newLeader.getName() + " is now the leader of " + nation.getName() + ".");
+                                            }
+                                            else if (pawn.getType() == EntityType.PLAYER) {
+                                                Player newLeader = (Player) environment.getEntity(nation.getLeaderId());
+                                                player.getStatus().update("You are now the leader of " + nation.getName() + ".");
+                                            }
+                                            else {
+                                                Debug.Log("ERROR: Oldest member of nation " + nation.getName() + " is not a pawn or player.");
+                                            }
+                                            
+                                        }
+                                        else {
+                                            nationRepository.removeNation(nation);
+                                            status.update(nation.getName() + " has been disbanded.");
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -192,6 +239,19 @@ namespace osg {
             else if (Input.GetKeyDown(KeyCode.F1)) {
                 SpawnPawnCommand command = new SpawnPawnCommand(environment, eventProducer);
                 command.execute(player);
+            }
+            else if (Input.GetKeyDown(KeyCode.F2)) { // TODO: move this to a separate class
+                Vector3 playerPosition = player.getGameObject().transform.position;
+                Chunk playerChunk = environment.getChunkAtPosition(playerPosition);
+                if (playerChunk != null) {
+                    Vector3 chunkPosition = playerChunk.getGameObject().transform.position;
+                    for (int x = -50; x < 51; x++) {
+                        for (int z = -50; z < 51; z++) {
+                            Vector3 position = new Vector3(chunkPosition.x + x * 10, 0, chunkPosition.z + z * 10);
+                            worldGenerator.generateChunkAtPosition(position);
+                        }
+                    }
+                }
             }
         }
 

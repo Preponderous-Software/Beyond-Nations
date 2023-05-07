@@ -1,3 +1,4 @@
+using System.Net;
 using UnityEngine;
 using System.Collections.Generic;
 
@@ -55,6 +56,10 @@ namespace osg {
             }
 
             Entity targetEntity = pawn.getTargetEntity();
+            if (targetEntity == null) {
+                Debug.LogWarning("Pawn " + pawn + " has no target entity in gather resources behavior.");
+                return;
+            }
             EntityType targetEntityType = targetEntity.getType();
             
             if (pawn.isAtTargetEntity()) {
@@ -90,10 +95,6 @@ namespace osg {
             else if (pawn.isAtTargetEntity()) {
                 Inventory pawnInventory = pawn.getInventory();
 
-                int numWood = pawnInventory.getNumItems(ItemType.WOOD);
-                int numStone = pawnInventory.getNumItems(ItemType.STONE);
-                int numApples = pawnInventory.getNumItems(ItemType.APPLE);
-
                 Entity targetEntity = pawn.getTargetEntity();
                 EntityType targetEntityType = targetEntity.getType();
                 Inventory targetInventory = null;
@@ -112,18 +113,38 @@ namespace osg {
                 int woodPrice = 2;
                 int stonePrice = 3;
                 int applePrice = 1;
-                int cost = numWood * woodPrice + numStone * stonePrice + numApples * applePrice;
-                if (targetInventory.getNumItems(ItemType.GOLD_COIN) >= cost) {
-                    targetInventory.removeItem(ItemType.GOLD_COIN, cost);
-                    targetInventory.addItem(ItemType.WOOD, numWood);
-                    targetInventory.addItem(ItemType.STONE, numStone);
-                    targetInventory.addItem(ItemType.APPLE, numApples);
-                    pawnInventory.removeItem(ItemType.WOOD, numWood);
-                    pawnInventory.removeItem(ItemType.STONE, numStone);
-                    pawnInventory.removeItem(ItemType.APPLE, numApples);
-                    pawnInventory.addItem(ItemType.GOLD_COIN, cost);
 
-                    int increase = Random.Range(1, 3);
+                bool increaseRelationship = false;
+
+                // if pawn has wood, sell 1
+                if (pawnInventory.getNumItems(ItemType.WOOD) > 0 && targetInventory.getNumItems(ItemType.GOLD_COIN) >= woodPrice) {
+                    pawnInventory.removeItem(ItemType.WOOD, 1);
+                    targetInventory.addItem(ItemType.WOOD, 1);
+                    pawnInventory.addItem(ItemType.GOLD_COIN, woodPrice);
+                    targetInventory.removeItem(ItemType.GOLD_COIN, woodPrice);
+                    increaseRelationship = true;
+                }
+
+                // if pawn has stone, sell 1
+                if (pawnInventory.getNumItems(ItemType.STONE) > 0 && targetInventory.getNumItems(ItemType.GOLD_COIN) >= stonePrice) {
+                    pawnInventory.removeItem(ItemType.STONE, 1);
+                    targetInventory.addItem(ItemType.STONE, 1);
+                    pawnInventory.addItem(ItemType.GOLD_COIN, stonePrice);
+                    targetInventory.removeItem(ItemType.GOLD_COIN, stonePrice);
+                    increaseRelationship = true;
+                }
+
+                // if pawn has apples, sell 1
+                if (pawnInventory.getNumItems(ItemType.APPLE) > 0 && targetInventory.getNumItems(ItemType.GOLD_COIN) >= applePrice) {
+                    pawnInventory.removeItem(ItemType.APPLE, 1);
+                    targetInventory.addItem(ItemType.APPLE, 1);
+                    pawnInventory.addItem(ItemType.GOLD_COIN, applePrice);
+                    targetInventory.removeItem(ItemType.GOLD_COIN, applePrice);
+                    increaseRelationship = true;
+                }
+
+                if (increaseRelationship) {
+                    int increase = Random.Range(1, 5);
                     if (pawn.getRelationships().ContainsKey(targetEntity.getId())) {
                         pawn.getRelationships()[targetEntity.getId()] += increase;
                     }
@@ -132,11 +153,12 @@ namespace osg {
                     }
                     
                     eventProducer.producePawnRelationshipIncreaseEvent(pawn, targetEntity, increase);
+                    if (targetEntityType == EntityType.PLAYER) {
+                        Player player = (Player)targetEntity;
+                        player.getStatus().update(pawn.getName() + " sold resources to you. Relationship: " + pawn.getRelationships()[player.getId()]);
+                    }
                 }
-                else {
-                    Debug.LogWarning("Pawn " + pawn + " has target entity " + targetEntity + " but it does not have enough coins.");
-                    pawn.setTargetEntity(null);
-                }
+
             }
             else {
                 // move towards target entity
@@ -184,7 +206,7 @@ namespace osg {
                     return;
                 }
 
-                int applePrice = 1;
+                int applePrice = 5;
                 int cost = applePrice;
                 Inventory pawnInventory = pawn.getInventory();
                 if (pawnInventory.getNumItems(ItemType.GOLD_COIN) >= cost) {
@@ -192,9 +214,23 @@ namespace osg {
                     targetInventory.removeItem(ItemType.APPLE, 1);
                     pawnInventory.addItem(ItemType.APPLE, 1);
                     
+                    // increase relationship
+                    int increase = Random.Range(1, 5);
+                    if (pawn.getRelationships().ContainsKey(targetEntity.getId())) {
+                        pawn.getRelationships()[targetEntity.getId()] += increase;
+                    }
+                    else {
+                        pawn.getRelationships().Add(targetEntity.getId(), increase);
+                    }
+                    
+                    eventProducer.producePawnRelationshipIncreaseEvent(pawn, targetEntity, increase);
+                    if (targetEntityType == EntityType.PLAYER) {
+                        Player player = (Player)targetEntity;
+                        player.getStatus().update(pawn.getName() + " bought an apple from you. Relationship: " + pawn.getRelationships()[player.getId()]);
+                    }
                 }
                 else {
-                    Debug.LogWarning("Pawn " + pawn.getName() + " has target entity " + targetEntity.getId() + " but it does not have enough coins.");
+                    Debug.LogWarning(pawn.getName() + " tried to purchase food, but the target entity did not have enough gold coins. Cost: " + cost + ", Target entity gold coins: " + targetInventory.getNumItems(ItemType.GOLD_COIN));
                     pawn.setTargetEntity(null);
                 }
             }
