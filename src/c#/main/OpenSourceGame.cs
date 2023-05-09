@@ -76,15 +76,13 @@ namespace osg {
 
         // Per-frame updates
         public void Update() {
-            tickCounter.increment(); // should this be in FixedUpdate()?
-
             handleCommands();
-
             player.update();
         }
 
         // Fixed updates
         public void FixedUpdate() {
+            tickCounter.increment();
             worldGenerator.update();
             checkIfPlayerIsFallingIntoVoid();
             numGoldCoinsText.updateText("Gold Coins: " + player.getInventory().getNumItems(ItemType.GOLD_COIN));
