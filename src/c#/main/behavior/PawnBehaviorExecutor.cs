@@ -93,72 +93,16 @@ namespace osg {
                 }
             }
             else if (pawn.isAtTargetEntity()) {
-                Inventory pawnInventory = pawn.getInventory();
-
                 Entity targetEntity = pawn.getTargetEntity();
-                EntityType targetEntityType = targetEntity.getType();
-                Inventory targetInventory = null;
-                if (targetEntityType == EntityType.PAWN) {
-                    targetInventory = ((Pawn)targetEntity).getInventory();
-                }
-                else if (targetEntityType == EntityType.PLAYER) {
-                    targetInventory = ((Player)targetEntity).getInventory();
-                }
-                else {
-                    Debug.LogWarning("Pawn " + pawn + " has target entity " + targetEntity + " but it is not a pawn or player.");
+                if (targetEntity.getType() != EntityType.PAWN && targetEntity.getType() != EntityType.PLAYER) {
+                    Debug.LogWarning("Pawn " + pawn + " is at target entity " + targetEntity + " but it is not a pawn or player.");
                     pawn.setTargetEntity(null);
                     return;
                 }
 
-                int woodPrice = 2;
-                int stonePrice = 3;
-                int applePrice = 1;
-
-                bool increaseRelationship = false;
-
-                // if pawn has wood, sell 1
-                if (pawnInventory.getNumItems(ItemType.WOOD) > 0 && targetInventory.getNumItems(ItemType.GOLD_COIN) >= woodPrice) {
-                    pawnInventory.removeItem(ItemType.WOOD, 1);
-                    targetInventory.addItem(ItemType.WOOD, 1);
-                    pawnInventory.addItem(ItemType.GOLD_COIN, woodPrice);
-                    targetInventory.removeItem(ItemType.GOLD_COIN, woodPrice);
-                    increaseRelationship = true;
-                }
-
-                // if pawn has stone, sell 1
-                if (pawnInventory.getNumItems(ItemType.STONE) > 0 && targetInventory.getNumItems(ItemType.GOLD_COIN) >= stonePrice) {
-                    pawnInventory.removeItem(ItemType.STONE, 1);
-                    targetInventory.addItem(ItemType.STONE, 1);
-                    pawnInventory.addItem(ItemType.GOLD_COIN, stonePrice);
-                    targetInventory.removeItem(ItemType.GOLD_COIN, stonePrice);
-                    increaseRelationship = true;
-                }
-
-                // if pawn has apples, sell 1
-                if (pawnInventory.getNumItems(ItemType.APPLE) > 0 && targetInventory.getNumItems(ItemType.GOLD_COIN) >= applePrice) {
-                    pawnInventory.removeItem(ItemType.APPLE, 1);
-                    targetInventory.addItem(ItemType.APPLE, 1);
-                    pawnInventory.addItem(ItemType.GOLD_COIN, applePrice);
-                    targetInventory.removeItem(ItemType.GOLD_COIN, applePrice);
-                    increaseRelationship = true;
-                }
-
-                if (increaseRelationship) {
-                    int increase = Random.Range(1, 5);
-                    if (pawn.getRelationships().ContainsKey(targetEntity.getId())) {
-                        pawn.getRelationships()[targetEntity.getId()] += increase;
-                    }
-                    else {
-                        pawn.getRelationships().Add(targetEntity.getId(), increase);
-                    }
-                    
-                    eventProducer.producePawnRelationshipIncreaseEvent(pawn, targetEntity, increase);
-                    if (targetEntityType == EntityType.PLAYER) {
-                        Player player = (Player)targetEntity;
-                        player.getStatus().update(pawn.getName() + " sold resources to you. Relationship: " + pawn.getRelationships()[player.getId()]);
-                    }
-                }
-
+                sellItem(pawn, targetEntity, ItemType.WOOD, 1);
+                sellItem(pawn, targetEntity, ItemType.STONE, 1);
+                sellItem(pawn, targetEntity, ItemType.APPLE, 1);
             }
             else {
                 // move towards target entity
@@ -237,6 +181,56 @@ namespace osg {
             else {
                 // move towards target entity
                 pawn.moveTowardsTargetEntity();
+            }
+        }
+
+        private void sellItem(Pawn seller, Entity buyer, ItemType itemType, int numItems) {
+            Inventory sellerInventory = seller.getInventory();
+            Inventory buyerInventory = buyer.getInventory();
+
+            // check if seller has item
+            if (sellerInventory.getNumItems(itemType) < numItems) {
+                Debug.LogWarning("Seller " + seller + " does not have " + numItems + " of item type " + itemType + ".");
+                return;
+            }
+            
+            // decide price
+            int price = 0;
+            switch (itemType) {
+                case ItemType.WOOD:
+                    price = 1;
+                    break;
+                case ItemType.STONE:
+                    price = 2;
+                    break;
+                case ItemType.APPLE:
+                    price = 5;
+                    break;
+                default:
+                    Debug.LogWarning("Seller " + seller + " tried to sell item type " + itemType + " but it is not a valid item type.");
+                    return;
+            }
+
+            // check if buyer has enough gold coins
+            if (buyerInventory.getNumItems(ItemType.GOLD_COIN) < price * numItems) {
+                Debug.LogWarning("Buyer " + buyer + " does not have enough gold coins to purchase " + numItems + " of item type " + itemType + ".");
+                return;
+            }
+
+            // transfer items
+            sellerInventory.removeItem(itemType, numItems);
+            buyerInventory.addItem(itemType, numItems);
+            sellerInventory.addItem(ItemType.GOLD_COIN, price * numItems);
+            buyerInventory.removeItem(ItemType.GOLD_COIN, price * numItems);
+
+            // increase relationship
+            int increase = Random.Range(1, 5);
+            seller.increaseRelationship(buyer, increase);
+            eventProducer.producePawnRelationshipIncreaseEvent(seller, buyer, increase);
+
+            if (buyer.getType() == EntityType.PLAYER) {
+                Player player = (Player)buyer;
+                player.getStatus().update(seller.getName() + " sold " + numItems + " " + itemType + " to you. Relationship: " + seller.getRelationships()[player.getId()]);
             }
         }
     }

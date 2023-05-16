@@ -157,7 +157,7 @@ namespace osg {
                         currentBehaviorType = BehaviorType.PURCHASE_FOOD;
                         return;
                     }
-                } // TODO: fix this so this doesn't happen all the time
+                }
 
                 currentBehaviorType = BehaviorType.GATHER_RESOURCES;
                 return;
@@ -206,5 +206,40 @@ namespace osg {
         public float getMetabolism() {
             return metabolism;
         }
+
+        public void increaseRelationship(Entity entity, int amount) {
+            if (entity == null) {
+                Debug.LogError("entity is null in increaseRelationship()");
+                return;
+            }
+            if (entity.getId() == getId()) {
+                Debug.LogError("entity is self in increaseRelationship()");
+                return;
+            }
+            if (getRelationships().ContainsKey(entity.getId())) {
+                getRelationships()[entity.getId()] += amount;
+            }
+            else {
+                getRelationships().Add(entity.getId(), amount);
+            }
+        }
+
+        public void decreaseRelationship(Entity entity, int amount) {
+            if (entity == null) {
+                Debug.LogError("entity is null in decreaseRelationship()");
+                return;
+            }
+            if (entity.getId() == getId()) {
+                Debug.LogError("entity is self in decreaseRelationship()");
+                return;
+            }
+            if (getRelationships().ContainsKey(entity.getId())) {
+                getRelationships()[entity.getId()] -= amount;
+            }
+            else {
+                getRelationships().Add(entity.getId(), -amount);
+            }
+        }
+
     }
 }
