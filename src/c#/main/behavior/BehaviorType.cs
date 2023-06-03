@@ -6,5 +6,7 @@ namespace osg {
         SELL_RESOURCES,
         WANDER,
         PURCHASE_FOOD,
+        CREATE_SETTLEMENT,
+        GO_HOME,
     }
 }

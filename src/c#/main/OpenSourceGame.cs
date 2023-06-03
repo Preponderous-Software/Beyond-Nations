@@ -180,6 +180,16 @@ namespace osg {
                                         }
                                         else {
                                             nationRepository.removeNation(nation);
+
+                                            // remove settlements
+                                            foreach (EntityId settlementId in nation.getSettlements()) {
+                                                Settlement settlement = (Settlement) environment.getEntity(settlementId);
+                                                settlement.markForDeletion();
+                                            }
+
+                                            // clear settlements
+                                            nation.getSettlements().Clear();
+
                                             status.update(nation.getName() + " has been disbanded.");
                                         }
                                     }

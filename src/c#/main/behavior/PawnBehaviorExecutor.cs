@@ -32,6 +32,12 @@ namespace osg {
                 case BehaviorType.PURCHASE_FOOD:
                     executePurchaseFoodBehavior(pawn);
                     break;
+                case BehaviorType.CREATE_SETTLEMENT:
+                    executeCreateSettlementBehavior(pawn);
+                    break;
+                case BehaviorType.GO_HOME:
+                    executeGoHomeBehavior(pawn);
+                    break;
                 default:
                     break;
             }
@@ -158,6 +164,47 @@ namespace osg {
                 pawn.moveTowardsTargetEntity();
             }
         }
+
+        private void executeCreateSettlementBehavior(Pawn pawn) {
+            Vector3 targetPosition = pawn.getPosition();
+
+            // get nation color
+            Nation nation = nationRepository.getNation(pawn.getNationId());
+            Color nationColor = nation.getColor();
+
+            // create settlement
+            Settlement settlement = new Settlement(targetPosition, nation.getId(), nationColor, nation.getName());
+            nation.addSettlement(settlement.getId());
+            
+            Chunk chunk = environment.getChunkAtPosition(targetPosition);
+            chunk.addEntity(settlement);
+            environment.addEntityId(settlement.getId());
+            settlement.getGameObject().transform.parent = chunk.getGameObject().transform;
+        }
+
+        private void executeGoHomeBehavior(Pawn pawn) {
+            if (!pawn.hasTargetEntity()) {
+                // target nation settlement
+                Nation nation = nationRepository.getNation(pawn.getNationId());
+                if (nation != null && nation.getNumberOfSettlements() > 0) {
+                    EntityId nationSettlementId = nation.getSettlement(0);
+                    Entity nationSettlement = environment.getEntity(nationSettlementId);
+                    if (nationSettlement != null) {
+                        pawn.setTargetEntity(nationSettlement);
+                    }
+                }
+            }
+            else if (pawn.isAtTargetEntity(30)) {
+                // do nothing
+                return;
+            }
+            else {
+                // move towards target entity
+                pawn.moveTowardsTargetEntity();
+            }
+        }
+
+        // ---
 
         private void buyItem(Pawn buyer, Entity seller, ItemType itemType, int numItems) {
             Inventory buyerInventory = buyer.getInventory();

@@ -10,6 +10,7 @@ namespace osg {
         private List<EntityId> members = new List<EntityId>();
         private Dictionary<EntityId, NationRole> roles = new Dictionary<EntityId, NationRole>();
         private Color color;
+        private List<EntityId> settlements = new List<EntityId>();
 
         public Nation(string name, EntityId leaderId) {
             id = new NationId();
@@ -73,6 +74,26 @@ namespace osg {
 
         public EntityId getOldestMemberId() {
             return members[0];
+        }
+
+        public List<EntityId> getSettlements() {
+            return settlements;
+        }
+
+        public void addSettlement(EntityId settlementId) {
+            settlements.Add(settlementId);
+        }
+
+        public void removeSettlement(EntityId settlementId) {
+            settlements.Remove(settlementId);
+        }
+
+        public int getNumberOfSettlements() {
+            return settlements.Count;
+        }
+
+        public EntityId getSettlement(int index) {
+            return settlements[index];
         }
     }
 }

@@ -6,5 +6,6 @@ namespace osg {
         ROCK,
         PAWN,
         PLAYER,
+        SETTLEMENT,
     }
 }

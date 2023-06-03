@@ -16,7 +16,7 @@ namespace osg {
             playerWalkSpeed = 20;
             playerRunSpeed = 50;
             respawnPawns = false;
-            numStartingNations = 2;
+            numStartingNations = 5;
         }
 
         public int getChunkSize() {
