@@ -17,16 +17,17 @@ namespace osg {
         private TickCounter tickCounter;
         private EventRepository eventRepository;
         private NationRepository nationRepository;
-        private EventProducer eventProducer;        
+        private EventProducer eventProducer;
+        private PawnBehaviorExecutor pawnBehaviorExecutor;
         private Player player;
 
         private Status status;
-        private TextGameObject chunkPositionText;
         private TextGameObject numGoldCoinsText;
         private TextGameObject numWoodText;
         private TextGameObject numStoneText;
         private TextGameObject numApplesText;
         private TextGameObject energyText;
+        private TextGameObject mtpsText;
 
         public GameObject playerGameObject; // must be set in Unity Editor -- TODO: make this private and set it in the constructor (will require refactoring Player.cs)
         public bool runTests = false;
@@ -44,20 +45,29 @@ namespace osg {
             }
 
             gameConfig = new GameConfig();
-            tickCounter = new TickCounter(gameConfig.getUpdateInterval());
+            tickCounter = new TickCounter();
             status = new Status(tickCounter, gameConfig.getStatusExpirationTicks());
             player = new Player(playerGameObject, gameConfig.getPlayerWalkSpeed(), gameConfig.getPlayerRunSpeed(), status);
             eventRepository = new EventRepository();
             eventProducer = new EventProducer(eventRepository);
             environment = new Environment(gameConfig.getChunkSize(), gameConfig.getLocationScale());
             worldGenerator = new WorldGenerator(environment, player, eventProducer);
-            chunkPositionText = new TextGameObject("Chunk: (0, 0)", 20, 0, Screen.height / 4);
             nationRepository = new NationRepository();
-            numGoldCoinsText = new TextGameObject("Gold Coins: 0", 20, -Screen.width / 4, Screen.height / 4);
-            numWoodText = new TextGameObject("Wood: 0", 20, -Screen.width / 4, 0);
-            numStoneText = new TextGameObject("Stone: 0", 20, Screen.width / 4, 0);
-            numApplesText = new TextGameObject("Apples: 0", 20, Screen.width / 4, Screen.height / 4);
+            pawnBehaviorExecutor = new PawnBehaviorExecutor(environment, nationRepository, eventProducer);
+
+            // resources UI
+            int resourcesX = -Screen.width / 4;
+            int resourcesY = -Screen.height / 4;
+            numGoldCoinsText = new TextGameObject("Gold Coins: 0", 20, resourcesX, resourcesY);
+            numWoodText = new TextGameObject("Wood: 0", 20, resourcesX, resourcesY - 20);
+            numStoneText = new TextGameObject("Stone: 0", 20, resourcesX, resourcesY - 40);
+            numApplesText = new TextGameObject("Apples: 0", 20, resourcesX, resourcesY - 60);
+
+            // other UI
             energyText = new TextGameObject("Energy: 100", 20, Screen.width / 4, -Screen.height / 4);
+
+            // put in very top right corner
+            mtpsText = new TextGameObject("0mtps", 20, Screen.width / 4, Screen.height / 4);
 
             environment.getChunk(0, 0).addEntity(player);
             environment.addEntityId(player.getId());
@@ -66,66 +76,123 @@ namespace osg {
 
         // Per-frame updates
         public void Update() {
-            tickCounter.increment();
-
             handleCommands();
-
             player.update();
         }
 
         // Fixed updates
         public void FixedUpdate() {
-            if (tickCounter.shouldUpdate()) {
-                worldGenerator.update();
-                checkIfPlayerIsFallingIntoVoid();
-                chunkPositionText.updateText("Chunk: (" + worldGenerator.getCurrentChunkX() + ", " + worldGenerator.getCurrentChunkZ() + ")");
-                numGoldCoinsText.updateText("Gold Coins: " + player.getInventory().getNumItems(ItemType.GOLD_COIN));
-                numWoodText.updateText("Wood: " + player.getInventory().getNumItems(ItemType.WOOD));
-                numStoneText.updateText("Stone: " + player.getInventory().getNumItems(ItemType.STONE));
-                numApplesText.updateText("Apples: " + player.getInventory().getNumItems(ItemType.APPLE));
-                energyText.updateText("Energy: " + player.getEnergy());
-                status.clearStatusIfExpired();
+            tickCounter.increment();
+            worldGenerator.update();
+            checkIfPlayerIsFallingIntoVoid();
+            numGoldCoinsText.updateText("Gold Coins: " + player.getInventory().getNumItems(ItemType.GOLD_COIN));
+            numWoodText.updateText("Wood: " + player.getInventory().getNumItems(ItemType.WOOD));
+            numStoneText.updateText("Stone: " + player.getInventory().getNumItems(ItemType.STONE));
+            numApplesText.updateText("Apples: " + player.getInventory().getNumItems(ItemType.APPLE));
+            energyText.updateText("Energy: " + player.getEnergy());
+            mtpsText.updateText(tickCounter.getMtps() + "mtps");
+            status.clearStatusIfExpired();
 
-                // list of positions to generate chunks at
-                List<Vector3> positionsToGenerateChunksAt = new List<Vector3>();
+            // list of positions to generate chunks at
+            List<Vector3> positionsToGenerateChunksAt = new List<Vector3>();
 
-                foreach (Chunk chunk in environment.getChunks()) {
-                    foreach (Entity entity in chunk.getEntities()) {
-                        if (entity.getType() == EntityType.PAWN) {
-                            Pawn pawn = (Pawn)entity;
+            foreach (Chunk chunk in environment.getChunks()) {
+                foreach (Entity entity in chunk.getEntities()) {
+                    if (entity.getType() == EntityType.PAWN) {
+                        Pawn pawn = (Pawn)entity;
 
-                            pawn.fixedUpdate(environment, nationRepository);
+                        // compute and execute behavior
+                        pawn.computeBehaviorType(environment, nationRepository);
+                        pawnBehaviorExecutor.executeBehavior(pawn, pawn.getCurrentBehaviorType());
 
-                            if (pawn.getNationId() == null) {
-                                createOrJoinNation(pawn);
-                            }
+                        // update energy
+                        if (pawn.getEnergy() < 90 && pawn.getInventory().getNumItems(ItemType.APPLE) > 0) {
+                            pawn.getInventory().removeItem(ItemType.APPLE, 1);
+                            pawn.setEnergy(pawn.getEnergy() + 10);
+                        }
+                        pawn.setEnergy(pawn.getEnergy() - pawn.getMetabolism());
 
-                            float ypos = pawn.getGameObject().transform.position.y;
-                            if (ypos < -10) {
-                                Debug.Log("Entity " + pawn.getId() + " fell into void. Teleporting to spawn.");
-                                pawn.getGameObject().transform.position = new Vector3(0, 10, 0);
-                            }
+                        // set nametag to show energy and inventory contents
+                        string nameTagText = pawn.getName() + " (" + (int)pawn.getEnergy() + ")";
+                        // show wood, stone, apples and gold coins
+                        if (pawn.getInventory().getNumItems(ItemType.WOOD) > 0) {
+                            nameTagText += " W:" + pawn.getInventory().getNumItems(ItemType.WOOD);
+                        }
+                        if (pawn.getInventory().getNumItems(ItemType.STONE) > 0) {
+                            nameTagText += " S:" + pawn.getInventory().getNumItems(ItemType.STONE);
+                        }
+                        if (pawn.getInventory().getNumItems(ItemType.APPLE) > 0) {
+                            nameTagText += " A:" + pawn.getInventory().getNumItems(ItemType.APPLE);
+                        }
+                        if (pawn.getInventory().getNumItems(ItemType.GOLD_COIN) > 0) {
+                            nameTagText += " G:" + pawn.getInventory().getNumItems(ItemType.GOLD_COIN);
+                        }
+                        pawn.setNameTag(nameTagText);
 
-                            Chunk retrievedChunk = environment.getChunkAtPosition(pawn.getGameObject().transform.position);
-                            if (retrievedChunk == null) {
-                                positionsToGenerateChunksAt.Add(pawn.getGameObject().transform.position);
-                            }
-                            
-                            if (pawn.getEnergy() <= 0) {
-                                eventProducer.producePawnDeathEvent(pawn.getGameObject().transform.position, pawn);
-                                pawn.setEnergy(100);
-                                pawn.getInventory().clear();
-                                status.update(pawn.getName() + " has died.");
+                        // create or join nation
+                        if (pawn.getNationId() == null) {
+                            createOrJoinNation(pawn);
+                        }
+
+                        // check if pawn is falling into void
+                        float ypos = pawn.getGameObject().transform.position.y;
+                        if (ypos < -10) {
+                            Debug.Log("Entity " + pawn.getId() + " fell into void. Teleporting to spawn.");
+                            pawn.getGameObject().transform.position = new Vector3(0, 10, 0);
+                        }
+
+                        // check if pawn is in a new chunk
+                        Chunk retrievedChunk = environment.getChunkAtPosition(pawn.getGameObject().transform.position);
+                        if (retrievedChunk == null) {
+                            positionsToGenerateChunksAt.Add(pawn.getGameObject().transform.position);
+                        }
+                        
+                        // check if pawn is dead
+                        if (pawn.getEnergy() <= 0) {
+                            eventProducer.producePawnDeathEvent(pawn.getGameObject().transform.position, pawn);
+                            pawn.setEnergy(100);
+                            pawn.getInventory().clear();
+                            status.update(pawn.getName() + " has died.");
+                            if (gameConfig.getRespawnPawns()) {
                                 pawn.getGameObject().transform.position = new Vector3(Random.Range(-100, 100), 10, Random.Range(-100, 100));
+                            }
+                            else {
+                                pawn.markForDeletion();
+                                if (pawn.getNationId() != null) {
+                                    Nation nation = nationRepository.getNation(pawn.getNationId());
+                                    nation.removeMember(pawn.getId());
+                                    if (nation.getLeaderId() == pawn.getId()) {
+                                        // transfer leadership to another pawn
+                                        if (nation.getNumberOfMembers() > 0) {
+                                            nation.setLeaderId(nation.getOldestMemberId());
+                                            if (pawn.getType() == EntityType.PAWN) {
+                                                Pawn newLeader = (Pawn) environment.getEntity(nation.getLeaderId());
+                                                status.update(newLeader.getName() + " is now the leader of " + nation.getName() + ".");
+                                            }
+                                            else if (pawn.getType() == EntityType.PLAYER) {
+                                                Player newLeader = (Player) environment.getEntity(nation.getLeaderId());
+                                                player.getStatus().update("You are now the leader of " + nation.getName() + ".");
+                                            }
+                                            else {
+                                                Debug.Log("ERROR: Oldest member of nation " + nation.getName() + " is not a pawn or player.");
+                                            }
+                                            
+                                        }
+                                        else {
+                                            nationRepository.removeNation(nation);
+                                            status.update(nation.getName() + " has been disbanded.");
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
                 }
+            }
 
-                foreach (Vector3 position in positionsToGenerateChunksAt) {
-                    worldGenerator.generateChunkAtPosition(position);
-                    worldGenerator.generateSurroundingChunksAtPosition(position);
-                }
+            foreach (Vector3 position in positionsToGenerateChunksAt) {
+                worldGenerator.generateChunkAtPosition(position);
+                worldGenerator.generateSurroundingChunksAtPosition(position);
             }
             
             player.fixedUpdate();
@@ -164,6 +231,18 @@ namespace osg {
                 InteractCommand command = new InteractCommand(environment, nationRepository, eventProducer);
                 command.execute(player);
             }
+            else if (Input.GetKeyDown(KeyCode.F1)) {
+                SpawnPawnCommand command = new SpawnPawnCommand(environment, eventProducer);
+                command.execute(player);
+            }
+            else if (Input.GetKeyDown(KeyCode.F2)) {
+                GenerateLandCommand command = new GenerateLandCommand(environment, worldGenerator);
+                command.execute(player);
+            }
+            else if (Input.GetKeyDown(KeyCode.F3)) {
+                SpawnMoneyCommand command = new SpawnMoneyCommand();
+                command.execute(player);
+            }
         }
 
         private void checkIfPlayerIsFallingIntoVoid() {
@@ -176,8 +255,7 @@ namespace osg {
         }
 
         private void createOrJoinNation(Pawn pawn) {
-            // if less than 4 nations, create a new nation
-            if (nationRepository.getNumberOfNations() < 4) {
+            if (nationRepository.getNumberOfNations() <= gameConfig.getNumStartingNations()) {
                 Nation nation = new Nation(NationNameGenerator.generate(), pawn.getId());
                 nationRepository.addNation(nation);
                 pawn.setNationId(nation.getId());

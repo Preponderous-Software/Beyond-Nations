@@ -27,6 +27,9 @@ The following controls are available in the game:
 | `L` | Leave your current nation |
 | `T` | Teleport all living entities to you |
 | `Num Lock` | Toggle auto-walk |
+| `F1` | Spawn a new pawn |
+| `F2` | Generate nearby land |
+| `F3` | Spawn money |
 
 ## Game Systems
 There are a number of systems that will be implemented in the game. These systems will be used to create a rich and engaging gameplay experience. Details can be found in the [Systems Document](./docs/SYSTEMS.md).

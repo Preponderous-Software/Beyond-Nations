@@ -85,6 +85,11 @@ namespace osg {
                 return generate();
             }
             generated.Add(fullName);
+
+            if (generated.Count == names.Length * familyNames.Length) {
+                generated.Clear();
+            }
+
             return fullName;
         }
     }

@@ -70,5 +70,9 @@ namespace osg {
             int randomIndex = Random.Range(0, members.Count);
             return members[randomIndex];
         }
+
+        public EntityId getOldestMemberId() {
+            return members[0];
+        }
     }
 }

@@ -13,6 +13,7 @@ namespace osg {
                     if (entity.getType() == EntityType.PAWN) {
                         Pawn pawn = (Pawn)entity;
                         pawn.getGameObject().transform.position = player.getGameObject().transform.position;
+                        pawn.setTargetEntity(null);
                     }
                 }
             }

@@ -11,5 +11,6 @@ namespace osg {
         PawnSpawn,
         PawnDeath,
         PlayerDeath,
+        PawnRelationshipIncrease
     }
 }

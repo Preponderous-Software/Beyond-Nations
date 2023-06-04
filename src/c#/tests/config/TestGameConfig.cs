@@ -17,7 +17,6 @@ namespace osgtests {
             // check
             Debug.Assert(config.getChunkSize() == 9);
             Debug.Assert(config.getLocationScale() == 9);
-            Debug.Assert(config.getUpdateInterval() == 10);
             Debug.Assert(config.getStatusExpirationTicks() == 500);
             Debug.Assert(config.getPlayerWalkSpeed() == 20);
             Debug.Assert(config.getPlayerRunSpeed() == 50);

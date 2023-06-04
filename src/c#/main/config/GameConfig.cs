@@ -3,18 +3,20 @@ namespace osg {
     class GameConfig {
         private int chunkSize;
         private int locationScale;
-        private int updateInterval;
         private int statusExpirationTicks;
         private int playerWalkSpeed;
         private int playerRunSpeed;
+        private bool respawnPawns;
+        private int numStartingNations;
 
         public GameConfig() {
             chunkSize = 9;
             locationScale = 9;
-            updateInterval = 10;
             statusExpirationTicks = 500;
             playerWalkSpeed = 20;
             playerRunSpeed = 50;
+            respawnPawns = false;
+            numStartingNations = 2;
         }
 
         public int getChunkSize() {
@@ -23,10 +25,6 @@ namespace osg {
 
         public int getLocationScale() {
             return locationScale;
-        }
-
-        public int getUpdateInterval() {
-            return updateInterval;
         }
 
         public int getStatusExpirationTicks() {
@@ -39,6 +37,14 @@ namespace osg {
 
         public int getPlayerRunSpeed() {
             return playerRunSpeed;
+        }
+
+        public bool getRespawnPawns() {
+            return respawnPawns;
+        }
+
+        public int getNumStartingNations() {
+            return numStartingNations;
         }
     }
 }
