@@ -17,8 +17,8 @@ namespace osg {
         }
 
         public override void createGameObject(Vector3 position) {
-            GameObject gameObject = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            gameObject.transform.localScale = new Vector3(10, 10, 10);
+            GameObject gameObject = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+            gameObject.transform.localScale = new Vector3(10, 5, 10);
             gameObject.GetComponent<Renderer>().material.color = this.color;
             gameObject.transform.position = position;
             gameObject.name = "Settlement";

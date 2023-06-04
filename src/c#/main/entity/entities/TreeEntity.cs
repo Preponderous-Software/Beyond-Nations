@@ -18,7 +18,7 @@ namespace osg {
             gameObject.transform.position = position;
             gameObject.name = "Tree";
 
-            trunk = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            trunk = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
             trunk.transform.localScale = new Vector3(1, height, 1);
             trunk.GetComponent<Renderer>().material.color = new Color(0.5f, 0.25f, 0);
             trunk.transform.position = position;
