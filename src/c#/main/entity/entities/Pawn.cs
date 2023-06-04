@@ -156,6 +156,20 @@ namespace osg {
 
         // The current behavior type should only be changed in computeBehaviorType()
         public void computeBehaviorType(Environment environment, NationRepository nationRepository, EntityRepository entityRepository) {
+            // 10% chance to consider planting a sapling
+            if (Random.Range(0, 100) < 5) {
+                if (getInventory().getNumItems(ItemType.SAPLING) > 0) {
+                    // if no tree within x units, plant sapling
+                    TreeEntity nearestTree = environment.getNearestTree(getGameObject().transform.position);
+                    Sapling nearestSapling = (Sapling)environment.getNearestEntityOfType(getGameObject().transform.position, EntityType.SAPLING);
+                    int distanceToNearestTree = nearestTree == null ? int.MaxValue : (int)Vector3.Distance(nearestTree.getGameObject().transform.position, getGameObject().transform.position);
+                    int distanceToNearestSapling = nearestSapling == null ? int.MaxValue : (int)Vector3.Distance(nearestSapling.getGameObject().transform.position, getGameObject().transform.position);
+                    if (nearestTree == null || distanceToNearestTree > 50 && distanceToNearestSapling > 20) {
+                        currentBehaviorType = BehaviorType.PLANT_SAPLING;
+                        return;
+                    }
+                }
+            }      
 
             if (energy < 80 && getInventory().getNumItems(ItemType.APPLE) == 0) {
                 // if nation leader has apples, purchase apples from leader

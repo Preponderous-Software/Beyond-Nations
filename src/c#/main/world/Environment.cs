@@ -57,9 +57,15 @@ namespace osg {
         }
 
         public Entity getNearestEntityOfType(Vector3 position, EntityType type) {
+            List<Entity> entities = entityRepository.getEntitiesOfType(type);
+            if (entities.Count == 0) {
+                return null;
+            }
+
+            // find nearest entity
             Entity nearestEntity = null;
             float nearestDistance = float.MaxValue;
-            foreach (Entity entity in entityRepository.getEntities()) {
+            foreach (Entity entity in entities) {
                 if (entity.getType() == type) {
                     float distance = Vector3.Distance(position, entity.getGameObject().transform.position);
                     if (distance < nearestDistance) {

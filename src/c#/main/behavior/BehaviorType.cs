@@ -8,5 +8,6 @@ namespace osg {
         PURCHASE_FOOD,
         CREATE_SETTLEMENT,
         GO_HOME,
+        PLANT_SAPLING,
     }
 }

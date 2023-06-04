@@ -16,6 +16,16 @@ namespace osg {
             return new List<Entity>(entities.Values);
         }
 
+        public List<Entity> getEntitiesOfType(EntityType type) {
+            List<Entity> entitiesOfType = new List<Entity>();
+            foreach (Entity entity in entities.Values) {
+                if (entity.getType() == type) {
+                    entitiesOfType.Add(entity);
+                }
+            }
+            return entitiesOfType;
+        }
+
         public Entity getEntity(EntityId id) {
             try {
                 return entities[id];

@@ -4,5 +4,6 @@ namespace osg {
         WOOD,
         STONE,
         APPLE,
+        SAPLING,
     }
 }

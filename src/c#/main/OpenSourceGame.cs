@@ -27,6 +27,7 @@ namespace osg {
         private TextGameObject numWoodText;
         private TextGameObject numStoneText;
         private TextGameObject numApplesText;
+        private TextGameObject numSaplingsText;
         private TextGameObject energyText;
         private TextGameObject mtpsText;
 
@@ -64,6 +65,7 @@ namespace osg {
             numWoodText = new TextGameObject("Wood: 0", 20, resourcesX, resourcesY - 20);
             numStoneText = new TextGameObject("Stone: 0", 20, resourcesX, resourcesY - 40);
             numApplesText = new TextGameObject("Apples: 0", 20, resourcesX, resourcesY - 60);
+            numSaplingsText = new TextGameObject("Saplings: 0", 20, resourcesX, resourcesY - 80);
 
             // other UI
             energyText = new TextGameObject("Energy: 100", 20, Screen.width / 4, -Screen.height / 4);
@@ -90,6 +92,7 @@ namespace osg {
             numWoodText.updateText("Wood: " + player.getInventory().getNumItems(ItemType.WOOD));
             numStoneText.updateText("Stone: " + player.getInventory().getNumItems(ItemType.STONE));
             numApplesText.updateText("Apples: " + player.getInventory().getNumItems(ItemType.APPLE));
+            numSaplingsText.updateText("Saplings: " + player.getInventory().getNumItems(ItemType.SAPLING));
             energyText.updateText("Energy: " + player.getEnergy());
             mtpsText.updateText(tickCounter.getMtps() + "mtps");
             status.clearStatusIfExpired();
@@ -195,6 +198,15 @@ namespace osg {
                                 }
                             }
                         }
+                    }
+                }
+                else if (entity.getType() == EntityType.SAPLING) {
+                    Sapling sapling = (Sapling)entity;
+                    if (sapling.isGrown()) {
+                        // replace with tree
+                        TreeEntity tree = new TreeEntity(sapling.getGameObject().transform.position, 5);
+                        entityRepository.addEntity(tree);
+                        sapling.markForDeletion();
                     }
                 }
             }

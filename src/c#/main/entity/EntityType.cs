@@ -7,5 +7,6 @@ namespace osg {
         PAWN,
         PLAYER,
         SETTLEMENT,
+        SAPLING,
     }
 }

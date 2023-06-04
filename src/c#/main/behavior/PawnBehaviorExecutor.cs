@@ -40,6 +40,9 @@ namespace osg {
                 case BehaviorType.GO_HOME:
                     executeGoHomeBehavior(pawn);
                     break;
+                case BehaviorType.PLANT_SAPLING:
+                    executePlantSaplingBehavior(pawn);
+                    break;
                 default:
                     break;
             }
@@ -200,6 +203,20 @@ namespace osg {
                 // move towards target entity
                 pawn.moveTowardsTargetEntity();
             }
+        }
+
+        private void executePlantSaplingBehavior(Pawn pawn) {
+            // if pawn has no saplings, skip
+            if (pawn.getInventory().getNumItems(ItemType.SAPLING) == 0) {
+                Debug.LogWarning("Pawn " + pawn + " has no saplings to plant.");
+                return;
+            }
+
+            Vector3 position = pawn.getPosition();
+            position += new Vector3(Random.Range(-5f, 5f), 0, Random.Range(-5f, 5f));
+            Sapling tree = new Sapling(position, 3);
+            entityRepository.addEntity(tree);
+            pawn.getInventory().removeItem(ItemType.SAPLING, 1);
         }
 
         // ---
