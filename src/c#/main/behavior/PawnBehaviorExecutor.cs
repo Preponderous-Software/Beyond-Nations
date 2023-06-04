@@ -11,11 +11,13 @@ namespace osg {
         private Environment environment;
         private NationRepository nationRepository;
         private EventProducer eventProducer;
+        private EntityRepository entityRepository;
 
-        public PawnBehaviorExecutor(Environment environment, NationRepository nationRepository, EventProducer eventProducer) {
+        public PawnBehaviorExecutor(Environment environment, NationRepository nationRepository, EventProducer eventProducer, EntityRepository entityRepository) {
             this.environment = environment;
             this.nationRepository = nationRepository;
             this.eventProducer = eventProducer;
+            this.entityRepository = entityRepository;
         }
 
         public void executeBehavior(Pawn pawn, BehaviorType behaviorType) {
@@ -92,7 +94,7 @@ namespace osg {
                 Nation nation = nationRepository.getNation(pawn.getNationId());
                 if (nation != null) {
                     EntityId nationLeaderId = nation.getLeaderId();
-                    Entity nationLeader = environment.getEntity(nationLeaderId);
+                    Entity nationLeader = entityRepository.getEntity(nationLeaderId);
                     if (nationLeader != null) {
                         pawn.setTargetEntity(nationLeader);
                     }
@@ -134,7 +136,7 @@ namespace osg {
                 Nation nation = nationRepository.getNation(pawn.getNationId());
                 if (nation != null) {
                     EntityId nationLeaderId = nation.getLeaderId();
-                    Entity nationLeader = environment.getEntity(nationLeaderId);
+                    Entity nationLeader = entityRepository.getEntity(nationLeaderId);
                     if (nationLeader != null) {
                         pawn.setTargetEntity(nationLeader);
                     }
@@ -175,11 +177,7 @@ namespace osg {
             // create settlement
             Settlement settlement = new Settlement(targetPosition, nation.getId(), nationColor, nation.getName());
             nation.addSettlement(settlement.getId());
-            
-            Chunk chunk = environment.getChunkAtPosition(targetPosition);
-            chunk.addEntity(settlement);
-            environment.addEntityId(settlement.getId());
-            settlement.getGameObject().transform.parent = chunk.getGameObject().transform;
+            entityRepository.addEntity(settlement);
         }
 
         private void executeGoHomeBehavior(Pawn pawn) {
@@ -188,7 +186,7 @@ namespace osg {
                 Nation nation = nationRepository.getNation(pawn.getNationId());
                 if (nation != null && nation.getNumberOfSettlements() > 0) {
                     EntityId nationSettlementId = nation.getSettlement(0);
-                    Entity nationSettlement = environment.getEntity(nationSettlementId);
+                    Entity nationSettlement = entityRepository.getEntity(nationSettlementId);
                     if (nationSettlement != null) {
                         pawn.setTargetEntity(nationSettlement);
                     }

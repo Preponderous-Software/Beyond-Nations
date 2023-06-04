@@ -17,7 +17,6 @@ namespace osg {
         private int zpos;
         private string name;
         private GameObject gameObject;
-        private List<Entity> entities = new List<Entity>();
 
         public Chunk(int xpos, int zpos, int size, int locationScale) {
             this.id = new ChunkId();
@@ -67,60 +66,10 @@ namespace osg {
             return locations[0, 0].getScale();
         }
 
-        public void addEntity(Entity entity) {
-            entities.Add(entity);
-            Location location = getRandomLocation();
-            location.addEntityId(entity.getId());
-        }
-
-        public void addEntity(Entity entity, Location location) {
-            entities.Add(entity);
-            location.addEntityId(entity.getId());
-        }
-
-        public void removeEntity(Entity entity) {
-            entities.Remove(entity);
-            // get location
-            Location location = null;
-            for (int x = 0; x < size; x++) {
-                for (int z = 0; z < size; z++) {
-                    if (locations[x, z].isEntityPresent(entity)) {
-                        location = locations[x, z];
-                        break;
-                    }
-                }
-            }
-            if (location == null) {
-                throw new System.Exception("Entity not found in chunk");
-            }
-            location.removeEntityId(entity.getId());
-        }
-
-        public bool isEntityPresent(Entity entity) {
-            return entities.Contains(entity);
-        }
-
-        public Entity getEntity(EntityId entityId) {
-            foreach (Entity entity in entities) {
-                if (entity.getId().Equals(entityId)) {
-                    return entity;
-                }
-            }
-            throw new System.Exception("Entity not found in chunk");
-        }
-
-        public int getNumberOfEntities() {
-            return entities.Count;
-        }
-
         public Location getRandomLocation() {
             int x = Random.Range(0, size);
             int z = Random.Range(0, size);
             return locations[x, z];
-        }
-
-        public List<Entity> getEntities() {
-            return entities;
         }
 
         public void destroyGameObject() {

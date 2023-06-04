@@ -15,8 +15,6 @@ namespace osgtests {
             testGetSize();
             testGetX();
             testGetZ();
-            testAddEntity();
-            testRemoveEntity();
         }
 
         public static void testInitialization() {
@@ -136,39 +134,6 @@ namespace osgtests {
             Debug.Assert(z == 0);
 
             // clean up
-            chunk.destroyGameObject();
-        }
-
-        public static void testAddEntity() {
-            // prepare
-            Chunk chunk = new Chunk(0, 0, 1, 1);
-            Entity entity = new RockEntity(new Vector3(0, 0, 0));
-
-            // run
-            chunk.addEntity(entity);
-
-            // verify
-            Debug.Assert(chunk.getNumberOfEntities() == 1);
-
-            // clean up
-            entity.destroyGameObject();
-            chunk.destroyGameObject();
-        }
-
-        public static void testRemoveEntity() {
-            // prepare
-            Chunk chunk = new Chunk(0, 0, 1, 1);
-            Entity entity = new RockEntity(new Vector3(0, 0, 0));
-            chunk.addEntity(entity);
-
-            // run
-            chunk.removeEntity(entity);
-
-            // verify
-            Debug.Assert(chunk.getNumberOfEntities() == 0);
-
-            // clean up
-            entity.destroyGameObject();
             chunk.destroyGameObject();
         }
     }

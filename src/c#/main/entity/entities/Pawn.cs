@@ -155,13 +155,13 @@ namespace osg {
         }
 
         // The current behavior type should only be changed in computeBehaviorType()
-        public void computeBehaviorType(Environment environment, NationRepository nationRepository) {
+        public void computeBehaviorType(Environment environment, NationRepository nationRepository, EntityRepository entityRepository) {
 
             if (energy < 80 && getInventory().getNumItems(ItemType.APPLE) == 0) {
                 // if nation leader has apples, purchase apples from leader
                 if (getNationId() != null) {
                     Nation nation1 = nationRepository.getNation(getNationId());
-                    Entity nationLeader = environment.getEntity(nation1.getLeaderId());
+                    Entity nationLeader = entityRepository.getEntity(nation1.getLeaderId());
                     if (nationLeader.getId() == getId()) {
                         currentBehaviorType = BehaviorType.GATHER_RESOURCES;
                         return;
@@ -197,7 +197,7 @@ namespace osg {
             else if (role == NationRole.CITIZEN) {
                 // if pawn has at least 1 of each resource, sell resources
                 if (getInventory().getNumItems(ItemType.WOOD) >= 1 && getInventory().getNumItems(ItemType.STONE) >= 1 && getInventory().getNumItems(ItemType.APPLE) >= 1) {
-                    Entity nationLeader = environment.getEntity(nation.getLeaderId());
+                    Entity nationLeader = entityRepository.getEntity(nation.getLeaderId());
                     int numWood = getInventory().getNumItems(ItemType.WOOD);
                     int numStone = getInventory().getNumItems(ItemType.STONE);
                     int numApples = getInventory().getNumItems(ItemType.APPLE);
