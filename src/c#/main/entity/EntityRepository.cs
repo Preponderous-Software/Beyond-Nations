@@ -4,6 +4,7 @@ using System.Collections.Generic;
 namespace osg {
 
     public class EntityRepository {
+        // TODO: transition to using a dictionary of dictionaries with entity type as the key for the outer dictionary
         private Dictionary<EntityId, Entity> entities;
         private List<EntityId> entityIds;
 

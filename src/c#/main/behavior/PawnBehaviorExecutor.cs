@@ -111,9 +111,20 @@ namespace osg {
                     return;
                 }
 
-                sellItem(pawn, targetEntity, ItemType.WOOD, 1);
-                sellItem(pawn, targetEntity, ItemType.STONE, 1);
-                sellItem(pawn, targetEntity, ItemType.APPLE, 1);
+                // 50% chance to sell wood
+                if (Random.Range(0, 100) < 50) {
+                    sellItem(pawn, targetEntity, ItemType.WOOD, 1);
+                }
+
+                // 30% chance to sell stone
+                if (Random.Range(0, 100) < 30) {
+                    sellItem(pawn, targetEntity, ItemType.STONE, 1);
+                }
+
+                // 10% chance to sell food
+                if (Random.Range(0, 100) < 10) {
+                    sellItem(pawn, targetEntity, ItemType.APPLE, 1);
+                }
             }
             else {
                 // move towards target entity

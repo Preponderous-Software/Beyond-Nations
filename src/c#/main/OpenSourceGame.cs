@@ -20,9 +20,7 @@ namespace osg {
         private EntityRepository entityRepository;
         private EventProducer eventProducer;
         private PawnBehaviorExecutor pawnBehaviorExecutor;
-        private Player player;
-
-        private Status status;
+        private Player player; // TODO: move to player repository
         private TextGameObject numGoldCoinsText;
         private TextGameObject numWoodText;
         private TextGameObject numStoneText;
@@ -48,8 +46,7 @@ namespace osg {
 
             gameConfig = new GameConfig();
             tickCounter = new TickCounter();
-            status = new Status(tickCounter, gameConfig.getStatusExpirationTicks());
-            player = new Player(playerGameObject, gameConfig.getPlayerWalkSpeed(), gameConfig.getPlayerRunSpeed(), status);
+            player = new Player(playerGameObject, gameConfig.getPlayerWalkSpeed(), gameConfig.getPlayerRunSpeed(), tickCounter, gameConfig.getStatusExpirationTicks());
             eventRepository = new EventRepository();
             eventProducer = new EventProducer(eventRepository);
             entityRepository = new EntityRepository();
@@ -74,7 +71,7 @@ namespace osg {
             mtpsText = new TextGameObject("0mtps", 20, Screen.width / 4, Screen.height / 4);
 
             entityRepository.addEntity(player);
-            status.update("Press N to create a nation.");
+            player.getStatus().update("Press N to create a nation.");
         }
 
         // Per-frame updates
@@ -95,7 +92,7 @@ namespace osg {
             numSaplingsText.updateText("Saplings: " + player.getInventory().getNumItems(ItemType.SAPLING));
             energyText.updateText("Energy: " + player.getEnergy());
             mtpsText.updateText(tickCounter.getMtps() + "mtps");
-            status.clearStatusIfExpired();
+            player.getStatus().clearStatusIfExpired();
 
             // list of positions to generate chunks at
             List<Vector3> positionsToGenerateChunksAt = new List<Vector3>();
@@ -155,7 +152,7 @@ namespace osg {
                         eventProducer.producePawnDeathEvent(pawn.getGameObject().transform.position, pawn);
                         pawn.setEnergy(100);
                         pawn.getInventory().clear();
-                        status.update(pawn.getName() + " has died.");
+                        player.getStatus().update(pawn.getName() + " has died.");
                         if (gameConfig.getRespawnPawns()) {
                             pawn.getGameObject().transform.position = new Vector3(Random.Range(-100, 100), 10, Random.Range(-100, 100));
                         }
@@ -170,7 +167,7 @@ namespace osg {
                                         nation.setLeaderId(nation.getOldestMemberId());
                                         if (pawn.getType() == EntityType.PAWN) {
                                             Pawn newLeader = (Pawn) entityRepository.getEntity(nation.getLeaderId());
-                                            status.update(newLeader.getName() + " is now the leader of " + nation.getName() + ".");
+                                            player.getStatus().update(newLeader.getName() + " is now the leader of " + nation.getName() + ".");
                                         }
                                         else if (pawn.getType() == EntityType.PLAYER) {
                                             Player newLeader = (Player) entityRepository.getEntity(nation.getLeaderId());
@@ -193,7 +190,7 @@ namespace osg {
                                         // clear settlements
                                         nation.getSettlements().Clear();
 
-                                        status.update(nation.getName() + " has been disbanded.");
+                                        player.getStatus().update(nation.getName() + " has been disbanded.");
                                     }
                                 }
                             }
@@ -221,7 +218,7 @@ namespace osg {
                 eventProducer.producePlayerDeathEvent(player.getGameObject().transform.position, player);
                 player.setEnergy(100);
                 player.getInventory().clear();
-                status.update("You died.");
+                player.getStatus().update("You died.");
                 player.getGameObject().transform.position = new Vector3(Random.Range(-100, 100), 10, Random.Range(-100, 100));
             }
             deleteEntitiesMarkedForDeletion();
@@ -245,7 +242,7 @@ namespace osg {
                 command.execute(player);
             }
             else if (Input.GetKeyDown(KeyCode.L)) {
-                NationLeaveCommand command = new NationLeaveCommand(nationRepository, eventProducer);
+                NationLeaveCommand command = new NationLeaveCommand(nationRepository, eventProducer, entityRepository);
                 command.execute(player);
             }
             else if (Input.GetKeyDown(KeyCode.E)) {
@@ -264,6 +261,14 @@ namespace osg {
                 SpawnMoneyCommand command = new SpawnMoneyCommand();
                 command.execute(player);
             }
+            else if (Input.GetKeyDown(KeyCode.F)) {
+                FoundSettlementCommand command = new FoundSettlementCommand(environment, nationRepository, eventProducer, entityRepository);
+                command.execute(player);
+            }
+            else if (Input.GetKeyDown(KeyCode.P)) {
+                PlantSaplingCommand command = new PlantSaplingCommand(entityRepository);
+                command.execute(player);
+            }
         }
 
         private void checkIfPlayerIsFallingIntoVoid() {
@@ -271,7 +276,7 @@ namespace osg {
             if (ypos < -10) {
                 eventProducer.producePlayerFallingIntoVoidEvent(player.getGameObject().transform.position);
                 player.getGameObject().transform.position = new Vector3(0, 10, 0); 
-                status.update("You fell into the void. You have been teleported to the surface.");
+                player.getStatus().update("You fell into the void. You have been teleported to the surface.");
             }
         }
 
@@ -282,7 +287,7 @@ namespace osg {
                 pawn.setNationId(nation.getId());
                 pawn.setColor(nation.getColor());
                 eventProducer.produceNationCreationEvent(nation);
-                status.update(pawn.getName() + " created nation " + nation.getName() + ".");
+                player.getStatus().update(pawn.getName() + " created nation " + nation.getName() + ".");
             }
             else {
                 // join a random nation
@@ -291,7 +296,7 @@ namespace osg {
                 pawn.setNationId(nation.getId());
                 pawn.setColor(nation.getColor());
                 eventProducer.produceNationJoinEvent(nation, pawn.getId());
-                status.update(pawn.getName() + " joined nation " + nation.getName() + ". Members: " + nation.getNumberOfMembers() + ".");
+                player.getStatus().update(pawn.getName() + " joined nation " + nation.getName() + ". Members: " + nation.getNumberOfMembers() + ".");
             }
         }
 

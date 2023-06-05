@@ -19,12 +19,12 @@ namespace osg {
         private float energy = 100;
         private float metabolism = 0.01f;
 
-        public Player(GameObject gameObject, int walkSpeed, int runSpeed, Status status) : base(EntityType.PLAYER){
+        public Player(GameObject gameObject, int walkSpeed, int runSpeed, TickCounter tickCounter, int statusExpirationTicks) : base(EntityType.PLAYER){
             setGameObject(gameObject);
             this.rigidBody = gameObject.GetComponent<Rigidbody>();
             this.walkSpeed = walkSpeed;
             this.runSpeed = runSpeed;
-            this.status = status;
+            status = new Status(tickCounter, statusExpirationTicks);
             this.currentSpeed = walkSpeed;
             GameObject childCameraObject = gameObject.transform.GetChild(0).gameObject;
             this.playerCamera = childCameraObject.GetComponent<Camera>();

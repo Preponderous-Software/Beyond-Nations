@@ -10,19 +10,18 @@ namespace osg {
         }
 
         public void execute(Player player) {
-            Status status = player.getStatus();
             if (player.getNationId() != null) {
                 Nation playerNation = nationRepository.getNation(player.getNationId());
                 if (playerNation.getLeaderId() == player.getId()) {
-                    status.update("You are already the leader of " + playerNation.getName() + ".");
+                    player.getStatus().update("You are already the leader of " + playerNation.getName() + ".");
                 }
                 else {
-                    status.update("You are already a member of " + playerNation.getName() + ".");
+                    player.getStatus().update("You are already a member of " + playerNation.getName() + ".");
                 }
                 return;
             }
             if (nationRepository.getNumberOfNations() == 0) {
-                status.update("There are no nations to join.");
+                player.getStatus().update("There are no nations to join.");
                 return;
             }
             Nation nation = nationRepository.getRandomNation();
@@ -30,7 +29,7 @@ namespace osg {
             player.setNationId(nation.getId());
             player.setColor(nation.getColor());
             eventProducer.produceNationJoinEvent(nation, player.getId());
-            status.update("You joined nation " + nation.getName() + ". Members: " + nation.getNumberOfMembers() + ".");
+            player.getStatus().update("You joined nation " + nation.getName() + ". Members: " + nation.getNumberOfMembers() + ".");
         }
     }
 }
