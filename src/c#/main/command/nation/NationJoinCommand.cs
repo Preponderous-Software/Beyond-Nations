@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace osg {
 
     public class NationJoinCommand {
@@ -30,6 +32,14 @@ namespace osg {
             player.setColor(nation.getColor());
             eventProducer.produceNationJoinEvent(nation, player.getId());
             player.getStatus().update("You joined nation " + nation.getName() + ". Members: " + nation.getNumberOfMembers() + ".");
+
+            // choose random nation settlement
+            int numSettlements = nation.getSettlements().Count;
+            if (numSettlements != 0) {
+                int randomSettlementIndex = Random.Range(0, numSettlements);
+                EntityId randomSettlementId = nation.getSettlements()[randomSettlementIndex];
+                player.setSettlementId(randomSettlementId);
+            }
         }
     }
 }

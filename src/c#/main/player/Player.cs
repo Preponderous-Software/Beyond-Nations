@@ -14,6 +14,7 @@ namespace osg {
         private int currentSpeed;
         private Camera playerCamera = null;
         private NationId nationId = null;
+        private EntityId settlementId = null;
         private Status status = null;
         private bool autoWalk = false;
         private float energy = 100;
@@ -99,6 +100,14 @@ namespace osg {
 
         public void setNationId(NationId nationId) {
             this.nationId = nationId;
+        }
+
+        public EntityId getSettlementId() {
+            return settlementId;
+        }
+
+        public void setSettlementId(EntityId settlementId) {
+            this.settlementId = settlementId;
         }
 
         public Status getStatus() {

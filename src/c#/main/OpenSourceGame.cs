@@ -133,12 +133,33 @@ namespace osg {
                     if (pawn.getNationId() == null) {
                         createOrJoinNation(pawn);
                     }
+                    Nation nation = nationRepository.getNation(pawn.getNationId());
+
+                    // join settlement if not already in one
+                    if (pawn.getSettlementId() == null) {
+                        // choose random nation settlement
+                        int numSettlements = nation.getSettlements().Count;
+                        if (numSettlements != 0) {
+                            int randomSettlementIndex = Random.Range(0, numSettlements);
+                            EntityId randomSettlementId = nation.getSettlements()[randomSettlementIndex];
+                            pawn.setSettlementId(randomSettlementId);
+                        }
+                    }
 
                     // check if pawn is falling into void
                     float ypos = pawn.getGameObject().transform.position.y;
                     if (ypos < -10) {
-                        Debug.Log("Entity " + pawn.getId() + " fell into void. Teleporting to spawn.");
-                        pawn.getGameObject().transform.position = new Vector3(0, 10, 0);
+                        Debug.Log("Entity " + pawn.getId() + " fell into void. Teleporting.");
+                        if (pawn.getSettlementId() != null) {
+                            // pawn is in a settlement, so respawn at settlement
+                            Settlement settlement = (Settlement)entityRepository.getEntity(pawn.getSettlementId());
+                            Vector3 newPosition = settlement.getGameObject().transform.position;
+                            newPosition = new Vector3(newPosition.x, newPosition.y + 1, newPosition.z);
+                            pawn.getGameObject().transform.position = newPosition;
+                        } else {
+                            // pawn is not in a settlement, so respawn at spawn
+                            pawn.getGameObject().transform.position = new Vector3(Random.Range(-100, 100), 100, Random.Range(-100, 100));
+                        }
                     }
 
                     // check if pawn is in a new chunk
@@ -154,44 +175,51 @@ namespace osg {
                         pawn.getInventory().clear();
                         player.getStatus().update(pawn.getName() + " has died.");
                         if (gameConfig.getRespawnPawns()) {
-                            pawn.getGameObject().transform.position = new Vector3(Random.Range(-100, 100), 10, Random.Range(-100, 100));
+                            if (pawn.getSettlementId() != null) {
+                                // pawn is in a settlement, so respawn at settlement
+                                Settlement settlement = (Settlement)entityRepository.getEntity(pawn.getSettlementId());
+                                Vector3 newPosition = settlement.getGameObject().transform.position;
+                                newPosition = new Vector3(newPosition.x + Random.Range(-20, 20), newPosition.y, newPosition.z + Random.Range(-20, 20));
+                                pawn.getGameObject().transform.position = newPosition;
+                            }
+                            else {
+                                // pawn is not in a settlement, so respawn at spawn
+                                pawn.getGameObject().transform.position = new Vector3(0, 10, 0);
+                            }
                         }
                         else {
                             pawn.markForDeletion();
-                            if (pawn.getNationId() != null) {
-                                Nation nation = nationRepository.getNation(pawn.getNationId());
-                                nation.removeMember(pawn.getId());
-                                if (nation.getLeaderId() == pawn.getId()) {
-                                    // transfer leadership to another pawn
-                                    if (nation.getNumberOfMembers() > 0) {
-                                        nation.setLeaderId(nation.getOldestMemberId());
-                                        if (pawn.getType() == EntityType.PAWN) {
-                                            Pawn newLeader = (Pawn) entityRepository.getEntity(nation.getLeaderId());
-                                            player.getStatus().update(newLeader.getName() + " is now the leader of " + nation.getName() + ".");
-                                        }
-                                        else if (pawn.getType() == EntityType.PLAYER) {
-                                            Player newLeader = (Player) entityRepository.getEntity(nation.getLeaderId());
-                                            player.getStatus().update("You are now the leader of " + nation.getName() + ".");
-                                        }
-                                        else {
-                                            Debug.Log("ERROR: Oldest member of nation " + nation.getName() + " is not a pawn or player.");
-                                        }
-                                        
+                            nation.removeMember(pawn.getId());
+                            if (nation.getLeaderId() == pawn.getId()) {
+                                // transfer leadership to another pawn
+                                if (nation.getNumberOfMembers() > 0) {
+                                    nation.setLeaderId(nation.getOldestMemberId());
+                                    if (pawn.getType() == EntityType.PAWN) {
+                                        Pawn newLeader = (Pawn) entityRepository.getEntity(nation.getLeaderId());
+                                        player.getStatus().update(newLeader.getName() + " is now the leader of " + nation.getName() + ".");
+                                    }
+                                    else if (pawn.getType() == EntityType.PLAYER) {
+                                        Player newLeader = (Player) entityRepository.getEntity(nation.getLeaderId());
+                                        player.getStatus().update("You are now the leader of " + nation.getName() + ".");
                                     }
                                     else {
-                                        nationRepository.removeNation(nation);
-
-                                        // remove settlements
-                                        foreach (EntityId settlementId in nation.getSettlements()) {
-                                            Settlement settlement = (Settlement) entityRepository.getEntity(settlementId);
-                                            settlement.markForDeletion();
-                                        }
-
-                                        // clear settlements
-                                        nation.getSettlements().Clear();
-
-                                        player.getStatus().update(nation.getName() + " has been disbanded.");
+                                        Debug.Log("ERROR: Oldest member of nation " + nation.getName() + " is not a pawn or player.");
                                     }
+                                    
+                                }
+                                else {
+                                    nationRepository.removeNation(nation);
+
+                                    // remove settlements
+                                    foreach (EntityId settlementId in nation.getSettlements()) {
+                                        Settlement settlement = (Settlement) entityRepository.getEntity(settlementId);
+                                        settlement.markForDeletion();
+                                    }
+
+                                    // clear settlements
+                                    nation.getSettlements().Clear();
+
+                                    player.getStatus().update(nation.getName() + " has been disbanded.");
                                 }
                             }
                         }
@@ -219,7 +247,17 @@ namespace osg {
                 player.setEnergy(100);
                 player.getInventory().clear();
                 player.getStatus().update("You died.");
-                player.getGameObject().transform.position = new Vector3(Random.Range(-100, 100), 10, Random.Range(-100, 100));
+                
+                if (player.getSettlementId() != null) {
+                    // player is in a settlement, so respawn at settlement
+                    Settlement settlement = (Settlement)entityRepository.getEntity(player.getSettlementId());
+                    Vector3 newPosition = settlement.getGameObject().transform.position;
+                    newPosition = new Vector3(newPosition.x + Random.Range(-20, 20), newPosition.y, newPosition.z + Random.Range(-20, 20));
+                    player.getGameObject().transform.position = newPosition;
+                }
+                else {
+                    player.getGameObject().transform.position = new Vector3(Random.Range(-100, 100), 10, Random.Range(-100, 100));
+                }
             }
             deleteEntitiesMarkedForDeletion();
         }
@@ -275,13 +313,23 @@ namespace osg {
             float ypos = player.getGameObject().transform.position.y;
             if (ypos < -10) {
                 eventProducer.producePlayerFallingIntoVoidEvent(player.getGameObject().transform.position);
-                player.getGameObject().transform.position = new Vector3(0, 10, 0); 
+                if (player.getSettlementId() != null) {
+                    // player is in a settlement, so respawn at settlement
+                    Settlement settlement = (Settlement)entityRepository.getEntity(player.getSettlementId());
+                    Vector3 newPosition = settlement.getGameObject().transform.position;
+                    newPosition = new Vector3(newPosition.x + Random.Range(-20, 20), newPosition.y, newPosition.z + Random.Range(-20, 20));
+                    player.getGameObject().transform.position = newPosition;
+                }
+                else {
+                    player.getGameObject().transform.position = new Vector3(Random.Range(-100, 100), 10, Random.Range(-100, 100));
+                }
                 player.getStatus().update("You fell into the void. You have been teleported to the surface.");
             }
         }
 
         private void createOrJoinNation(Pawn pawn) {
             if (nationRepository.getNumberOfNations() <= gameConfig.getNumStartingNations()) {
+                // create a new nation
                 Nation nation = new Nation(NationNameGenerator.generate(), pawn.getId());
                 nationRepository.addNation(nation);
                 pawn.setNationId(nation.getId());

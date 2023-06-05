@@ -38,7 +38,7 @@ namespace osg {
                 if (player.getNationId() != null) {
                     Nation playersNation = nationRepository.getNation(player.getNationId());
                     if (playersNation.getLeaderId() == pawn.getId()) {
-                        attemptToSellItemsToPawn(player, pawn, status);
+                        attemptToSellItemsToPawn(player, pawn);
                         return;
                     }
                 }
@@ -80,7 +80,7 @@ namespace osg {
             return phrases;
         }
 
-        private void attemptToSellItemsToPawn(Player player, Pawn pawn, Status status) {
+        private void attemptToSellItemsToPawn(Player player, Pawn pawn) {
             int numWood = player.getInventory().getNumItems(ItemType.WOOD);
             int numStone = player.getInventory().getNumItems(ItemType.STONE);
             int numApples = player.getInventory().getNumItems(ItemType.APPLE);

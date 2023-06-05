@@ -21,11 +21,11 @@ namespace osg {
             Nation nation = nationRepository.getNation(player.getNationId());
             if (nation.getLeaderId() == player.getId()) {
                 if (nation.getNumberOfMembers() == 1) {
-                    deleteNation(nation, player, status);
+                    deleteNation(nation, player);
                     return;
                 }
                 else {
-                    transferLeadership(nation, player, status);
+                    transferLeadership(nation, player);
                     return;
                 }
             }
@@ -34,9 +34,11 @@ namespace osg {
             player.setColor(Color.white);
             eventProducer.produceNationLeaveEvent(nation, player.getId());
             player.getStatus().update("You left nation " + nation.getName() + ". Members: " + nation.getNumberOfMembers() + ".");
+
+            player.setSettlementId(null);
         }
 
-        private void deleteNation(Nation nation, Player player, Status status) {
+        private void deleteNation(Nation nation, Player player) {
             nationRepository.removeNation(nation);
             player.setNationId(null);
             player.setColor(Color.white);
@@ -51,9 +53,11 @@ namespace osg {
 
             // clear settlements
             nation.getSettlements().Clear();
+
+            player.setSettlementId(null);
         }
 
-        private void transferLeadership(Nation nation, Player player, Status status) {
+        private void transferLeadership(Nation nation, Player player) {
             while (nation.getLeaderId() == player.getId()) {
                 nation.setLeaderId(nation.getRandomMemberId());
                 nation.setRole(nation.getLeaderId(), NationRole.LEADER);

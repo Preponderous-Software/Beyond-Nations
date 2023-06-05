@@ -36,6 +36,7 @@ namespace osg {
             entityRepository.addEntity(settlement);
             nationRepository.getNation(player.getNationId()).addSettlement(settlement.getId());
             player.getStatus().update("Settlement founded.");
+            player.setSettlementId(settlement.getId());
         }
     }
 }
