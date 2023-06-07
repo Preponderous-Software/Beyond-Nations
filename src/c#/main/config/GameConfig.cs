@@ -8,6 +8,7 @@ namespace osg {
         private int playerRunSpeed;
         private bool respawnPawns;
         private int numStartingNations;
+        private bool keepInventoryOnDeath;
 
         public GameConfig() {
             chunkSize = 9;
@@ -16,7 +17,8 @@ namespace osg {
             playerWalkSpeed = 20;
             playerRunSpeed = 50;
             respawnPawns = true;
-            numStartingNations = 5;
+            numStartingNations = 10;
+            keepInventoryOnDeath = true;
         }
 
         public int getChunkSize() {
@@ -45,6 +47,10 @@ namespace osg {
 
         public int getNumStartingNations() {
             return numStartingNations;
+        }
+
+        public bool getKeepInventoryOnDeath() {
+            return keepInventoryOnDeath;
         }
     }
 }

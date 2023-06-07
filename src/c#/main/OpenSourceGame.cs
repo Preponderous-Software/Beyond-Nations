@@ -172,7 +172,9 @@ namespace osg {
                     if (pawn.getEnergy() <= 0) {
                         eventProducer.producePawnDeathEvent(pawn.getGameObject().transform.position, pawn);
                         pawn.setEnergy(100);
-                        pawn.getInventory().clear();
+                        if (gameConfig.getKeepInventoryOnDeath() == false) {
+                            pawn.getInventory().clear();
+                        }
                         player.getStatus().update(pawn.getName() + " has died.");
                         if (gameConfig.getRespawnPawns()) {
                             if (pawn.getSettlementId() != null) {
@@ -245,7 +247,9 @@ namespace osg {
             if (player.getEnergy() <= 0) {
                 eventProducer.producePlayerDeathEvent(player.getGameObject().transform.position, player);
                 player.setEnergy(100);
-                player.getInventory().clear();
+                if (gameConfig.getKeepInventoryOnDeath() == false) {
+                    player.getInventory().clear();
+                }
                 player.getStatus().update("You died.");
                 
                 if (player.getSettlementId() != null) {

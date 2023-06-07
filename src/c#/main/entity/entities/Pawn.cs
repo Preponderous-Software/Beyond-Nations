@@ -189,7 +189,7 @@ namespace osg {
                         currentBehaviorType = BehaviorType.GATHER_RESOURCES;
                         return;
                     }
-                    if (nationLeader.getInventory().getNumItems(ItemType.APPLE) > 0 && getInventory().getNumItems(ItemType.GOLD_COIN) >= 1) {
+                    if (nationLeader.getInventory().getNumItems(ItemType.APPLE) > 0 && getInventory().getNumItems(ItemType.GOLD_COIN) >= 5) {
                         currentBehaviorType = BehaviorType.PURCHASE_FOOD;
                         return;
                     }
@@ -209,30 +209,57 @@ namespace osg {
             NationRole role = nation.getRole(getId());
             if (role == NationRole.LEADER) {
                 if (nation.getNumberOfSettlements() == 0) {
-                    currentBehaviorType = BehaviorType.CREATE_SETTLEMENT;
-                    return;
+                    // if no settlements within x units, create settlement
+                    Entity nearestSettlement = environment.getNearestEntityOfType(getGameObject().transform.position, EntityType.SETTLEMENT);
+                    int distanceToNearestSettlement = nearestSettlement == null ? int.MaxValue : (int)Vector3.Distance(nearestSettlement.getGameObject().transform.position, getGameObject().transform.position);
+                    if (nearestSettlement == null || distanceToNearestSettlement > 200) {
+                        currentBehaviorType = BehaviorType.CREATE_SETTLEMENT;
+                        return;
+                    }
+                    else {
+                        currentBehaviorType = BehaviorType.GATHER_RESOURCES;
+                        return;
+                    }
+                    
                 }
                 else {
                     currentBehaviorType = BehaviorType.GO_HOME;
+                    return;
                 }
-                return;
+                
             }
             else if (role == NationRole.CITIZEN) {
-                // if pawn has at least 1 of each resource, sell resources
+                // if pawn has at least 1 of each resource, consider selling resources
                 if (getInventory().getNumItems(ItemType.WOOD) >= 1 && getInventory().getNumItems(ItemType.STONE) >= 1 && getInventory().getNumItems(ItemType.APPLE) >= 1) {
-                    Entity nationLeader = entityRepository.getEntity(nation.getLeaderId());
-                    int numWood = getInventory().getNumItems(ItemType.WOOD);
-                    int numStone = getInventory().getNumItems(ItemType.STONE);
-                    int numApples = getInventory().getNumItems(ItemType.APPLE);
-                    if (nationLeader.getInventory().getNumItems(ItemType.GOLD_COIN) < numWood * 2 + numStone * 3 + numApples * 1) {
-                        // leader doesn't have enough money to buy resources
+                    if (Random.Range(0, 100) < 25) {
+                        Entity nationLeader = entityRepository.getEntity(nation.getLeaderId());
+
+                        int numWood = getInventory().getNumItems(ItemType.WOOD);
+                        int numStone = getInventory().getNumItems(ItemType.STONE);
+                        int numApples = getInventory().getNumItems(ItemType.APPLE);
+                        if (nationLeader.getInventory().getNumItems(ItemType.GOLD_COIN) < numWood * 2 + numStone * 3 + numApples * 1) {
+                            // leader doesn't have enough money to buy resources
+                            currentBehaviorType = BehaviorType.GO_HOME;
+                            return;
+                        }
+                        currentBehaviorType = BehaviorType.SELL_RESOURCES;
+                        return;
+                    }
+                    else {
                         currentBehaviorType = BehaviorType.GO_HOME;
                         return;
                     }
-                    currentBehaviorType = BehaviorType.SELL_RESOURCES;
                 }
                 else {
-                    currentBehaviorType = BehaviorType.GATHER_RESOURCES;
+                    // if pawn doesn't have an abundance of resources, gather resources
+                    if (getInventory().getNumItems(ItemType.WOOD) < 10 && getInventory().getNumItems(ItemType.STONE) < 10 && getInventory().getNumItems(ItemType.APPLE) < 10) {
+                        currentBehaviorType = BehaviorType.GATHER_RESOURCES;
+                        return;
+                    }
+                    else {
+                        currentBehaviorType = BehaviorType.GO_HOME;
+                        return;
+                    }
                 }
             }
         }
