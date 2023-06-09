@@ -192,7 +192,7 @@ namespace osg {
             Settlement settlement = new Settlement(targetPosition, nation.getId(), nationColor, nation.getName());
             nation.addSettlement(settlement.getId());
             entityRepository.addEntity(settlement);
-            pawn.setSettlementId(settlement.getId());
+            pawn.setHomeSettlementId(settlement.getId());
         }
 
         private void executeGoHomeBehavior(Pawn pawn) {
@@ -200,7 +200,7 @@ namespace osg {
                 
                 Nation nation = nationRepository.getNation(pawn.getNationId());
                 if (nation != null && nation.getNumberOfSettlements() > 0) {
-                    EntityId settlementId = pawn.getSettlementId();
+                    EntityId settlementId = pawn.getHomeSettlementId();
                     if (settlementId == null) {
                         Debug.LogError("Pawn " + pawn + " has no settlement id.");
                         return;

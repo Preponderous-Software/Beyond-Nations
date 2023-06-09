@@ -138,13 +138,13 @@ namespace osg {
                     Nation nation = nationRepository.getNation(pawn.getNationId());
 
                     // join settlement if not already in one
-                    if (pawn.getSettlementId() == null) {
+                    if (pawn.getHomeSettlementId() == null) {
                         // choose random nation settlement
                         int numSettlements = nation.getSettlements().Count;
                         if (numSettlements != 0) {
                             int randomSettlementIndex = Random.Range(0, numSettlements);
                             EntityId randomSettlementId = nation.getSettlements()[randomSettlementIndex];
-                            pawn.setSettlementId(randomSettlementId);
+                            pawn.setHomeSettlementId(randomSettlementId);
                         }
                     }
 
@@ -152,9 +152,9 @@ namespace osg {
                     float ypos = pawn.getGameObject().transform.position.y;
                     if (ypos < -10) {
                         Debug.Log("Entity " + pawn.getId() + " fell into void. Teleporting.");
-                        if (pawn.getSettlementId() != null) {
+                        if (pawn.getHomeSettlementId() != null) {
                             // pawn is in a settlement, so respawn at settlement
-                            Settlement settlement = (Settlement)entityRepository.getEntity(pawn.getSettlementId());
+                            Settlement settlement = (Settlement)entityRepository.getEntity(pawn.getHomeSettlementId());
                             Vector3 newPosition = settlement.getGameObject().transform.position;
                             newPosition = new Vector3(newPosition.x, newPosition.y + 1, newPosition.z);
                             pawn.getGameObject().transform.position = newPosition;
@@ -179,9 +179,9 @@ namespace osg {
                         }
                         player.getStatus().update(pawn.getName() + " has died.");
                         if (gameConfig.getRespawnPawns()) {
-                            if (pawn.getSettlementId() != null) {
+                            if (pawn.getHomeSettlementId() != null) {
                                 // pawn is in a settlement, so respawn at settlement
-                                Settlement settlement = (Settlement)entityRepository.getEntity(pawn.getSettlementId());
+                                Settlement settlement = (Settlement)entityRepository.getEntity(pawn.getHomeSettlementId());
                                 Vector3 newPosition = settlement.getGameObject().transform.position;
                                 newPosition = new Vector3(newPosition.x + Random.Range(-20, 20), newPosition.y, newPosition.z + Random.Range(-20, 20));
                                 pawn.getGameObject().transform.position = newPosition;

@@ -7,7 +7,7 @@ namespace osg {
         private string name;
         private int speed = Random.Range(10, 20);
         private NationId nationId;
-        private EntityId settlementId;
+        private EntityId homeSettlementId;
         private Entity targetEntity;
         private BehaviorType currentBehaviorType = BehaviorType.NONE;
 
@@ -50,12 +50,12 @@ namespace osg {
             this.nationId = nationId;
         }
 
-        public EntityId getSettlementId() {
-            return settlementId;
+        public EntityId getHomeSettlementId() {
+            return homeSettlementId;
         }
 
-        public void setSettlementId(EntityId settlementId) {
-            this.settlementId = settlementId;
+        public void setHomeSettlementId(EntityId settlementId) {
+            this.homeSettlementId = settlementId;
         }
 
         public Dictionary<EntityId, int> getRelationships() {
