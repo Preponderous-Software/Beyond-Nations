@@ -19,6 +19,7 @@ namespace osg {
         private NationRepository nationRepository;
         private EntityRepository entityRepository;
         private EventProducer eventProducer;
+        private PawnBehaviorCalculator pawnBehaviorCalculator;
         private PawnBehaviorExecutor pawnBehaviorExecutor;
         private Player player; // TODO: move to player repository
         private TextGameObject numGoldCoinsText;
@@ -53,6 +54,7 @@ namespace osg {
             environment = new Environment(gameConfig.getChunkSize(), gameConfig.getLocationScale(), entityRepository);
             worldGenerator = new WorldGenerator(environment, player, eventProducer, entityRepository);
             nationRepository = new NationRepository();
+            pawnBehaviorCalculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository);
             pawnBehaviorExecutor = new PawnBehaviorExecutor(environment, nationRepository, eventProducer, entityRepository);
 
             // resources UI
@@ -102,8 +104,8 @@ namespace osg {
                     Pawn pawn = (Pawn)entity;
 
                     // compute and execute behavior
-                    pawn.computeBehaviorType(environment, nationRepository, entityRepository);
-                    pawnBehaviorExecutor.executeBehavior(pawn, pawn.getCurrentBehaviorType());
+                    BehaviorType currentBehavior = pawnBehaviorCalculator.computeBehaviorType(pawn);
+                    pawnBehaviorExecutor.executeBehavior(pawn, currentBehavior);
 
                     // update energy
                     if (pawn.getEnergy() < 90 && pawn.getInventory().getNumItems(ItemType.APPLE) > 0) {
