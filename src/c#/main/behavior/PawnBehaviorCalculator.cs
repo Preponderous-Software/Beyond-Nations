@@ -3,7 +3,7 @@ using UnityEngine;
 namespace osg {
 
     /**
-     * A class that handles pawn actions.
+     * A class that computes the behavior type of a pawn.
      */
     public class PawnBehaviorCalculator {
         private Environment environment;

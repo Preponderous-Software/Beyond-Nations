@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace osg {
 
     /**
-     * A class that handles pawn actions.
+     * A class that executes the behavior of a pawn.
      */
     public class PawnBehaviorExecutor {
         private Environment environment;
