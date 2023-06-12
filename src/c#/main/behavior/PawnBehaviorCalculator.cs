@@ -127,7 +127,7 @@ namespace osg {
                 return false;
             }
 
-            Pawn nationLeader = (Pawn)entityRepository.getEntity(nation.getLeaderId());
+            Entity nationLeader = entityRepository.getEntity(nation.getLeaderId());
             if (nationLeader == null) {
                 Debug.LogWarning("nation leader is null");
                 return false;
