@@ -103,9 +103,16 @@ namespace osg {
                 if (entity.getType() == EntityType.PAWN) {
                     Pawn pawn = (Pawn)entity;
 
-                    // compute and execute behavior
-                    BehaviorType currentBehavior = pawnBehaviorCalculator.computeBehaviorType(pawn);
-                    pawnBehaviorExecutor.executeBehavior(pawn, currentBehavior);
+                    int ticksBetweenBehaviorCalculations = gameConfig.getTicksBetweenBehaviorCalculations();
+                    BehaviorType currentBehavior = BehaviorType.NONE;
+                    if (tickCounter.getTick() % ticksBetweenBehaviorCalculations == 0) {
+                        currentBehavior = pawnBehaviorCalculator.computeBehaviorType(pawn);
+                    }
+
+                    int ticksBetweenBehaviorExecutions = gameConfig.getTicksBetweenBehaviorExecutions();
+                    if (tickCounter.getTick() % ticksBetweenBehaviorExecutions == 0) {
+                        pawnBehaviorExecutor.executeBehavior(pawn, currentBehavior);
+                    }
 
                     // update energy
                     if (pawn.getEnergy() < 90 && pawn.getInventory().getNumItems(ItemType.APPLE) > 0) {

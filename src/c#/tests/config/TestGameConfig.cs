@@ -20,6 +20,11 @@ namespace osgtests {
             Debug.Assert(config.getStatusExpirationTicks() == 500);
             Debug.Assert(config.getPlayerWalkSpeed() == 20);
             Debug.Assert(config.getPlayerRunSpeed() == 50);
+            Debug.Assert(config.getRespawnPawns() == true);
+            Debug.Assert(config.getNumStartingNations() == 5);
+            Debug.Assert(config.getKeepInventoryOnDeath() == true);
+            Debug.Assert(config.getTicksBetweenBehaviorCalculations() == 25);
+            Debug.Assert(config.getTicksBetweenBehaviorExecutions() == 5);
         }
     }    
 }

@@ -60,23 +60,18 @@ namespace osg {
                 
             }
             else if (role == NationRole.CITIZEN) {
-                // if pawn has at least 1 of each resource, consider selling resources
+                // if pawn has at least 1 of each resource, sell resources
                 if (pawn.getInventory().getNumItems(ItemType.WOOD) >= 1 && pawn.getInventory().getNumItems(ItemType.STONE) >= 1 && pawn.getInventory().getNumItems(ItemType.APPLE) >= 1) {
-                    if (Random.Range(0, 100) < 2) {
-                        Entity nationLeader = entityRepository.getEntity(nation.getLeaderId());
+                    Entity nationLeader = entityRepository.getEntity(nation.getLeaderId());
 
-                        int numWood = pawn.getInventory().getNumItems(ItemType.WOOD);
-                        int numStone = pawn.getInventory().getNumItems(ItemType.STONE);
-                        int numApples = pawn.getInventory().getNumItems(ItemType.APPLE);
-                        if (nationLeader.getInventory().getNumItems(ItemType.GOLD_COIN) < numWood * 2 + numStone * 3 + numApples * 1) {
-                            // leader doesn't have enough money to buy resources
-                            return BehaviorType.GO_HOME;
-                        }
-                        return BehaviorType.SELL_RESOURCES;
-                    }
-                    else {
+                    int numWood = pawn.getInventory().getNumItems(ItemType.WOOD);
+                    int numStone = pawn.getInventory().getNumItems(ItemType.STONE);
+                    int numApples = pawn.getInventory().getNumItems(ItemType.APPLE);
+                    if (nationLeader.getInventory().getNumItems(ItemType.GOLD_COIN) < numWood * 2 + numStone * 3 + numApples * 1) {
+                        // leader doesn't have enough money to buy resources
                         return BehaviorType.GO_HOME;
                     }
+                    return BehaviorType.SELL_RESOURCES;
                 }
                 else {
                     // if pawn doesn't have an abundance of resources, gather resources
