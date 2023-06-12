@@ -173,12 +173,12 @@ namespace osg {
                     // check if pawn is dead
                     if (pawn.getEnergy() <= 0) {
                         eventProducer.producePawnDeathEvent(pawn.getGameObject().transform.position, pawn);
-                        pawn.setEnergy(100);
-                        if (gameConfig.getKeepInventoryOnDeath() == false) {
-                            pawn.getInventory().clear();
-                        }
                         player.getStatus().update(pawn.getName() + " has died.");
                         if (gameConfig.getRespawnPawns()) {
+                            pawn.setEnergy(100);
+                            if (gameConfig.getKeepInventoryOnDeath() == false) {
+                                pawn.getInventory().clear();
+                            }
                             if (pawn.getHomeSettlementId() != null) {
                                 // pawn is in a settlement, so respawn at settlement
                                 Settlement settlement = (Settlement)entityRepository.getEntity(pawn.getHomeSettlementId());

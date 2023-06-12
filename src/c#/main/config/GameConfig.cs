@@ -16,7 +16,7 @@ namespace osg {
             statusExpirationTicks = 500;
             playerWalkSpeed = 20;
             playerRunSpeed = 50;
-            respawnPawns = true;
+            respawnPawns = false;
             numStartingNations = 10;
             keepInventoryOnDeath = true;
         }

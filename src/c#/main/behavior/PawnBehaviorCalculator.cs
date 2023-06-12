@@ -17,6 +17,10 @@ namespace osg {
         }
 
         public BehaviorType computeBehaviorType(Pawn pawn) {
+            if (pawn.isMarkedForDeletion()) {
+                return BehaviorType.NONE;
+            }
+
             // 10% chance to consider planting a sapling
             if (Random.Range(0, 100) < 5) {
                 if (pawn.getInventory().getNumItems(ItemType.SAPLING) > 0) {
