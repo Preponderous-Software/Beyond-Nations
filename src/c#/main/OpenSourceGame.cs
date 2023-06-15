@@ -101,7 +101,28 @@ namespace osg {
 
             foreach (Entity entity in entityRepository.getEntities()) {
                 if (entity.getType() == EntityType.PAWN) {
-                    Pawn pawn = (Pawn)entity;
+                    Pawn pawn = (Pawn) entity;
+
+                    // update energy
+                    if (pawn.getEnergy() < 90 && pawn.getInventory().getNumItems(ItemType.APPLE) > 0) {
+                        pawn.getInventory().removeItem(ItemType.APPLE, 1);
+                        pawn.setEnergy(pawn.getEnergy() + 10);
+                    }
+
+                    if (pawn.isCurrentlyInSettlement()) {
+                        pawn.setEnergy(pawn.getEnergy() - pawn.getMetabolism() / 10f);
+                        if (pawn.getEnergy() < 50) {
+                            pawn.setCurrentlyInSettlement(false);
+                            Settlement settlement = entityRepository.getEntity(pawn.getHomeSettlementId()) as Settlement;
+                            settlement.removeCurrentlyPresentEntity(pawn.getId());
+                            pawn.createGameObject(settlement.getGameObject().transform.position + new Vector3(Random.Range(-20, 20), 0, Random.Range(-20, 20)));
+                            pawn.setColor(settlement.getColor());
+                        }
+                        continue;
+                    }
+                    else {
+                        pawn.setEnergy(pawn.getEnergy() - pawn.getMetabolism());
+                    }
 
                     int ticksBetweenBehaviorCalculations = gameConfig.getTicksBetweenBehaviorCalculations();
                     BehaviorType currentBehavior = BehaviorType.NONE;
@@ -113,13 +134,6 @@ namespace osg {
                     if (tickCounter.getTick() % ticksBetweenBehaviorExecutions == 0) {
                         pawnBehaviorExecutor.executeBehavior(pawn, currentBehavior);
                     }
-
-                    // update energy
-                    if (pawn.getEnergy() < 90 && pawn.getInventory().getNumItems(ItemType.APPLE) > 0) {
-                        pawn.getInventory().removeItem(ItemType.APPLE, 1);
-                        pawn.setEnergy(pawn.getEnergy() + 10);
-                    }
-                    pawn.setEnergy(pawn.getEnergy() - pawn.getMetabolism());
 
                     // set nametag to show energy and inventory contents
                     string nameTagText = pawn.getName() + " (" + (int)pawn.getEnergy() + ")";

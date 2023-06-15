@@ -66,6 +66,12 @@ namespace osg {
             Entity nearestEntity = null;
             float nearestDistance = float.MaxValue;
             foreach (Entity entity in entities) {
+                if (entity.getType() == EntityType.PAWN) {
+                    Pawn pawn = (Pawn) entity;
+                    if (pawn.isCurrentlyInSettlement()) {
+                        continue;
+                    }
+                }
                 if (entity.getType() == type) {
                     float distance = Vector3.Distance(position, entity.getGameObject().transform.position);
                     if (distance < nearestDistance) {

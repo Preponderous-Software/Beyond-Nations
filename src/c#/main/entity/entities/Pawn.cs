@@ -23,15 +23,13 @@ namespace osg {
 
         // map of entity id to integer representing relationship strength
         private Dictionary<EntityId, int> relationships = new Dictionary<EntityId, int>();
+        private bool currentlyInSettlement = false;
 
         public Pawn(Vector3 position, string name) : base(EntityType.PAWN) {
             this.name = name;
             createGameObject(position);
             int startingGoldCoins = Random.Range(50, 200);
             getInventory().addItem(ItemType.GOLD_COIN, startingGoldCoins);
-
-            // create text object above head
-            initializeNameTag();
         }
 
         public string getName() {
@@ -131,6 +129,7 @@ namespace osg {
             Rigidbody rigidbody = gameObject.AddComponent<Rigidbody>();
             rigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
             setGameObject(gameObject);
+            initializeNameTag();
         }
 
         public override void destroyGameObject() {
@@ -211,6 +210,14 @@ namespace osg {
             else {
                 getRelationships().Add(entity.getId(), -amount);
             }
+        }
+
+        public bool isCurrentlyInSettlement() {
+            return currentlyInSettlement;
+        }
+
+        public void setCurrentlyInSettlement(bool currentlyInSettlement) {
+            this.currentlyInSettlement = currentlyInSettlement;
         }
     }
 }

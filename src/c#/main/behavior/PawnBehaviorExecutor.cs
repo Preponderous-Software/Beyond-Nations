@@ -121,8 +121,8 @@ namespace osg {
                     sellItem(pawn, targetEntity, ItemType.STONE, 1);
                 }
 
-                // 10% chance to sell food
-                if (Random.Range(0, 100) < 10) {
+                // 10% chance to sell food if pawn has an abundance
+                if (pawn.getInventory().getNumItems(ItemType.APPLE) > 10 && Random.Range(0, 100) < 10) {
                     sellItem(pawn, targetEntity, ItemType.APPLE, 1);
                 }
             }
@@ -196,23 +196,31 @@ namespace osg {
         }
 
         private void executeGoHomeBehavior(Pawn pawn) {
+            Nation nation = nationRepository.getNation(pawn.getNationId());
+            Settlement settlement = null;
+            if (nation != null && nation.getNumberOfSettlements() > 0) {
+                EntityId settlementId = pawn.getHomeSettlementId();
+                if (settlementId == null) {
+                    Debug.LogError("Pawn " + pawn + " has no settlement id.");
+                    return;
+                }
+                settlement = (Settlement) entityRepository.getEntity(settlementId);
+            }
+
             if (!pawn.hasTargetEntity()) {
-                
-                Nation nation = nationRepository.getNation(pawn.getNationId());
-                if (nation != null && nation.getNumberOfSettlements() > 0) {
-                    EntityId settlementId = pawn.getHomeSettlementId();
-                    if (settlementId == null) {
-                        Debug.LogError("Pawn " + pawn + " has no settlement id.");
-                        return;
-                    }
-                    Entity settlement = entityRepository.getEntity(settlementId);
-                    if (settlement != null) {
-                        pawn.setTargetEntity(settlement);
-                    }
+                if (settlement != null) {
+                    pawn.setTargetEntity(settlement);
                 }
             }
-            else if (pawn.isAtTargetEntity(30)) {
-                // do nothing
+            else if (pawn.isAtTargetEntity(20)) {
+                if (settlement == null) {
+                    Debug.LogError("Pawn " + pawn + " has no settlement to go to.");
+                    return;
+                }
+                settlement.addCurrentlyPresentEntity(pawn.getId());
+                pawn.setCurrentlyInSettlement(true);
+                pawn.destroyGameObject();
+                pawn.setTargetEntity(null);
                 return;
             }
             else {
