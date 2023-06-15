@@ -16,6 +16,21 @@ namespace osg {
             this.nationRepository = nationRepository;
         }
 
+        /**
+        * Scenarios:
+        * 1. pawn marked for deletion => NONE
+        * 2. pawn needs food but is nation leader => GATHER_RESOURCES
+        * 3. pawn needs food, nation leader has apples => PURCHASE_FOOD
+        * 4. pawn needs food, nation leader does not have apples => GATHER_RESOURCES
+        * 5. pawn has saplings and no trees/saplings within x units => PLANT_SAPLING
+        * 6. pawn has no nation => WANDER
+        * 7. pawn is nation leader, no settlements and no settlement within x units => CREATE_SETTLEMENT
+        * 8. pawn is nation leader, no settlements but settlement within x units => GATHER_RESOURCES
+        * 9. pawn is nation leader, has settlements => GO_HOME
+        * 10. pawn is citizen, does not have an abundance of resources => GATHER_RESOURCES
+        * 11. pawn is citizen, has an abundance of resources, nation leader has enough money => SELL_RESOURCES
+        * 12. pawn is citizen, has an abundance of resources, nation leader does not have enough money => GO_HOME
+        */
         public BehaviorType computeBehaviorType(Pawn pawn) {
             if (pawn.isMarkedForDeletion()) {
                 return BehaviorType.NONE;
@@ -23,7 +38,7 @@ namespace osg {
 
             if (pawnNeedsFood(pawn)) {
                 // if nation leader has apples, purchase apples from leader
-                if (nationLeaderHasApples(pawn) && !pawnIsNationLeader(pawn)) {
+                if (!pawnIsNationLeader(pawn) && nationLeaderHasApples(pawn)) {
                     return BehaviorType.PURCHASE_FOOD;
                 }
                 else {
@@ -101,12 +116,13 @@ namespace osg {
             }
 
             // if no tree within x units, plant sapling
+            int threshold = 25;
             TreeEntity nearestTree = environment.getNearestTree(pawn.getGameObject().transform.position);
             Sapling nearestSapling = (Sapling)environment.getNearestEntityOfType(pawn.getGameObject().transform.position, EntityType.SAPLING);
             int distanceToNearestTree = nearestTree == null ? int.MaxValue : (int)Vector3.Distance(nearestTree.getGameObject().transform.position, pawn.getGameObject().transform.position);
             int distanceToNearestSapling = nearestSapling == null ? int.MaxValue : (int)Vector3.Distance(nearestSapling.getGameObject().transform.position, pawn.getGameObject().transform.position);
 
-            return (nearestTree == null || distanceToNearestTree > 50) && (nearestSapling == null || distanceToNearestSapling > 20);
+            return (nearestTree == null || distanceToNearestTree > threshold) && (nearestSapling == null || distanceToNearestSapling > threshold);
         }
 
         private bool nationLeaderHasApples(Pawn pawn) {

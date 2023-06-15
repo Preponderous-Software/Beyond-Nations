@@ -29,6 +29,7 @@ namespace osg {
             trunk.GetComponent<Renderer>().material.color = new Color(0.5f, 0.25f, 0);
             trunk.transform.position = position;
             trunk.transform.parent = gameObject.transform;
+            UnityEngine.Object.Destroy(trunk.GetComponent<CapsuleCollider>());
             trunk.name = "Trunk";
 
             leaves = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -36,6 +37,7 @@ namespace osg {
             leaves.GetComponent<Renderer>().material.color = Color.green;
             leaves.transform.position = position + new Vector3(0, height - 1, 0);
             leaves.transform.parent = gameObject.transform;
+            UnityEngine.Object.Destroy(leaves.GetComponent<BoxCollider>());
             leaves.name = "Leaves";
             
             setGameObject(gameObject);

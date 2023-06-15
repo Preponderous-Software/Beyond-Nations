@@ -24,6 +24,7 @@ namespace osg {
             gameObject.GetComponent<Renderer>().material.color = this.color;
             gameObject.transform.position = position;
             gameObject.name = "Settlement";
+            UnityEngine.Object.Destroy(gameObject.GetComponent<CapsuleCollider>());
             setGameObject(gameObject);
         }
 

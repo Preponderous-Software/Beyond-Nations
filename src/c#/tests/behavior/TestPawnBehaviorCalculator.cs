@@ -15,8 +15,11 @@ namespace osgtests {
             testComputeBehaviorTypeNationLeaderHasSettlementsShouldGoHome();
         }
 
-        // input: pawn marked for deletion
-        // expected output: none
+        /**
+         * == Scenario 1 ==
+         * Input: pawn marked for deletion
+         * Expected output: NONE
+        */
         public static void testComputeBehaviorTypePawnMarkedForDeletionShouldDoNothing() {
             // prepare
             EntityRepository entityRepository = new EntityRepository();
@@ -37,8 +40,18 @@ namespace osgtests {
             pawn.destroyGameObject();
         }
 
-        // input: pawn needs food, nation leader has apples
-        // expected output: purchase food
+        /**
+         * == Scenario 2 ==
+            * Input: pawn needs food but is nation leader
+            * Expected output: GATHER_RESOURCES
+        */
+        // TODO: implement
+
+        /**
+         * == Scenario 3 ==
+            * Input: pawn needs food, nation leader has apples
+            * Expected output: PURCHASE_FOOD
+        */
         public static void testComputeBehaviorTypePawnNeedsFoodNationLeaderHasApplesShouldPurchaseFood() {
             // prepare
             EntityRepository entityRepository = new EntityRepository();
@@ -72,8 +85,11 @@ namespace osgtests {
             nationLeader.destroyGameObject();
         }
 
-        // input: pawn needs food, nation leader does not have apples
-        // expected output: gather resources
+        /**
+         * == Scenario 4 ==
+            * Input: pawn needs food, nation leader does not have apples
+            * Expected output: GATHER_RESOURCES
+        */
         public static void testComputeBehaviorTypePawnNeedsFoodNationLeaderDoesNotHaveApplesShouldGatherResources() {
             // prepare
             EntityRepository entityRepository = new EntityRepository();
@@ -106,8 +122,18 @@ namespace osgtests {
             nationLeader.destroyGameObject();
         }
 
-        // input: pawn has no nation
-        // expected output: wander
+        /**
+         * == Scenario 5 ==
+            * Input: pawn has saplings, no trees/saplings within x units
+            * Expected output: PLANT_SAPLING
+        */
+        // TODO: implement
+
+        /**
+         * == Scenario 6 ==
+            * Input: pawn has no nation
+            * Expected output: WANDER
+        */
         public static void testComputeBehaviorTypeNoNationShouldWander() {
             // prepare
             EntityRepository entityRepository = new EntityRepository();
@@ -129,8 +155,11 @@ namespace osgtests {
             pawn.destroyGameObject();
         }
 
-        // input: pawn has nation, is leader, has no settlements
-        // expected output: create settlement
+        /**
+         * == Scenario 7 ==
+            * Input: pawn has nation, is leader, has no settlements and no settlement within x units
+            * Expected output: create settlement
+        */
         public static void testComputeBehaviorTypeNationLeaderNoSettlementsShouldCreateSettlement() {
             // prepare
             EntityRepository entityRepository = new EntityRepository();
@@ -162,8 +191,18 @@ namespace osgtests {
             nationLeader.destroyGameObject();
         }
 
-        // input: pawn has nation, is leader, has settlements
-        // expected output: go home
+        /**
+         * == Scenario 8 ==
+            * Input: pawn has nation, is leader, has no settlements and settlement within x units
+            * Expected output: GATHER_RESOURCES
+        */
+        // TODO: implement
+
+        /**
+         * == Scenario 9 ==
+            * Input: pawn has nation, is leader, has settlements
+            * Expected output: GO_HOME
+        */
         public static void testComputeBehaviorTypeNationLeaderHasSettlementsShouldGoHome() {
             // prepare
             EntityRepository entityRepository = new EntityRepository();
@@ -199,5 +238,26 @@ namespace osgtests {
             nationLeader.destroyGameObject();
             settlement.destroyGameObject();
         }
+
+        /**
+         * == Scenario 10 ==
+            * Input: pawn is citizen, does not have an abundance of resources
+            * Expected output: GATHER_RESOURCES
+        */
+        // TODO: implement
+
+        /**
+         * == Scenario 11 ==
+            * Input: pawn is citizen, has an abundance of resources, nation leader has enough money
+            * Expected output: SELL_RESOURCES
+        */
+        // TODO: implement
+
+        /**
+         * == Scenario 12 ==
+            * Input: pawn is citizen, has an abundance of resources, nation leader does not have enough money
+            * Expected output: GO_HOME
+        */
+        // TODO: implement
     }
 }

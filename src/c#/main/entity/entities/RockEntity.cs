@@ -14,6 +14,7 @@ namespace osg {
             gameObject.GetComponent<Renderer>().material.color = Color.gray;
             gameObject.transform.position = position;
             gameObject.name = "Rock";
+            UnityEngine.Object.Destroy(gameObject.GetComponent<BoxCollider>());
             setGameObject(gameObject);
 
             getInventory().addItem(ItemType.STONE, 1);
