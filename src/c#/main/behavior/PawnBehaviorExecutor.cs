@@ -213,6 +213,9 @@ namespace osg {
                 }
             }
             else if (pawn.isAtTargetEntity(20)) {
+                if (nation.getLeaderId() == pawn.getId()) {
+                    return;
+                }
                 if (settlement == null) {
                     Debug.LogError("Pawn " + pawn + " has no settlement to go to.");
                     return;
