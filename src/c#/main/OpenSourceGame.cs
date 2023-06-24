@@ -315,7 +315,7 @@ namespace osg {
                 command.execute(player);
             }
             else if (Input.GetKeyDown(KeyCode.F1)) {
-                SpawnPawnCommand command = new SpawnPawnCommand(environment, eventProducer, entityRepository);
+                SpawnPawnCommand command = new SpawnPawnCommand(eventProducer, entityRepository);
                 command.execute(player);
             }
             else if (Input.GetKeyDown(KeyCode.F2)) {

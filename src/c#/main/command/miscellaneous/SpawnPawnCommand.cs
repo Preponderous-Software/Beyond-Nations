@@ -3,12 +3,10 @@ using UnityEngine;
 namespace osg {
 
     public class SpawnPawnCommand {
-        private Environment environment;
         private EventProducer eventProducer;
         private EntityRepository entityRepository;
 
-        public SpawnPawnCommand(Environment environment, EventProducer eventProducer, EntityRepository entityRepository) {
-            this.environment = environment;
+        public SpawnPawnCommand(EventProducer eventProducer, EntityRepository entityRepository) {
             this.eventProducer = eventProducer;
             this.entityRepository = entityRepository;
         }
