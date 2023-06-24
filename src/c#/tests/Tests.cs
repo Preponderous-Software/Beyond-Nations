@@ -25,6 +25,9 @@ namespace osgtests {
             // tick
             TestTickCounter.runTests();
 
+            // ui
+            TestCanvasFactory.runTests();
+
             // world
             TestLocationId.runTests();
             TestLocation.runTests();
