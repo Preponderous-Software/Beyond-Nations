@@ -30,6 +30,7 @@ namespace osgtests {
 
             // ui
             TestCanvasFactory.runTests();
+            TestStatus.runTests();
 
             // world
             TestLocationId.runTests();
