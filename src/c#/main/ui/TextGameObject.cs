@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 namespace osg {
     
-    class TextGameObject {
+    public class TextGameObject {
         private string text;
         private int fontSize;
         private int x;
@@ -27,6 +27,10 @@ namespace osg {
 
         public string getText() {
             return text;
+        }
+
+        public GameObject getCanvasObject() {
+            return canvasObject;
         }
 
     }

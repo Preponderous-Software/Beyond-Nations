@@ -37,6 +37,10 @@ namespace osg {
             return statusText.getText();
         }
 
+        public TextGameObject getTextGameObject() {
+            return statusText;
+        }
+
         private void createStatusText() {
             int x = 0;
             int y = -(Screen.height / 4);
