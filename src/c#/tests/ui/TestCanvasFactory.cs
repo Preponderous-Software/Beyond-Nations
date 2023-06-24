@@ -31,6 +31,9 @@ namespace osgtests {
             Debug.Assert(textComponent.color == Color.black);
             Debug.Assert(textComponent.rectTransform.sizeDelta == new Vector2(250, 100));
             Debug.Assert(textComponent.rectTransform.anchoredPosition == new Vector2(0, 0));
+
+            // cleanup
+            GameObject.Destroy(canvasObject);
         }
     }
 }
