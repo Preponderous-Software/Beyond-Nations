@@ -299,7 +299,7 @@ namespace osg {
                 command.execute(player);
             }
             else if (Input.GetKeyDown(KeyCode.T)) {
-                TeleportAllPawnsCommand command = new TeleportAllPawnsCommand(environment, entityRepository);
+                TeleportAllPawnsCommand command = new TeleportAllPawnsCommand(entityRepository);
                 command.execute(player);
             }
             else if (Input.GetKeyDown(KeyCode.Numlock)) {

@@ -3,11 +3,9 @@ using UnityEngine;
 namespace osg {
 
     public class TeleportAllPawnsCommand {
-        private Environment environment;
         private EntityRepository entityRepository;
 
-        public TeleportAllPawnsCommand(Environment environment, EntityRepository entityRepository) {
-            this.environment = environment;
+        public TeleportAllPawnsCommand(EntityRepository entityRepository) {
             this.entityRepository = entityRepository;
         }
 
