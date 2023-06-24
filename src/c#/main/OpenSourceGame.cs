@@ -327,7 +327,7 @@ namespace osg {
                 command.execute(player);
             }
             else if (Input.GetKeyDown(KeyCode.F)) {
-                FoundSettlementCommand command = new FoundSettlementCommand(environment, nationRepository, eventProducer, entityRepository);
+                FoundSettlementCommand command = new FoundSettlementCommand(nationRepository, eventProducer, entityRepository);
                 command.execute(player);
             }
             else if (Input.GetKeyDown(KeyCode.P)) {

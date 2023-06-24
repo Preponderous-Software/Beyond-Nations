@@ -3,13 +3,11 @@ using UnityEngine;
 namespace osg {
 
     public class FoundSettlementCommand {
-        private Environment environment;
         private NationRepository nationRepository;
         private EventProducer eventProducer;
         private EntityRepository entityRepository;
 
-        public FoundSettlementCommand(Environment environment, NationRepository nationRepository, EventProducer eventProducer, EntityRepository entityRepository) {
-            this.environment = environment;
+        public FoundSettlementCommand(NationRepository nationRepository, EventProducer eventProducer, EntityRepository entityRepository) {
             this.nationRepository = nationRepository;
             this.eventProducer = eventProducer;
             this.entityRepository = entityRepository;
