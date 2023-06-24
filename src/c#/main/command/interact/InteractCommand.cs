@@ -8,28 +8,28 @@ namespace osg {
         private Environment environment;
         private NationRepository nationRepository;
         private EventProducer eventProducer;
+        private EntityRepository entityRepository;
 
-        public InteractCommand(Environment environment, NationRepository nationRepository, EventProducer eventProducer) {
+        public InteractCommand(Environment environment, NationRepository nationRepository, EventProducer eventProducer, EntityRepository entityRepository) {
             this.environment = environment;
             this.nationRepository = nationRepository;
             this.eventProducer = eventProducer;
+            this.entityRepository = entityRepository;
         }
 
         public void execute(Player player) {
             TreeEntity tree = environment.getNearestTree(player.getGameObject().transform.position);
             RockEntity rock = environment.getNearestRock(player.getGameObject().transform.position);
             Pawn pawn = (Pawn) environment.getNearestEntityOfType(player.getGameObject().transform.position, EntityType.PAWN);
+            Settlement settlement = (Settlement) environment.getNearestEntityOfType(player.getGameObject().transform.position, EntityType.SETTLEMENT);
 
-            // if within range of tree or rock, gather resources
-            if (tree != null && Vector3.Distance(player.getGameObject().transform.position, tree.getGameObject().transform.position) < 5) {
-                tree.markForDeletion();
-                player.getInventory().transferContentsOfInventory(tree.getInventory());
-                player.getStatus().update("Gathered wood from tree.");
-            }
-            else if (rock != null && Vector3.Distance(player.getGameObject().transform.position, rock.getGameObject().transform.position) < 5) {
-                rock.markForDeletion();
-                player.getInventory().transferContentsOfInventory(rock.getInventory());
-                player.getStatus().update("Gathered stone from rock.");
+            if (settlement != null && Vector3.Distance(player.getGameObject().transform.position, settlement.getGameObject().transform.position) < 5) {
+                string listOfPresentPawns = "";
+                foreach (EntityId entityId in settlement.getCurrentlyPresentEntities()) {
+                    Pawn pawnInSettlement = (Pawn) entityRepository.getEntity(entityId);
+                    listOfPresentPawns += pawnInSettlement.getName() + ", ";
+                }
+                player.getStatus().update("Settlement contains: " + listOfPresentPawns);
             }
             else if (pawn != null && Vector3.Distance(player.getGameObject().transform.position, pawn.getGameObject().transform.position) < 5) {
                 Nation pawnsNation = nationRepository.getNation(pawn.getNationId());
@@ -46,6 +46,16 @@ namespace osg {
                 List <string> phrases = generatePhrases(pawnsNation, pawn, player);
                 string phrase = phrases[Random.Range(0, phrases.Count)];
                 player.getStatus().update(pawn.getName() + ": \"" + phrase + "\"");
+            }
+            else if (tree != null && Vector3.Distance(player.getGameObject().transform.position, tree.getGameObject().transform.position) < 5) {
+                tree.markForDeletion();
+                player.getInventory().transferContentsOfInventory(tree.getInventory());
+                player.getStatus().update("Gathered wood from tree.");
+            }
+            else if (rock != null && Vector3.Distance(player.getGameObject().transform.position, rock.getGameObject().transform.position) < 5) {
+                rock.markForDeletion();
+                player.getInventory().transferContentsOfInventory(rock.getInventory());
+                player.getStatus().update("Gathered stone from rock.");
             }
             else {
                 player.getStatus().update("No entities within range to interact with.");

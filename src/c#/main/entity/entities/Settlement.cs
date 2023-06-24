@@ -54,6 +54,10 @@ namespace osg {
             return this.color;
         }
 
+        public string getNameTagText() {
+            return nameTag.GetComponent<TextMesh>().text;
+        }
+
         private void initializeNameTag() {
             nameTag = new GameObject();
             nameTag.transform.parent = getGameObject().transform;

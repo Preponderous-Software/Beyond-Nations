@@ -311,7 +311,7 @@ namespace osg {
                 command.execute(player);
             }
             else if (Input.GetKeyDown(KeyCode.E)) {
-                InteractCommand command = new InteractCommand(environment, nationRepository, eventProducer);
+                InteractCommand command = new InteractCommand(environment, nationRepository, eventProducer, entityRepository);
                 command.execute(player);
             }
             else if (Input.GetKeyDown(KeyCode.F1)) {
