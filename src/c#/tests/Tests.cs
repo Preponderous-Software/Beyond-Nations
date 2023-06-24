@@ -32,6 +32,7 @@ namespace osgtests {
             TestCanvasFactory.runTests();
             TestStatus.runTests();
             TestTextGameObject.runTests();
+            TestScreenOverlay.runTests();
 
             // world
             TestLocationId.runTests();

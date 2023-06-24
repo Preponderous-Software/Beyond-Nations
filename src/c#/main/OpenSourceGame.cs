@@ -22,13 +22,7 @@ namespace osg {
         private PawnBehaviorCalculator pawnBehaviorCalculator;
         private PawnBehaviorExecutor pawnBehaviorExecutor;
         private Player player; // TODO: move to player repository
-        private TextGameObject numGoldCoinsText;
-        private TextGameObject numWoodText;
-        private TextGameObject numStoneText;
-        private TextGameObject numApplesText;
-        private TextGameObject numSaplingsText;
-        private TextGameObject energyText;
-        private TextGameObject mtpsText;
+        private ScreenOverlay screenOverlay;
 
         public GameObject playerGameObject; // must be set in Unity Editor -- TODO: make this private and set it in the constructor (will require refactoring Player.cs)
         public bool runTests = false;
@@ -48,6 +42,7 @@ namespace osg {
             gameConfig = new GameConfig();
             tickCounter = new TickCounter();
             player = new Player(playerGameObject, gameConfig.getPlayerWalkSpeed(), gameConfig.getPlayerRunSpeed(), tickCounter, gameConfig.getStatusExpirationTicks());
+            screenOverlay = new ScreenOverlay(player, tickCounter);
             eventRepository = new EventRepository();
             eventProducer = new EventProducer(eventRepository);
             entityRepository = new EntityRepository();
@@ -56,22 +51,6 @@ namespace osg {
             nationRepository = new NationRepository();
             pawnBehaviorCalculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository);
             pawnBehaviorExecutor = new PawnBehaviorExecutor(environment, nationRepository, eventProducer, entityRepository);
-
-            // resources UI
-            int resourcesX = -Screen.width / 4;
-            int resourcesY = -Screen.height / 4;
-            numGoldCoinsText = new TextGameObject("Gold Coins: 0", 20, resourcesX, resourcesY);
-            numWoodText = new TextGameObject("Wood: 0", 20, resourcesX, resourcesY - 20);
-            numStoneText = new TextGameObject("Stone: 0", 20, resourcesX, resourcesY - 40);
-            numApplesText = new TextGameObject("Apples: 0", 20, resourcesX, resourcesY - 60);
-            numSaplingsText = new TextGameObject("Saplings: 0", 20, resourcesX, resourcesY - 80);
-
-            // other UI
-            energyText = new TextGameObject("Energy: 100", 20, Screen.width / 4, -Screen.height / 4);
-
-            // put in very top right corner
-            mtpsText = new TextGameObject("0mtps", 20, Screen.width / 4, Screen.height / 4);
-
             entityRepository.addEntity(player);
             player.getStatus().update("Press N to create a nation.");
         }
@@ -87,13 +66,7 @@ namespace osg {
             tickCounter.increment();
             worldGenerator.update();
             checkIfPlayerIsFallingIntoVoid();
-            numGoldCoinsText.updateText("Gold Coins: " + player.getInventory().getNumItems(ItemType.GOLD_COIN));
-            numWoodText.updateText("Wood: " + player.getInventory().getNumItems(ItemType.WOOD));
-            numStoneText.updateText("Stone: " + player.getInventory().getNumItems(ItemType.STONE));
-            numApplesText.updateText("Apples: " + player.getInventory().getNumItems(ItemType.APPLE));
-            numSaplingsText.updateText("Saplings: " + player.getInventory().getNumItems(ItemType.SAPLING));
-            energyText.updateText("Energy: " + player.getEnergy());
-            mtpsText.updateText(tickCounter.getMtps() + "mtps");
+            screenOverlay.update();
             player.getStatus().clearStatusIfExpired();
 
             // list of positions to generate chunks at
