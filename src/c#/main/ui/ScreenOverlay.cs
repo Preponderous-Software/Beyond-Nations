@@ -41,5 +41,15 @@ namespace osg {
             energyText.updateText("Energy: " + player.getEnergy());
             mtpsText.updateText(tickCounter.getMtps() + "mtps");
         }
+
+        public void destroy() {
+            UnityEngine.Object.Destroy(numGoldCoinsText.getCanvasObject());
+            UnityEngine.Object.Destroy(numWoodText.getCanvasObject());
+            UnityEngine.Object.Destroy(numStoneText.getCanvasObject());
+            UnityEngine.Object.Destroy(numApplesText.getCanvasObject());
+            UnityEngine.Object.Destroy(numSaplingsText.getCanvasObject());
+            UnityEngine.Object.Destroy(energyText.getCanvasObject());
+            UnityEngine.Object.Destroy(mtpsText.getCanvasObject());
+        }
     }
 }

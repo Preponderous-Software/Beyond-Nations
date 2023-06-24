@@ -17,6 +17,9 @@ namespace osgtests {
             
             // verify
             Debug.Assert(screenOverlay != null);
+
+            // cleanup
+            screenOverlay.destroy();
         }
 
         // TODO: test update method (requires mocking the Player class)
