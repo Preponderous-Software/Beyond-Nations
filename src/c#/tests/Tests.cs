@@ -5,6 +5,9 @@ namespace osgtests {
     public static class Tests {
         
         public static void runTests() {
+            // behavior
+            TestPawnBehaviorCalculator.runTests();
+
             // config
             TestGameConfig.runTests();
 

@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace osg {
 
@@ -7,6 +8,7 @@ namespace osg {
         private GameObject nameTag;
         private NationId nationId;
         private string nationName;
+        private List<EntityId> currentlyPresentEntities = new List<EntityId>();
             
         public Settlement(Vector3 position, NationId nationId, Color color, string nationName) : base(EntityType.SETTLEMENT) {
             this.color = color;
@@ -22,11 +24,34 @@ namespace osg {
             gameObject.GetComponent<Renderer>().material.color = this.color;
             gameObject.transform.position = position;
             gameObject.name = "Settlement";
+            UnityEngine.Object.Destroy(gameObject.GetComponent<CapsuleCollider>());
             setGameObject(gameObject);
         }
 
         public override void destroyGameObject() {
             UnityEngine.Object.Destroy(getGameObject());
+        }
+
+        public List<EntityId> getCurrentlyPresentEntities() {
+            return this.currentlyPresentEntities;
+        }
+
+        public void addCurrentlyPresentEntity(EntityId entityId) {
+            this.currentlyPresentEntities.Add(entityId);
+            updateNameTagWithCurrentlyPresentEntities();
+        }
+
+        public void removeCurrentlyPresentEntity(EntityId entityId) {
+            this.currentlyPresentEntities.Remove(entityId);
+            updateNameTagWithCurrentlyPresentEntities();
+        }
+
+        public int getCurrentlyPresentEntitiesCount() {
+            return this.currentlyPresentEntities.Count;
+        }
+
+        public Color getColor() {
+            return this.color;
         }
 
         private void initializeNameTag() {
@@ -41,6 +66,16 @@ namespace osg {
             textMesh.anchor = TextAnchor.MiddleCenter;
             textMesh.characterSize = 0.1f;
             textMesh.GetComponent<Renderer>().material.color = Color.black;
+        }
+
+        private void setNameTag(string name) {
+            nameTag.GetComponent<TextMesh>().text = name;
+        }
+
+        private void updateNameTagWithCurrentlyPresentEntities() {
+            string name = "Settlement of " + this.nationName + "\n\n";
+            name += "(" + getCurrentlyPresentEntitiesCount() + ")";
+            setNameTag(name);
         }
     }
 }

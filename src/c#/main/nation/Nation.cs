@@ -95,5 +95,10 @@ namespace osg {
         public EntityId getSettlement(int index) {
             return settlements[index];
         }
+
+        public EntityId getRandomSettlementId() {
+            int randomIndex = Random.Range(0, settlements.Count);
+            return settlements[randomIndex];
+        }
     }
 }

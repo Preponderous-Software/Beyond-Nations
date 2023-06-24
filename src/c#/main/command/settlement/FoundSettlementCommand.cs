@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace osg {
 
     public class FoundSettlementCommand {
@@ -29,6 +31,18 @@ namespace osg {
             if (player.getInventory().getNumItems(ItemType.GOLD_COIN) < 100) {
                 player.getStatus().update("You don't have enough money.");
                 return;
+            }
+
+            // if another settlement within 200 units
+            foreach (Entity entity in entityRepository.getEntities()) {
+                if (entity.getType() == EntityType.SETTLEMENT) {
+                    Settlement settlementToCheck = (Settlement)entity;
+                    int distance = (int)Vector3.Distance(player.getGameObject().transform.position, settlementToCheck.getPosition());
+                    if (distance < 200) {
+                        player.getStatus().update("Too close to another settlement.");
+                        return;
+                    }
+                }
             }
 
             player.getInventory().removeItem(ItemType.GOLD_COIN, 100);

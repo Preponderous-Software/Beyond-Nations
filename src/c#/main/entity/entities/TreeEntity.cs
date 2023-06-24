@@ -24,6 +24,7 @@ namespace osg {
             trunk.transform.position = position;
             trunk.transform.parent = gameObject.transform;
             trunk.name = "Trunk";
+            UnityEngine.Object.Destroy(trunk.GetComponent<CapsuleCollider>());
 
             leaves = GameObject.CreatePrimitive(PrimitiveType.Cube);
             leaves.transform.localScale = new Vector3(3, 3, 3);
@@ -31,6 +32,7 @@ namespace osg {
             leaves.transform.position = position + new Vector3(0, height - 1, 0);
             leaves.transform.parent = gameObject.transform;
             leaves.name = "Leaves";
+            UnityEngine.Object.Destroy(leaves.GetComponent<BoxCollider>());
             
             setGameObject(gameObject);
 

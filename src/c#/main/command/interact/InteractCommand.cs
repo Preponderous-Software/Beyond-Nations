@@ -104,6 +104,7 @@ namespace osg {
             pawn.getInventory().addItem(ItemType.STONE, numStone);
             pawn.getInventory().addItem(ItemType.APPLE, numApples);
             player.getInventory().addItem(ItemType.GOLD_COIN, cost);
+            pawn.getInventory().removeItem(ItemType.GOLD_COIN, cost);
             player.getStatus().update("Sold " + numWood + " wood, " + numStone + " stone, and " + numApples + " apples to " + pawn.getName() + " for " + cost + " gold coins.");
             return;
         }

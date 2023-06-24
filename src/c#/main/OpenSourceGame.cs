@@ -19,6 +19,7 @@ namespace osg {
         private NationRepository nationRepository;
         private EntityRepository entityRepository;
         private EventProducer eventProducer;
+        private PawnBehaviorCalculator pawnBehaviorCalculator;
         private PawnBehaviorExecutor pawnBehaviorExecutor;
         private Player player; // TODO: move to player repository
         private TextGameObject numGoldCoinsText;
@@ -53,6 +54,7 @@ namespace osg {
             environment = new Environment(gameConfig.getChunkSize(), gameConfig.getLocationScale(), entityRepository);
             worldGenerator = new WorldGenerator(environment, player, eventProducer, entityRepository);
             nationRepository = new NationRepository();
+            pawnBehaviorCalculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository);
             pawnBehaviorExecutor = new PawnBehaviorExecutor(environment, nationRepository, eventProducer, entityRepository);
 
             // resources UI
@@ -99,18 +101,39 @@ namespace osg {
 
             foreach (Entity entity in entityRepository.getEntities()) {
                 if (entity.getType() == EntityType.PAWN) {
-                    Pawn pawn = (Pawn)entity;
-
-                    // compute and execute behavior
-                    pawn.computeBehaviorType(environment, nationRepository, entityRepository);
-                    pawnBehaviorExecutor.executeBehavior(pawn, pawn.getCurrentBehaviorType());
+                    Pawn pawn = (Pawn) entity;
 
                     // update energy
                     if (pawn.getEnergy() < 90 && pawn.getInventory().getNumItems(ItemType.APPLE) > 0) {
                         pawn.getInventory().removeItem(ItemType.APPLE, 1);
                         pawn.setEnergy(pawn.getEnergy() + 10);
                     }
-                    pawn.setEnergy(pawn.getEnergy() - pawn.getMetabolism());
+
+                    if (pawn.isCurrentlyInSettlement()) {
+                        pawn.setEnergy(pawn.getEnergy() - pawn.getMetabolism() / 10f);
+                        if (pawn.getEnergy() < 50) {
+                            pawn.setCurrentlyInSettlement(false);
+                            Settlement settlement = entityRepository.getEntity(pawn.getHomeSettlementId()) as Settlement;
+                            settlement.removeCurrentlyPresentEntity(pawn.getId());
+                            pawn.createGameObject(settlement.getGameObject().transform.position + new Vector3(Random.Range(-20, 20), 0, Random.Range(-20, 20)));
+                            pawn.setColor(settlement.getColor());
+                        }
+                        continue;
+                    }
+                    else {
+                        pawn.setEnergy(pawn.getEnergy() - pawn.getMetabolism());
+                    }
+
+                    int ticksBetweenBehaviorCalculations = gameConfig.getTicksBetweenBehaviorCalculations();
+                    BehaviorType currentBehavior = BehaviorType.NONE;
+                    if (tickCounter.getTick() % ticksBetweenBehaviorCalculations == 0) {
+                        currentBehavior = pawnBehaviorCalculator.computeBehaviorType(pawn);
+                    }
+
+                    int ticksBetweenBehaviorExecutions = gameConfig.getTicksBetweenBehaviorExecutions();
+                    if (tickCounter.getTick() % ticksBetweenBehaviorExecutions == 0) {
+                        pawnBehaviorExecutor.executeBehavior(pawn, currentBehavior);
+                    }
 
                     // set nametag to show energy and inventory contents
                     string nameTagText = pawn.getName() + " (" + (int)pawn.getEnergy() + ")";
@@ -136,13 +159,13 @@ namespace osg {
                     Nation nation = nationRepository.getNation(pawn.getNationId());
 
                     // join settlement if not already in one
-                    if (pawn.getSettlementId() == null) {
+                    if (pawn.getHomeSettlementId() == null) {
                         // choose random nation settlement
                         int numSettlements = nation.getSettlements().Count;
                         if (numSettlements != 0) {
                             int randomSettlementIndex = Random.Range(0, numSettlements);
                             EntityId randomSettlementId = nation.getSettlements()[randomSettlementIndex];
-                            pawn.setSettlementId(randomSettlementId);
+                            pawn.setHomeSettlementId(randomSettlementId);
                         }
                     }
 
@@ -150,9 +173,9 @@ namespace osg {
                     float ypos = pawn.getGameObject().transform.position.y;
                     if (ypos < -10) {
                         Debug.Log("Entity " + pawn.getId() + " fell into void. Teleporting.");
-                        if (pawn.getSettlementId() != null) {
+                        if (pawn.getHomeSettlementId() != null) {
                             // pawn is in a settlement, so respawn at settlement
-                            Settlement settlement = (Settlement)entityRepository.getEntity(pawn.getSettlementId());
+                            Settlement settlement = (Settlement)entityRepository.getEntity(pawn.getHomeSettlementId());
                             Vector3 newPosition = settlement.getGameObject().transform.position;
                             newPosition = new Vector3(newPosition.x, newPosition.y + 1, newPosition.z);
                             pawn.getGameObject().transform.position = newPosition;
@@ -171,13 +194,15 @@ namespace osg {
                     // check if pawn is dead
                     if (pawn.getEnergy() <= 0) {
                         eventProducer.producePawnDeathEvent(pawn.getGameObject().transform.position, pawn);
-                        pawn.setEnergy(100);
-                        pawn.getInventory().clear();
                         player.getStatus().update(pawn.getName() + " has died.");
                         if (gameConfig.getRespawnPawns()) {
-                            if (pawn.getSettlementId() != null) {
+                            pawn.setEnergy(100);
+                            if (gameConfig.getKeepInventoryOnDeath() == false) {
+                                pawn.getInventory().clear();
+                            }
+                            if (pawn.getHomeSettlementId() != null) {
                                 // pawn is in a settlement, so respawn at settlement
-                                Settlement settlement = (Settlement)entityRepository.getEntity(pawn.getSettlementId());
+                                Settlement settlement = (Settlement)entityRepository.getEntity(pawn.getHomeSettlementId());
                                 Vector3 newPosition = settlement.getGameObject().transform.position;
                                 newPosition = new Vector3(newPosition.x + Random.Range(-20, 20), newPosition.y, newPosition.z + Random.Range(-20, 20));
                                 pawn.getGameObject().transform.position = newPosition;
@@ -245,7 +270,9 @@ namespace osg {
             if (player.getEnergy() <= 0) {
                 eventProducer.producePlayerDeathEvent(player.getGameObject().transform.position, player);
                 player.setEnergy(100);
-                player.getInventory().clear();
+                if (gameConfig.getKeepInventoryOnDeath() == false) {
+                    player.getInventory().clear();
+                }
                 player.getStatus().update("You died.");
                 
                 if (player.getSettlementId() != null) {
