@@ -23,8 +23,6 @@ namespace osg {
         private PawnBehaviorExecutor pawnBehaviorExecutor;
         private Player player; // TODO: move to player repository
         private ScreenOverlay screenOverlay;
-
-        public GameObject playerGameObject; // must be set in Unity Editor -- TODO: make this private and set it in the constructor (will require refactoring Player.cs)
         public bool runTests = false;
 
         // Initialization
@@ -41,7 +39,7 @@ namespace osg {
 
             gameConfig = new GameConfig();
             tickCounter = new TickCounter();
-            player = new Player(playerGameObject, gameConfig.getPlayerWalkSpeed(), gameConfig.getPlayerRunSpeed(), tickCounter, gameConfig.getStatusExpirationTicks());
+            player = new Player(gameConfig.getPlayerWalkSpeed(), gameConfig.getPlayerRunSpeed(), tickCounter, gameConfig.getStatusExpirationTicks());
             screenOverlay = new ScreenOverlay(player, tickCounter);
             eventRepository = new EventRepository();
             eventProducer = new EventProducer(eventRepository);

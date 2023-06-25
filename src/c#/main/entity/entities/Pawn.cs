@@ -19,7 +19,7 @@ namespace osg {
 
         private GameObject nameTag;
         private float energy = 100.00f;
-        private float metabolism = Random.Range(0.001f, 0.050f);
+        private float metabolism = Random.Range(0.001f, 0.010f);
 
         // map of entity id to integer representing relationship strength
         private Dictionary<EntityId, int> relationships = new Dictionary<EntityId, int>();

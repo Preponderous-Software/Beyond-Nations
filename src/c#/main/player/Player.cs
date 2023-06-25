@@ -18,18 +18,24 @@ namespace osg {
         private Status status = null;
         private bool autoWalk = false;
         private float energy = 100;
-        private float metabolism = 0.01f;
+        private float metabolism = Random.Range(0.001f, 0.010f);
 
-        public Player(GameObject gameObject, int walkSpeed, int runSpeed, TickCounter tickCounter, int statusExpirationTicks) : base(EntityType.PLAYER){
-            setGameObject(gameObject);
-            this.rigidBody = gameObject.GetComponent<Rigidbody>();
+        public Player(int walkSpeed, int runSpeed, TickCounter tickCounter, int statusExpirationTicks) : base(EntityType.PLAYER){
+            createGameObject(new Vector3(0, 0, 0));
+            setupCamera();
+            this.rigidBody = getGameObject().GetComponent<Rigidbody>();
             this.walkSpeed = walkSpeed;
             this.runSpeed = runSpeed;
             status = new Status(tickCounter, statusExpirationTicks);
             this.currentSpeed = walkSpeed;
-            GameObject childCameraObject = gameObject.transform.GetChild(0).gameObject;
-            this.playerCamera = childCameraObject.GetComponent<Camera>();
             getInventory().addItem(ItemType.GOLD_COIN, Random.Range(100, 400));
+        }
+
+        private void setupCamera() {
+            GameObject cameraObject = GameObject.Find("/Camera");      
+            cameraObject.transform.SetParent(getGameObject().transform);
+            cameraObject.transform.position = new Vector3(0, 3, -10);
+            this.playerCamera = cameraObject.GetComponent<Camera>();
         }
 
         public void update() {
@@ -83,7 +89,13 @@ namespace osg {
         }
 
         public override void createGameObject(Vector3 position) {
-            throw new System.NotImplementedException();
+            GameObject gameObject = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+            gameObject.transform.localScale = new Vector3(1, 1, 1);
+            gameObject.transform.position = position;
+            gameObject.name = "Player";
+            Rigidbody rigidbody = gameObject.AddComponent<Rigidbody>();
+            rigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
+            setGameObject(gameObject);
         }
 
         public override void destroyGameObject() {
