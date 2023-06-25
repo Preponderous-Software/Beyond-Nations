@@ -23,8 +23,6 @@ namespace osg {
         private PawnBehaviorExecutor pawnBehaviorExecutor;
         private Player player; // TODO: move to player repository
         private ScreenOverlay screenOverlay;
-
-        public GameObject playerGameObject; // must be set in Unity Editor -- TODO: make this private and set it in the constructor (will require refactoring Player.cs)
         public bool runTests = false;
 
         // Initialization
@@ -41,7 +39,7 @@ namespace osg {
 
             gameConfig = new GameConfig();
             tickCounter = new TickCounter();
-            player = new Player(playerGameObject, gameConfig.getPlayerWalkSpeed(), gameConfig.getPlayerRunSpeed(), tickCounter, gameConfig.getStatusExpirationTicks());
+            player = new Player(gameConfig.getPlayerWalkSpeed(), gameConfig.getPlayerRunSpeed(), tickCounter, gameConfig.getStatusExpirationTicks());
             screenOverlay = new ScreenOverlay(player, tickCounter);
             eventRepository = new EventRepository();
             eventProducer = new EventProducer(eventRepository);
@@ -101,6 +99,7 @@ namespace osg {
                     BehaviorType currentBehavior = BehaviorType.NONE;
                     if (tickCounter.getTick() % ticksBetweenBehaviorCalculations == 0) {
                         currentBehavior = pawnBehaviorCalculator.computeBehaviorType(pawn);
+                        pawn.setCurrentBehaviorType(currentBehavior);
                     }
 
                     int ticksBetweenBehaviorExecutions = gameConfig.getTicksBetweenBehaviorExecutions();
@@ -108,21 +107,7 @@ namespace osg {
                         pawnBehaviorExecutor.executeBehavior(pawn, currentBehavior);
                     }
 
-                    // set nametag to show energy and inventory contents
-                    string nameTagText = pawn.getName() + " (" + (int)pawn.getEnergy() + ")";
-                    // show wood, stone, apples and gold coins
-                    if (pawn.getInventory().getNumItems(ItemType.WOOD) > 0) {
-                        nameTagText += " W:" + pawn.getInventory().getNumItems(ItemType.WOOD);
-                    }
-                    if (pawn.getInventory().getNumItems(ItemType.STONE) > 0) {
-                        nameTagText += " S:" + pawn.getInventory().getNumItems(ItemType.STONE);
-                    }
-                    if (pawn.getInventory().getNumItems(ItemType.APPLE) > 0) {
-                        nameTagText += " A:" + pawn.getInventory().getNumItems(ItemType.APPLE);
-                    }
-                    if (pawn.getInventory().getNumItems(ItemType.GOLD_COIN) > 0) {
-                        nameTagText += " G:" + pawn.getInventory().getNumItems(ItemType.GOLD_COIN);
-                    }
+                    string nameTagText = pawn.getName() + "\n" + pawn.getCurrentBehaviorDescription();
                     pawn.setNameTag(nameTagText);
 
                     // create or join nation

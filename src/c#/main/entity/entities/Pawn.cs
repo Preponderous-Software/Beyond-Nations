@@ -19,7 +19,7 @@ namespace osg {
 
         private GameObject nameTag;
         private float energy = 100.00f;
-        private float metabolism = Random.Range(0.001f, 0.050f);
+        private float metabolism = Random.Range(0.001f, 0.010f);
 
         // map of entity id to integer representing relationship strength
         private Dictionary<EntityId, int> relationships = new Dictionary<EntityId, int>();
@@ -218,6 +218,36 @@ namespace osg {
 
         public void setCurrentlyInSettlement(bool currentlyInSettlement) {
             this.currentlyInSettlement = currentlyInSettlement;
+        }
+
+        public string getCurrentBehaviorDescription() {
+            if (getCurrentBehaviorType() == BehaviorType.NONE) {
+                return "(doing nothing)";
+            }
+            else if (getCurrentBehaviorType() == BehaviorType.GATHER_RESOURCES) {
+                return "(gathering resources)";
+            }
+            else if (getCurrentBehaviorType() == BehaviorType.SELL_RESOURCES) {
+                return "(selling resources)";
+            }
+            else if (getCurrentBehaviorType() == BehaviorType.WANDER) {
+                return "(wandering)";
+            }
+            else if (getCurrentBehaviorType() == BehaviorType.PURCHASE_FOOD) {
+                return "(purchasing food)";
+            }
+            else if (getCurrentBehaviorType() == BehaviorType.CREATE_SETTLEMENT) {
+                return "(creating settlementing)";
+            }
+            else if (getCurrentBehaviorType() == BehaviorType.GO_HOME) {
+                return "(going home)";
+            }
+            else if (getCurrentBehaviorType() == BehaviorType.PLANT_SAPLING) {
+                return "(planting sapling)";
+            }
+            else {
+                return "(?)";
+            }
         }
     }
 }
