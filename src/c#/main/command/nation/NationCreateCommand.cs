@@ -10,14 +10,13 @@ namespace osg {
         }
 
         public void execute(Player player) {
-            Status status = player.getStatus();
             if (player.getNationId() != null) {
                 Nation playerNation = nationRepository.getNation(player.getNationId());
                 if (playerNation.getLeaderId() == player.getId()) {
-                    status.update("You are already the leader of " + playerNation.getName() + ".");
+                    player.getStatus().update("You are already the leader of " + playerNation.getName() + ".");
                 }
                 else {
-                    status.update("You are already a member of " + playerNation.getName() + ".");
+                    player.getStatus().update("You are already a member of " + playerNation.getName() + ".");
                 }
                 return;
             }
@@ -26,7 +25,7 @@ namespace osg {
             player.setNationId(nation.getId());
             player.setColor(nation.getColor());
             eventProducer.produceNationCreationEvent(nation);
-            status.update("Created nation " + nation.getName() + ".");
+            player.getStatus().update("Created nation " + nation.getName() + ".");
         }
     }
 }

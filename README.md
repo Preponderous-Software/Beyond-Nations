@@ -26,6 +26,8 @@ The following controls are available in the game:
 | `J` | Join a random nation |
 | `L` | Leave your current nation |
 | `T` | Teleport all living entities to you |
+| `F` | Found a settlement |
+| `P` | Plant a sapling |
 | `Num Lock` | Toggle auto-walk |
 | `F1` | Spawn a new pawn |
 | `F2` | Generate nearby land |

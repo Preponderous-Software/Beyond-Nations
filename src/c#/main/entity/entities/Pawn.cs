@@ -7,6 +7,7 @@ namespace osg {
         private string name;
         private int speed = Random.Range(10, 20);
         private NationId nationId;
+        private EntityId homeSettlementId;
         private Entity targetEntity;
         private BehaviorType currentBehaviorType = BehaviorType.NONE;
 
@@ -18,19 +19,17 @@ namespace osg {
 
         private GameObject nameTag;
         private float energy = 100.00f;
-        private float metabolism = Random.Range(0.01f, 0.10f);
+        private float metabolism = Random.Range(0.001f, 0.050f);
 
         // map of entity id to integer representing relationship strength
         private Dictionary<EntityId, int> relationships = new Dictionary<EntityId, int>();
+        private bool currentlyInSettlement = false;
 
         public Pawn(Vector3 position, string name) : base(EntityType.PAWN) {
             this.name = name;
             createGameObject(position);
             int startingGoldCoins = Random.Range(50, 200);
             getInventory().addItem(ItemType.GOLD_COIN, startingGoldCoins);
-
-            // create text object above head
-            initializeNameTag();
         }
 
         public string getName() {
@@ -47,6 +46,14 @@ namespace osg {
 
         public void setNationId(NationId nationId) {
             this.nationId = nationId;
+        }
+
+        public EntityId getHomeSettlementId() {
+            return homeSettlementId;
+        }
+
+        public void setHomeSettlementId(EntityId settlementId) {
+            this.homeSettlementId = settlementId;
         }
 
         public Dictionary<EntityId, int> getRelationships() {
@@ -78,14 +85,20 @@ namespace osg {
                 Debug.LogWarning("target entity game object is null in moveTowardsTargetEntity()");
                 return;
             }
+
             Vector3 targetPosition = targetEntity.getGameObject().transform.position;
             Vector3 currentPosition = getGameObject().transform.position;
             Vector3 direction = targetPosition - currentPosition;
             direction.Normalize();
+
             getGameObject().GetComponent<Rigidbody>().velocity = direction * getSpeed();
         }
 
         public bool isAtTargetEntity() {
+            return isAtTargetEntity(distanceThreshold);
+        }
+
+        public bool isAtTargetEntity(int distanceThreshold) {
             if (targetEntity == null) {
                 return false;
             }
@@ -101,7 +114,10 @@ namespace osg {
             Vector3 targetPosition = targetEntity.getGameObject().transform.position;
             Vector3 currentPosition = getGameObject().transform.position;
             Vector3 direction = targetPosition - currentPosition;
-            return direction.magnitude < distanceThreshold;
+
+            bool toReturn = direction.magnitude < distanceThreshold;
+
+            return toReturn;
         }
 
         public override void createGameObject(Vector3 position) {
@@ -113,6 +129,7 @@ namespace osg {
             Rigidbody rigidbody = gameObject.AddComponent<Rigidbody>();
             rigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
             setGameObject(gameObject);
+            initializeNameTag();
         }
 
         public override void destroyGameObject() {
@@ -145,58 +162,12 @@ namespace osg {
             textMesh.GetComponent<Renderer>().material.color = Color.black;
         }
 
-        // The current behavior type should only be changed in computeBehaviorType()
-        public void computeBehaviorType(Environment environment, NationRepository nationRepository) {
-
-            if (energy < 80 && getInventory().getNumItems(ItemType.APPLE) == 0) {
-                // if nation leader has apples, purchase apples from leader
-                if (getNationId() != null) {
-                    Nation nation1 = nationRepository.getNation(getNationId());
-                    Entity nationLeader = environment.getEntity(nation1.getLeaderId());
-                    if (nationLeader.getInventory().getNumItems(ItemType.APPLE) > 0 && getInventory().getNumItems(ItemType.GOLD_COIN) >= 1) {
-                        currentBehaviorType = BehaviorType.PURCHASE_FOOD;
-                        return;
-                    }
-                }
-
-                currentBehaviorType = BehaviorType.GATHER_RESOURCES;
-                return;
-            }
-
-            if (getNationId() == null) {
-                currentBehaviorType = BehaviorType.WANDER;
-                return;
-            }
-
-            Nation nation = nationRepository.getNation(getNationId());
-
-            NationRole role = nation.getRole(getId());
-            if (role == NationRole.LEADER) {
-                currentBehaviorType = BehaviorType.WANDER;
-                return;
-            }
-            else if (role == NationRole.CITIZEN) {
-                // if pawn has at least 1 of each resource, sell resources
-                if (getInventory().getNumItems(ItemType.WOOD) >= 1 && getInventory().getNumItems(ItemType.STONE) >= 1 && getInventory().getNumItems(ItemType.APPLE) >= 1) {
-                    Entity nationLeader = environment.getEntity(nation.getLeaderId());
-                    int numWood = getInventory().getNumItems(ItemType.WOOD);
-                    int numStone = getInventory().getNumItems(ItemType.STONE);
-                    int numApples = getInventory().getNumItems(ItemType.APPLE);
-                    if (nationLeader.getInventory().getNumItems(ItemType.GOLD_COIN) < numWood * 2 + numStone * 3 + numApples * 1) {
-                        // leader doesn't have enough money to buy resources
-                        currentBehaviorType = BehaviorType.SELL_RESOURCES;
-                        return;
-                    }
-                    currentBehaviorType = BehaviorType.SELL_RESOURCES;
-                }
-                else {
-                    currentBehaviorType = BehaviorType.GATHER_RESOURCES;
-                }
-            }
-        }
-
         public BehaviorType getCurrentBehaviorType() {
             return currentBehaviorType;
+        }
+
+        public void setCurrentBehaviorType(BehaviorType currentBehaviorType) {
+            this.currentBehaviorType = currentBehaviorType;
         }
 
         public void setNameTag(string name) {
@@ -241,5 +212,12 @@ namespace osg {
             }
         }
 
+        public bool isCurrentlyInSettlement() {
+            return currentlyInSettlement;
+        }
+
+        public void setCurrentlyInSettlement(bool currentlyInSettlement) {
+            this.currentlyInSettlement = currentlyInSettlement;
+        }
     }
 }

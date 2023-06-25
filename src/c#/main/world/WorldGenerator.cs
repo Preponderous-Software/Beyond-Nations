@@ -15,13 +15,15 @@ namespace osg {
         private int locationScale = 3;
         private int currentChunkX = 0;
         private int currentChunkZ = 0;
+        private EntityRepository entityRepository;
 
-        public WorldGenerator(Environment environment, Player player, EventProducer eventProducer) {
+        public WorldGenerator(Environment environment, Player player, EventProducer eventProducer, EntityRepository entityRepository) {
             this.environment = environment;
             this.player = player;
             this.eventProducer = eventProducer;
             this.chunkSize = environment.getChunkSize();
             this.locationScale = environment.getLocationScale();
+            this.entityRepository = entityRepository;
         }
 
         public void update() {
@@ -108,11 +110,7 @@ namespace osg {
                 // create tree
                 Vector3 position = new Vector3(locationPosition.x, locationPosition.y + 1, locationPosition.z);
                 TreeEntity tree = new TreeEntity(position, 5);
-
-                // add tree to chunk
-                chunk.addEntity(tree, randomLocation);
-                environment.addEntityId(tree.getId());
-                tree.getGameObject().transform.parent = randomLocation.getGameObject().transform;
+                entityRepository.addEntity(tree);
             }
         }
 
@@ -129,11 +127,7 @@ namespace osg {
                 // create rock
                 Vector3 position = new Vector3(locationPosition.x, locationPosition.y + 1, locationPosition.z);
                 RockEntity rock = new RockEntity(position);
-
-                // add rock to chunk if location is not occupied
-                chunk.addEntity(rock, randomLocation);
-                environment.addEntityId(rock.getId());
-                rock.getGameObject().transform.parent = randomLocation.getGameObject().transform;
+                entityRepository.addEntity(rock);
             }
         }
 
@@ -149,10 +143,7 @@ namespace osg {
                 Vector3 position = new Vector3(locationPosition.x, (float)(locationPosition.y + 1.5), locationPosition.z);
                 Pawn pawn = new Pawn(position, PawnNameGenerator.generate());
                 eventProducer.producePawnSpawnEvent(position, pawn);
-
-                chunk.addEntity(pawn, randomLocation);
-                environment.addEntityId(pawn.getId());
-                pawn.getGameObject().transform.parent = randomLocation.getGameObject().transform;
+                entityRepository.addEntity(pawn);
             }
         }
 

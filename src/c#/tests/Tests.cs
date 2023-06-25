@@ -5,6 +5,9 @@ namespace osgtests {
     public static class Tests {
         
         public static void runTests() {
+            // behavior
+            TestPawnBehaviorCalculator.runTests();
+
             // config
             TestGameConfig.runTests();
 
@@ -24,6 +27,12 @@ namespace osgtests {
 
             // tick
             TestTickCounter.runTests();
+
+            // ui
+            TestCanvasFactory.runTests();
+            TestStatus.runTests();
+            TestTextGameObject.runTests();
+            TestScreenOverlay.runTests();
 
             // world
             TestLocationId.runTests();

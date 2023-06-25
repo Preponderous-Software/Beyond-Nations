@@ -10,6 +10,7 @@ namespace osg {
             items.Add(ItemType.WOOD, 0);
             items.Add(ItemType.STONE, 0);
             items.Add(ItemType.APPLE, 0);
+            items.Add(ItemType.SAPLING, 0);
         }
         
         public int getNumItems(ItemType itemType) {
@@ -37,6 +38,7 @@ namespace osg {
             items[ItemType.WOOD] = 0;
             items[ItemType.STONE] = 0;
             items[ItemType.APPLE] = 0;
+            items[ItemType.SAPLING] = 0;
         }
 
         public void transferContentsOfInventory(Inventory otherInventory) {
@@ -44,6 +46,7 @@ namespace osg {
             items[ItemType.WOOD] += otherInventory.getNumItems(ItemType.WOOD);
             items[ItemType.STONE] += otherInventory.getNumItems(ItemType.STONE);
             items[ItemType.APPLE] += otherInventory.getNumItems(ItemType.APPLE);
+            items[ItemType.SAPLING] += otherInventory.getNumItems(ItemType.SAPLING);
             otherInventory.clear();
         }
     }

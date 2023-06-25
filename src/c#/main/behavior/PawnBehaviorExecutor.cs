@@ -5,17 +5,19 @@ using System.Collections.Generic;
 namespace osg {
 
     /**
-     * A class that handles pawn actions.
+     * A class that executes the behavior of a pawn.
      */
     public class PawnBehaviorExecutor {
         private Environment environment;
         private NationRepository nationRepository;
         private EventProducer eventProducer;
+        private EntityRepository entityRepository;
 
-        public PawnBehaviorExecutor(Environment environment, NationRepository nationRepository, EventProducer eventProducer) {
+        public PawnBehaviorExecutor(Environment environment, NationRepository nationRepository, EventProducer eventProducer, EntityRepository entityRepository) {
             this.environment = environment;
             this.nationRepository = nationRepository;
             this.eventProducer = eventProducer;
+            this.entityRepository = entityRepository;
         }
 
         public void executeBehavior(Pawn pawn, BehaviorType behaviorType) {
@@ -31,6 +33,15 @@ namespace osg {
                     break;
                 case BehaviorType.PURCHASE_FOOD:
                     executePurchaseFoodBehavior(pawn);
+                    break;
+                case BehaviorType.CREATE_SETTLEMENT:
+                    executeCreateSettlementBehavior(pawn);
+                    break;
+                case BehaviorType.GO_HOME:
+                    executeGoHomeBehavior(pawn);
+                    break;
+                case BehaviorType.PLANT_SAPLING:
+                    executePlantSaplingBehavior(pawn);
                     break;
                 default:
                     break;
@@ -86,7 +97,7 @@ namespace osg {
                 Nation nation = nationRepository.getNation(pawn.getNationId());
                 if (nation != null) {
                     EntityId nationLeaderId = nation.getLeaderId();
-                    Entity nationLeader = environment.getEntity(nationLeaderId);
+                    Entity nationLeader = entityRepository.getEntity(nationLeaderId);
                     if (nationLeader != null) {
                         pawn.setTargetEntity(nationLeader);
                     }
@@ -100,9 +111,20 @@ namespace osg {
                     return;
                 }
 
-                sellItem(pawn, targetEntity, ItemType.WOOD, 1);
-                sellItem(pawn, targetEntity, ItemType.STONE, 1);
-                sellItem(pawn, targetEntity, ItemType.APPLE, 1);
+                // 50% chance to sell wood
+                if (Random.Range(0, 100) < 50) {
+                    sellItem(pawn, targetEntity, ItemType.WOOD, 1);
+                }
+
+                // 30% chance to sell stone
+                if (Random.Range(0, 100) < 30) {
+                    sellItem(pawn, targetEntity, ItemType.STONE, 1);
+                }
+
+                // 10% chance to sell food if pawn has an abundance
+                if (pawn.getInventory().getNumItems(ItemType.APPLE) > 10 && Random.Range(0, 100) < 10) {
+                    sellItem(pawn, targetEntity, ItemType.APPLE, 1);
+                }
             }
             else {
                 // move towards target entity
@@ -128,7 +150,7 @@ namespace osg {
                 Nation nation = nationRepository.getNation(pawn.getNationId());
                 if (nation != null) {
                     EntityId nationLeaderId = nation.getLeaderId();
-                    Entity nationLeader = environment.getEntity(nationLeaderId);
+                    Entity nationLeader = entityRepository.getEntity(nationLeaderId);
                     if (nationLeader != null) {
                         pawn.setTargetEntity(nationLeader);
                     }
@@ -158,6 +180,73 @@ namespace osg {
                 pawn.moveTowardsTargetEntity();
             }
         }
+
+        private void executeCreateSettlementBehavior(Pawn pawn) {
+            Vector3 targetPosition = pawn.getPosition();
+
+            // get nation color
+            Nation nation = nationRepository.getNation(pawn.getNationId());
+            Color nationColor = nation.getColor();
+
+            // create settlement
+            Settlement settlement = new Settlement(targetPosition, nation.getId(), nationColor, nation.getName());
+            nation.addSettlement(settlement.getId());
+            entityRepository.addEntity(settlement);
+            pawn.setHomeSettlementId(settlement.getId());
+        }
+
+        private void executeGoHomeBehavior(Pawn pawn) {
+            Nation nation = nationRepository.getNation(pawn.getNationId());
+            Settlement settlement = null;
+            if (nation != null && nation.getNumberOfSettlements() > 0) {
+                EntityId settlementId = pawn.getHomeSettlementId();
+                if (settlementId == null) {
+                    Debug.LogError("Pawn " + pawn + " has no settlement id.");
+                    return;
+                }
+                settlement = (Settlement) entityRepository.getEntity(settlementId);
+            }
+
+            if (!pawn.hasTargetEntity()) {
+                if (settlement != null) {
+                    pawn.setTargetEntity(settlement);
+                }
+            }
+            else if (pawn.isAtTargetEntity(20)) {
+                if (nation.getLeaderId() == pawn.getId()) {
+                    return;
+                }
+                if (settlement == null) {
+                    Debug.LogError("Pawn " + pawn + " has no settlement to go to.");
+                    return;
+                }
+                settlement.addCurrentlyPresentEntity(pawn.getId());
+                pawn.setCurrentlyInSettlement(true);
+                pawn.destroyGameObject();
+                pawn.setTargetEntity(null);
+                return;
+            }
+            else {
+                // move towards target entity
+                pawn.moveTowardsTargetEntity();
+            }
+        }
+
+        private void executePlantSaplingBehavior(Pawn pawn) {
+            // if pawn has no saplings, skip
+            if (pawn.getInventory().getNumItems(ItemType.SAPLING) == 0) {
+                Debug.LogWarning("Pawn " + pawn + " has no saplings to plant.");
+                return;
+            }
+
+            Vector3 position = pawn.getPosition();
+            position += new Vector3(Random.Range(-5f, 5f), 0, Random.Range(-5f, 5f));
+            Sapling tree = new Sapling(position, 3);
+            entityRepository.addEntity(tree);
+            pawn.getInventory().removeItem(ItemType.SAPLING, 1);
+        }
+
+        // ---
 
         private void buyItem(Pawn buyer, Entity seller, ItemType itemType, int numItems) {
             Inventory buyerInventory = buyer.getInventory();

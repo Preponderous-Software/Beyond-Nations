@@ -8,30 +8,28 @@ namespace osg {
         private Environment environment;
         private NationRepository nationRepository;
         private EventProducer eventProducer;
+        private EntityRepository entityRepository;
 
-        public InteractCommand(Environment environment, NationRepository nationRepository, EventProducer eventProducer) {
+        public InteractCommand(Environment environment, NationRepository nationRepository, EventProducer eventProducer, EntityRepository entityRepository) {
             this.environment = environment;
             this.nationRepository = nationRepository;
             this.eventProducer = eventProducer;
+            this.entityRepository = entityRepository;
         }
 
         public void execute(Player player) {
-            Status status = player.getStatus();
-
             TreeEntity tree = environment.getNearestTree(player.getGameObject().transform.position);
             RockEntity rock = environment.getNearestRock(player.getGameObject().transform.position);
             Pawn pawn = (Pawn) environment.getNearestEntityOfType(player.getGameObject().transform.position, EntityType.PAWN);
+            Settlement settlement = (Settlement) environment.getNearestEntityOfType(player.getGameObject().transform.position, EntityType.SETTLEMENT);
 
-            // if within range of tree or rock, gather resources
-            if (tree != null && Vector3.Distance(player.getGameObject().transform.position, tree.getGameObject().transform.position) < 5) {
-                tree.markForDeletion();
-                player.getInventory().transferContentsOfInventory(tree.getInventory());
-                status.update("Gathered wood from tree.");
-            }
-            else if (rock != null && Vector3.Distance(player.getGameObject().transform.position, rock.getGameObject().transform.position) < 5) {
-                rock.markForDeletion();
-                player.getInventory().transferContentsOfInventory(rock.getInventory());
-                status.update("Gathered stone from rock.");
+            if (settlement != null && Vector3.Distance(player.getGameObject().transform.position, settlement.getGameObject().transform.position) < 5) {
+                string listOfPresentPawns = "";
+                foreach (EntityId entityId in settlement.getCurrentlyPresentEntities()) {
+                    Pawn pawnInSettlement = (Pawn) entityRepository.getEntity(entityId);
+                    listOfPresentPawns += pawnInSettlement.getName() + ", ";
+                }
+                player.getStatus().update("Settlement contains: " + listOfPresentPawns);
             }
             else if (pawn != null && Vector3.Distance(player.getGameObject().transform.position, pawn.getGameObject().transform.position) < 5) {
                 Nation pawnsNation = nationRepository.getNation(pawn.getNationId());
@@ -40,17 +38,27 @@ namespace osg {
                 if (player.getNationId() != null) {
                     Nation playersNation = nationRepository.getNation(player.getNationId());
                     if (playersNation.getLeaderId() == pawn.getId()) {
-                        attemptToSellItemsToPawn(player, pawn, status);
+                        attemptToSellItemsToPawn(player, pawn);
                         return;
                     }
                 }
 
                 List <string> phrases = generatePhrases(pawnsNation, pawn, player);
                 string phrase = phrases[Random.Range(0, phrases.Count)];
-                status.update(pawn.getName() + ": \"" + phrase + "\"");
+                player.getStatus().update(pawn.getName() + ": \"" + phrase + "\"");
+            }
+            else if (tree != null && Vector3.Distance(player.getGameObject().transform.position, tree.getGameObject().transform.position) < 5) {
+                tree.markForDeletion();
+                player.getInventory().transferContentsOfInventory(tree.getInventory());
+                player.getStatus().update("Gathered wood from tree.");
+            }
+            else if (rock != null && Vector3.Distance(player.getGameObject().transform.position, rock.getGameObject().transform.position) < 5) {
+                rock.markForDeletion();
+                player.getInventory().transferContentsOfInventory(rock.getInventory());
+                player.getStatus().update("Gathered stone from rock.");
             }
             else {
-                status.update("No entities within range to interact with.");
+                player.getStatus().update("No entities within range to interact with.");
             }
         }
 
@@ -82,7 +90,7 @@ namespace osg {
             return phrases;
         }
 
-        private void attemptToSellItemsToPawn(Player player, Pawn pawn, Status status) {
+        private void attemptToSellItemsToPawn(Player player, Pawn pawn) {
             int numWood = player.getInventory().getNumItems(ItemType.WOOD);
             int numStone = player.getInventory().getNumItems(ItemType.STONE);
             int numApples = player.getInventory().getNumItems(ItemType.APPLE);
@@ -90,12 +98,12 @@ namespace osg {
             int cost = (numWood * 5) + (numStone * 10) + (numApples * 1);
 
             if (cost == 0) {
-                status.update("You don't have anything to sell.");
+                player.getStatus().update("You don't have anything to sell.");
                 return;
             }
 
             if (pawn.getInventory().getNumItems(ItemType.GOLD_COIN) < cost) {
-                status.update(pawn.getName() + " doesn't have enough gold coins to buy your items.");
+                player.getStatus().update(pawn.getName() + " doesn't have enough gold coins to buy your items.");
                 return;
             }
 
@@ -106,7 +114,8 @@ namespace osg {
             pawn.getInventory().addItem(ItemType.STONE, numStone);
             pawn.getInventory().addItem(ItemType.APPLE, numApples);
             player.getInventory().addItem(ItemType.GOLD_COIN, cost);
-            status.update("Sold " + numWood + " wood, " + numStone + " stone, and " + numApples + " apples to " + pawn.getName() + " for " + cost + " gold coins.");
+            pawn.getInventory().removeItem(ItemType.GOLD_COIN, cost);
+            player.getStatus().update("Sold " + numWood + " wood, " + numStone + " stone, and " + numApples + " apples to " + pawn.getName() + " for " + cost + " gold coins.");
             return;
         }
     }

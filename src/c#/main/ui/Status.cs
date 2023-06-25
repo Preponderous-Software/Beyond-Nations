@@ -25,6 +25,22 @@ namespace osg {
             }
         }
 
+        public int getTicksToExpire() {
+            return ticksToExpire;
+        }
+
+        public int getTickLastSet() {
+            return tickLastSet;
+        }
+
+        public string getStatus() {
+            return statusText.getText();
+        }
+
+        public TextGameObject getTextGameObject() {
+            return statusText;
+        }
+
         private void createStatusText() {
             int x = 0;
             int y = -(Screen.height / 4);
