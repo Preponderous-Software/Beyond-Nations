@@ -99,6 +99,7 @@ namespace osg {
                     BehaviorType currentBehavior = BehaviorType.NONE;
                     if (tickCounter.getTick() % ticksBetweenBehaviorCalculations == 0) {
                         currentBehavior = pawnBehaviorCalculator.computeBehaviorType(pawn);
+                        pawn.setCurrentBehaviorType(currentBehavior);
                     }
 
                     int ticksBetweenBehaviorExecutions = gameConfig.getTicksBetweenBehaviorExecutions();
@@ -106,21 +107,35 @@ namespace osg {
                         pawnBehaviorExecutor.executeBehavior(pawn, currentBehavior);
                     }
 
-                    // set nametag to show energy and inventory contents
-                    string nameTagText = pawn.getName() + " (" + (int)pawn.getEnergy() + ")";
-                    // show wood, stone, apples and gold coins
-                    if (pawn.getInventory().getNumItems(ItemType.WOOD) > 0) {
-                        nameTagText += " W:" + pawn.getInventory().getNumItems(ItemType.WOOD);
+                    string nameTagText = pawn.getName();
+                    if (pawn.getCurrentBehaviorType() == BehaviorType.NONE) {
+                        nameTagText += "\n" + "(doing nothing)";
                     }
-                    if (pawn.getInventory().getNumItems(ItemType.STONE) > 0) {
-                        nameTagText += " S:" + pawn.getInventory().getNumItems(ItemType.STONE);
+                    else if (pawn.getCurrentBehaviorType() == BehaviorType.GATHER_RESOURCES) {
+                        nameTagText += "\n" + "(gathering resources)";
                     }
-                    if (pawn.getInventory().getNumItems(ItemType.APPLE) > 0) {
-                        nameTagText += " A:" + pawn.getInventory().getNumItems(ItemType.APPLE);
+                    else if (pawn.getCurrentBehaviorType() == BehaviorType.SELL_RESOURCES) {
+                        nameTagText += "\n" + "(selling resources)";
                     }
-                    if (pawn.getInventory().getNumItems(ItemType.GOLD_COIN) > 0) {
-                        nameTagText += " G:" + pawn.getInventory().getNumItems(ItemType.GOLD_COIN);
+                    else if (pawn.getCurrentBehaviorType() == BehaviorType.WANDER) {
+                        nameTagText += "\n" + "(wandering)";
                     }
+                    else if (pawn.getCurrentBehaviorType() == BehaviorType.PURCHASE_FOOD) {
+                        nameTagText += "\n" + "(purchasing food)";
+                    }
+                    else if (pawn.getCurrentBehaviorType() == BehaviorType.CREATE_SETTLEMENT) {
+                        nameTagText += "\n" + "(creating settlementing)";
+                    }
+                    else if (pawn.getCurrentBehaviorType() == BehaviorType.GO_HOME) {
+                        nameTagText += "\n" + "(going home)";
+                    }
+                    else if (pawn.getCurrentBehaviorType() == BehaviorType.PLANT_SAPLING) {
+                        nameTagText += "\n" + "(planting sapling)";
+                    }
+                    else {
+                        nameTagText += "\n" + "(?)";
+                    }
+
                     pawn.setNameTag(nameTagText);
 
                     // create or join nation
