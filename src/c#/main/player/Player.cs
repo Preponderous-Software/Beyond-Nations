@@ -21,7 +21,7 @@ namespace osg {
         private float metabolism = Random.Range(0.001f, 0.010f);
 
         public Player(int walkSpeed, int runSpeed, TickCounter tickCounter, int statusExpirationTicks) : base(EntityType.PLAYER){
-            createGameObject(new Vector3(0, 0, 0));
+            createGameObject(new Vector3(0, 2, 0));
             setupCamera();
             this.rigidBody = getGameObject().GetComponent<Rigidbody>();
             this.walkSpeed = walkSpeed;
@@ -34,7 +34,7 @@ namespace osg {
         private void setupCamera() {
             GameObject cameraObject = GameObject.Find("/Camera");      
             cameraObject.transform.SetParent(getGameObject().transform);
-            cameraObject.transform.position = new Vector3(0, 3, -10);
+            cameraObject.transform.position = new Vector3(0, 5, -10);
             this.playerCamera = cameraObject.GetComponent<Camera>();
         }
 
