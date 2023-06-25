@@ -107,35 +107,7 @@ namespace osg {
                         pawnBehaviorExecutor.executeBehavior(pawn, currentBehavior);
                     }
 
-                    string nameTagText = pawn.getName();
-                    if (pawn.getCurrentBehaviorType() == BehaviorType.NONE) {
-                        nameTagText += "\n" + "(doing nothing)";
-                    }
-                    else if (pawn.getCurrentBehaviorType() == BehaviorType.GATHER_RESOURCES) {
-                        nameTagText += "\n" + "(gathering resources)";
-                    }
-                    else if (pawn.getCurrentBehaviorType() == BehaviorType.SELL_RESOURCES) {
-                        nameTagText += "\n" + "(selling resources)";
-                    }
-                    else if (pawn.getCurrentBehaviorType() == BehaviorType.WANDER) {
-                        nameTagText += "\n" + "(wandering)";
-                    }
-                    else if (pawn.getCurrentBehaviorType() == BehaviorType.PURCHASE_FOOD) {
-                        nameTagText += "\n" + "(purchasing food)";
-                    }
-                    else if (pawn.getCurrentBehaviorType() == BehaviorType.CREATE_SETTLEMENT) {
-                        nameTagText += "\n" + "(creating settlementing)";
-                    }
-                    else if (pawn.getCurrentBehaviorType() == BehaviorType.GO_HOME) {
-                        nameTagText += "\n" + "(going home)";
-                    }
-                    else if (pawn.getCurrentBehaviorType() == BehaviorType.PLANT_SAPLING) {
-                        nameTagText += "\n" + "(planting sapling)";
-                    }
-                    else {
-                        nameTagText += "\n" + "(?)";
-                    }
-
+                    string nameTagText = pawn.getName() + "\n" + pawn.getCurrentBehaviorDescription();
                     pawn.setNameTag(nameTagText);
 
                     // create or join nation
