@@ -292,6 +292,10 @@ namespace osg {
                 PlantSaplingCommand command = new PlantSaplingCommand(entityRepository);
                 command.execute(player);
             }
+            else if (Input.GetKeyDown(KeyCode.H)) {
+                TeleportHomeCommand command = new TeleportHomeCommand(entityRepository);
+                command.execute(player);
+            }
         }
 
         private void checkIfPlayerIsFallingIntoVoid() {
