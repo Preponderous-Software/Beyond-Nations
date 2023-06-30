@@ -24,10 +24,19 @@ namespace osg {
             Settlement settlement = (Settlement) environment.getNearestEntityOfType(player.getGameObject().transform.position, EntityType.SETTLEMENT);
 
             if (settlement != null && Vector3.Distance(player.getGameObject().transform.position, settlement.getGameObject().transform.position) < 5) {
+                if (settlement.getCurrentlyPresentEntitiesCount() == 0) {
+                    player.getStatus().update("No one is home.");
+                    return;
+                }
                 string listOfPresentPawns = "";
                 foreach (EntityId entityId in settlement.getCurrentlyPresentEntities()) {
                     Pawn pawnInSettlement = (Pawn) entityRepository.getEntity(entityId);
-                    listOfPresentPawns += pawnInSettlement.getName() + ", ";
+                    string pawnName = pawnInSettlement.getName();
+                    listOfPresentPawns += pawnName + ", ";
+                    if (listOfPresentPawns.Length > 50) {
+                        listOfPresentPawns += "...";
+                        break;
+                    }
                 }
                 player.getStatus().update("Settlement contains: " + listOfPresentPawns);
             }
