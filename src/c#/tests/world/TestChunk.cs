@@ -22,16 +22,16 @@ namespace osgtests {
             Chunk chunk = new Chunk(0, 0, 1, 1);
 
             // verify
-            Debug.Assert(chunk != null);
-            Debug.Assert(chunk.getId() != null);
-            Debug.Assert(chunk.getSize() == 1);
-            Debug.Assert(chunk.getX() == 0);
-            Debug.Assert(chunk.getZ() == 0);
-            Debug.Assert(chunk.getPosition() == new Vector3(0, 0, 0));
-            Debug.Assert(chunk.getGameObject() != null);
-            Debug.Assert(chunk.getLocations() != null);
-            Debug.Assert(chunk.getLocations().Length == 1);
-            Debug.Assert(chunk.getLocations()[0, 0] != null);
+            UnityEngine.Debug.Assert(chunk != null);
+            UnityEngine.Debug.Assert(chunk.getId() != null);
+            UnityEngine.Debug.Assert(chunk.getSize() == 1);
+            UnityEngine.Debug.Assert(chunk.getX() == 0);
+            UnityEngine.Debug.Assert(chunk.getZ() == 0);
+            UnityEngine.Debug.Assert(chunk.getPosition() == new Vector3(0, 0, 0));
+            UnityEngine.Debug.Assert(chunk.getGameObject() != null);
+            UnityEngine.Debug.Assert(chunk.getLocations() != null);
+            UnityEngine.Debug.Assert(chunk.getLocations().Length == 1);
+            UnityEngine.Debug.Assert(chunk.getLocations()[0, 0] != null);
 
             // clean up
             chunk.destroyGameObject();
@@ -45,7 +45,7 @@ namespace osgtests {
             Location location = chunk.getLocation(0, 0);
 
             // verify
-            Debug.Assert(location != null);
+            UnityEngine.Debug.Assert(location != null);
 
             // clean up
             chunk.destroyGameObject();
@@ -59,9 +59,9 @@ namespace osgtests {
             Location[,] locations = chunk.getLocations();
 
             // verify
-            Debug.Assert(locations != null);
-            Debug.Assert(locations.Length == 1);
-            Debug.Assert(locations[0, 0] != null);
+            UnityEngine.Debug.Assert(locations != null);
+            UnityEngine.Debug.Assert(locations.Length == 1);
+            UnityEngine.Debug.Assert(locations[0, 0] != null);
 
             // clean up
             chunk.destroyGameObject();
@@ -75,7 +75,7 @@ namespace osgtests {
             GameObject gameObject = chunk.getGameObject();
 
             // verify
-            Debug.Assert(gameObject != null);
+            UnityEngine.Debug.Assert(gameObject != null);
 
             // clean up
             chunk.destroyGameObject();
@@ -89,7 +89,7 @@ namespace osgtests {
             Vector3 position = chunk.getPosition();
 
             // verify
-            Debug.Assert(position == new Vector3(0, 0, 0));
+            UnityEngine.Debug.Assert(position == new Vector3(0, 0, 0));
 
             // clean up
             chunk.destroyGameObject();
@@ -103,7 +103,7 @@ namespace osgtests {
             int size = chunk.getSize();
 
             // verify
-            Debug.Assert(size == 1);
+            UnityEngine.Debug.Assert(size == 1);
 
             // clean up
             chunk.destroyGameObject();
@@ -117,7 +117,7 @@ namespace osgtests {
             int x = chunk.getX();
 
             // verify
-            Debug.Assert(x == 0);
+            UnityEngine.Debug.Assert(x == 0);
 
             // clean up
             chunk.destroyGameObject();
@@ -131,7 +131,7 @@ namespace osgtests {
             int z = chunk.getZ();
 
             // verify
-            Debug.Assert(z == 0);
+            UnityEngine.Debug.Assert(z == 0);
 
             // clean up
             chunk.destroyGameObject();

@@ -21,7 +21,7 @@ namespace osg {
             respawnPawns = false;
             numStartingNations = 5;
             keepInventoryOnDeath = true;
-            ticksBetweenBehaviorCalculations = 25;
+            ticksBetweenBehaviorCalculations = 1000;
             ticksBetweenBehaviorExecutions = 5;
         }
 

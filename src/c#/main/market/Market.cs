@@ -45,13 +45,31 @@ namespace osg {
             }
         }
 
-        public void transferOwnership(EntityId oldOwnerId, EntityId newOwnerId) {
+        public int getNumStallsForSale() {
+            int numStallsForSale = 0;
             foreach (Stall stall in stalls) {
-                if (stall.getOwnerId() == oldOwnerId) {
-                    stall.setOwnerId(newOwnerId);
-                    return;
+                if (stall.getOwnerId() == null) {
+                    numStallsForSale++;
                 }
             }
+            return numStallsForSale;
+        }
+
+        public Stall getStallForSale() {
+            foreach (Stall stall in stalls) {
+                if (stall.getOwnerId() == null) {
+                    return stall;
+                }
+            }
+            return null;
+        }
+
+        public int getNumStalls() {
+            return stalls.Count;
+        }
+
+        public int getMaxNumStalls() {
+            return maxNumStalls;
         }
     }
 }

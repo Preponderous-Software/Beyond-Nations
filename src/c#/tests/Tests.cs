@@ -13,11 +13,15 @@ namespace osgtests {
 
             // entity
             TestPawn.runTests();    
-            TestRockEntity.runTests();
-            TestTreeEntity.runTests();
+            TestRock.runTests();
+            TestTree.runTests();
 
             // inventory
             TestInventory.runTests();
+
+            // market
+            TestMarket.runTests();
+            TestStall.runTests();
 
             // nation
             TestNation.runTests();

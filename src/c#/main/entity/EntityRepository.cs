@@ -45,12 +45,12 @@ namespace osg {
             entityIds.Remove(entity.getId());
         }
 
-        public int getNumberOfEntitys() {
+        public int getNumberOfEntities() {
             return entities.Count;
         }
 
         public Entity getRandomEntity() {
-            int randomIndex = Random.Range(0, entityIds.Count);
+            int randomIndex = UnityEngine.Random.Range(0, entityIds.Count);
             EntityId randomEntityId = entityIds[randomIndex];
             return entities[randomEntityId];
         }

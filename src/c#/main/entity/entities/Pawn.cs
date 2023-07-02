@@ -5,7 +5,7 @@ namespace osg {
 
     public class Pawn : Entity {
         private string name;
-        private int speed = Random.Range(10, 20);
+        private int speed = UnityEngine.Random.Range(10, 20);
         private NationId nationId;
         private EntityId homeSettlementId;
         private Entity targetEntity;
@@ -19,7 +19,7 @@ namespace osg {
 
         private GameObject nameTag;
         private float energy = 100.00f;
-        private float metabolism = Random.Range(0.001f, 0.010f);
+        private float metabolism = UnityEngine.Random.Range(0.001f, 0.010f);
 
         // map of entity id to integer representing relationship strength
         private Dictionary<EntityId, int> relationships = new Dictionary<EntityId, int>();
@@ -28,7 +28,7 @@ namespace osg {
         public Pawn(Vector3 position, string name) : base(EntityType.PAWN) {
             this.name = name;
             createGameObject(position);
-            int startingGoldCoins = Random.Range(50, 200);
+            int startingGoldCoins = UnityEngine.Random.Range(50, 200);
             getInventory().addItem(ItemType.GOLD_COIN, startingGoldCoins);
         }
 

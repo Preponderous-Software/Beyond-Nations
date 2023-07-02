@@ -18,8 +18,8 @@ namespace osg {
         }
 
         public void execute(Player player) {
-            TreeEntity tree = environment.getNearestTree(player.getGameObject().transform.position);
-            RockEntity rock = environment.getNearestRock(player.getGameObject().transform.position);
+            AppleTree tree = environment.getNearestTree(player.getGameObject().transform.position);
+            Rock rock = environment.getNearestRock(player.getGameObject().transform.position);
             Pawn pawn = (Pawn) environment.getNearestEntityOfType(player.getGameObject().transform.position, EntityType.PAWN);
             Settlement settlement = (Settlement) environment.getNearestEntityOfType(player.getGameObject().transform.position, EntityType.SETTLEMENT);
 
@@ -42,18 +42,9 @@ namespace osg {
             }
             else if (pawn != null && Vector3.Distance(player.getGameObject().transform.position, pawn.getGameObject().transform.position) < 5) {
                 Nation pawnsNation = nationRepository.getNation(pawn.getNationId());
-                EntityId randomMemberId = pawnsNation.getRandomMemberId();
-
-                if (player.getNationId() != null) {
-                    Nation playersNation = nationRepository.getNation(player.getNationId());
-                    if (playersNation.getLeaderId() == pawn.getId()) {
-                        attemptToSellItemsToPawn(player, pawn);
-                        return;
-                    }
-                }
 
                 List <string> phrases = generatePhrases(pawnsNation, pawn, player);
-                string phrase = phrases[Random.Range(0, phrases.Count)];
+                string phrase = phrases[UnityEngine.Random.Range(0, phrases.Count)];
                 player.getStatus().update(pawn.getName() + ": \"" + phrase + "\"");
             }
             else if (tree != null && Vector3.Distance(player.getGameObject().transform.position, tree.getGameObject().transform.position) < 5) {

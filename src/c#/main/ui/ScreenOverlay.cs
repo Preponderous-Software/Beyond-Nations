@@ -12,7 +12,6 @@ namespace osg {
         private TextGameObject numApplesText;
         private TextGameObject numSaplingsText;
         private TextGameObject energyText;
-        private TextGameObject mtpsText;
 
         public ScreenOverlay(Player player, TickCounter tickCounter) {
             this.player = player;
@@ -29,7 +28,6 @@ namespace osg {
             numApplesText = new TextGameObject("Apples: 0", 20, resourcesX, resourcesY - 60);
             numSaplingsText = new TextGameObject("Saplings: 0", 20, resourcesX, resourcesY - 80);
             energyText = new TextGameObject("Energy: 100", 20, Screen.width / 4, -Screen.height / 4);
-            mtpsText = new TextGameObject("0mtps", 20, Screen.width / 4, Screen.height / 4);
         }
 
         public void update() {
@@ -39,7 +37,6 @@ namespace osg {
             numApplesText.updateText("Apples: " + player.getInventory().getNumItems(ItemType.APPLE));
             numSaplingsText.updateText("Saplings: " + player.getInventory().getNumItems(ItemType.SAPLING));
             energyText.updateText("Energy: " + player.getEnergy());
-            mtpsText.updateText(tickCounter.getMtps() + "mtps");
         }
 
         public void destroy() {
@@ -49,7 +46,6 @@ namespace osg {
             UnityEngine.Object.Destroy(numApplesText.getCanvasObject());
             UnityEngine.Object.Destroy(numSaplingsText.getCanvasObject());
             UnityEngine.Object.Destroy(energyText.getCanvasObject());
-            UnityEngine.Object.Destroy(mtpsText.getCanvasObject());
         }
     }
 }

@@ -23,8 +23,8 @@ namespace osgtests {
             TextGameObject textGameObject = new TextGameObject(text, fontSize, x, y);
 
             // verify
-            Debug.Assert(textGameObject.getText() == text);
-            Debug.Assert(textGameObject.getCanvasObject().GetComponentInChildren<Text>().text == text);
+            UnityEngine.Debug.Assert(textGameObject.getText() == text);
+            UnityEngine.Debug.Assert(textGameObject.getCanvasObject().GetComponentInChildren<Text>().text == text);
 
             // cleanup
             GameObject.Destroy(textGameObject.getCanvasObject());
@@ -43,8 +43,8 @@ namespace osgtests {
             textGameObject.updateText(newText);
 
             // verify
-            Debug.Assert(textGameObject.getText() == newText);
-            Debug.Assert(textGameObject.getCanvasObject().GetComponentInChildren<Text>().text == newText);
+            UnityEngine.Debug.Assert(textGameObject.getText() == newText);
+            UnityEngine.Debug.Assert(textGameObject.getCanvasObject().GetComponentInChildren<Text>().text == newText);
 
             // cleanup
             GameObject.Destroy(textGameObject.getCanvasObject());

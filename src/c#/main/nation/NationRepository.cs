@@ -45,7 +45,7 @@ namespace osg {
         }
 
         public Nation getRandomNation() {
-            int randomIndex = Random.Range(0, nationIds.Count);
+            int randomIndex = UnityEngine.Random.Range(0, nationIds.Count);
             NationId randomNationId = nationIds[randomIndex];
             return nations[randomNationId];
         }

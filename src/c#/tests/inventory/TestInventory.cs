@@ -21,9 +21,9 @@ namespace osgtests {
             Inventory inventory = new Inventory(0);
 
             // check
-            Debug.Assert(inventory.getNumItems(ItemType.GOLD_COIN) == 0);
-            Debug.Assert(inventory.getNumItems(ItemType.WOOD) == 0);
-            Debug.Assert(inventory.getNumItems(ItemType.STONE) == 0);
+            UnityEngine.Debug.Assert(inventory.getNumItems(ItemType.GOLD_COIN) == 0);
+            UnityEngine.Debug.Assert(inventory.getNumItems(ItemType.WOOD) == 0);
+            UnityEngine.Debug.Assert(inventory.getNumItems(ItemType.STONE) == 0);
         }
 
         public static void testAddWood() {
@@ -34,7 +34,7 @@ namespace osgtests {
             inventory.addItem(ItemType.WOOD, 5);
 
             // check
-            Debug.Assert(inventory.getNumItems(ItemType.WOOD) == 5);
+            UnityEngine.Debug.Assert(inventory.getNumItems(ItemType.WOOD) == 5);
         }
 
         public static void testRemoveWood() {
@@ -46,7 +46,7 @@ namespace osgtests {
             inventory.removeItem(ItemType.WOOD, 3);
 
             // check
-            Debug.Assert(inventory.getNumItems(ItemType.WOOD) == 2);
+            UnityEngine.Debug.Assert(inventory.getNumItems(ItemType.WOOD) == 2);
         }
 
         public static void testAddStone() {
@@ -57,7 +57,7 @@ namespace osgtests {
             inventory.addItem(ItemType.STONE, 5);
 
             // check
-            Debug.Assert(inventory.getNumItems(ItemType.STONE) == 5);
+            UnityEngine.Debug.Assert(inventory.getNumItems(ItemType.STONE) == 5);
         }
 
         public static void testRemoveStone() {
@@ -69,7 +69,7 @@ namespace osgtests {
             inventory.removeItem(ItemType.STONE, 3);
 
             // check
-            Debug.Assert(inventory.getNumItems(ItemType.STONE) == 2);
+            UnityEngine.Debug.Assert(inventory.getNumItems(ItemType.STONE) == 2);
         }
         
         public static void testSetNumWood() {
@@ -80,7 +80,7 @@ namespace osgtests {
             inventory.setNumItems(ItemType.WOOD, 5);
 
             // check
-            Debug.Assert(inventory.getNumItems(ItemType.WOOD) == 5);
+            UnityEngine.Debug.Assert(inventory.getNumItems(ItemType.WOOD) == 5);
         }
 
         public static void testSetNumStone() {
@@ -91,7 +91,7 @@ namespace osgtests {
             inventory.setNumItems(ItemType.STONE, 5);
 
             // check
-            Debug.Assert(inventory.getNumItems(ItemType.STONE) == 5);
+            UnityEngine.Debug.Assert(inventory.getNumItems(ItemType.STONE) == 5);
         }
     }
 }

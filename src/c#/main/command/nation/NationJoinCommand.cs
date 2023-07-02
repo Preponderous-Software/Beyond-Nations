@@ -36,7 +36,7 @@ namespace osg {
             // choose random nation settlement
             int numSettlements = nation.getSettlements().Count;
             if (numSettlements != 0) {
-                int randomSettlementIndex = Random.Range(0, numSettlements);
+                int randomSettlementIndex = UnityEngine.Random.Range(0, numSettlements);
                 EntityId randomSettlementId = nation.getSettlements()[randomSettlementIndex];
                 player.setSettlementId(randomSettlementId);
             }

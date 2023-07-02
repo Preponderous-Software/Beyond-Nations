@@ -18,7 +18,7 @@ namespace osg {
         private Status status = null;
         private bool autoWalk = false;
         private float energy = 100;
-        private float metabolism = Random.Range(0.001f, 0.010f);
+        private float metabolism = UnityEngine.Random.Range(0.001f, 0.010f);
 
         public Player(int walkSpeed, int runSpeed, TickCounter tickCounter, int statusExpirationTicks) : base(EntityType.PLAYER){
             createGameObject(new Vector3(0, 2, 0));
@@ -28,7 +28,7 @@ namespace osg {
             this.runSpeed = runSpeed;
             status = new Status(tickCounter, statusExpirationTicks);
             this.currentSpeed = walkSpeed;
-            getInventory().addItem(ItemType.GOLD_COIN, Random.Range(100, 400));
+            getInventory().addItem(ItemType.GOLD_COIN, UnityEngine.Random.Range(100, 400));
         }
 
         private void setupCamera() {

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -24,6 +25,7 @@ namespace osg {
         private Player player; // TODO: move to player repository
         private ScreenOverlay screenOverlay;
         public bool runTests = false;
+        public bool showDebugInfo = true;
 
         // Initialization
         public void Start() {
@@ -80,13 +82,13 @@ namespace osg {
                         pawn.setEnergy(pawn.getEnergy() + 10);
                     }
 
-                    if (pawn.isCurrentlyInSettlement()) {
+                    if (pawn.isCurrentlyInSettlement()) { // TODO: replace this by implementing some new behaviors
                         pawn.setEnergy(pawn.getEnergy() - pawn.getMetabolism() / 10f);
-                        if (pawn.getEnergy() < 50) {
+                        if (pawn.getEnergy() < 80) {
                             pawn.setCurrentlyInSettlement(false);
                             Settlement settlement = entityRepository.getEntity(pawn.getHomeSettlementId()) as Settlement;
                             settlement.removeCurrentlyPresentEntity(pawn.getId());
-                            pawn.createGameObject(settlement.getGameObject().transform.position + new Vector3(Random.Range(-20, 20), 0, Random.Range(-20, 20)));
+                            pawn.createGameObject(settlement.getGameObject().transform.position + new Vector3(UnityEngine.Random.Range(-20, 20), 0, UnityEngine.Random.Range(-20, 20)));
                             pawn.setColor(settlement.getColor());
                         }
                         continue;
@@ -96,15 +98,13 @@ namespace osg {
                     }
 
                     int ticksBetweenBehaviorCalculations = gameConfig.getTicksBetweenBehaviorCalculations();
-                    BehaviorType currentBehavior = BehaviorType.NONE;
                     if (tickCounter.getTick() % ticksBetweenBehaviorCalculations == 0) {
-                        currentBehavior = pawnBehaviorCalculator.computeBehaviorType(pawn);
-                        pawn.setCurrentBehaviorType(currentBehavior);
+                        pawn.setCurrentBehaviorType(pawnBehaviorCalculator.computeBehaviorType(pawn));
                     }
 
                     int ticksBetweenBehaviorExecutions = gameConfig.getTicksBetweenBehaviorExecutions();
                     if (tickCounter.getTick() % ticksBetweenBehaviorExecutions == 0) {
-                        pawnBehaviorExecutor.executeBehavior(pawn, currentBehavior);
+                        pawnBehaviorExecutor.executeBehavior(pawn, pawn.getCurrentBehaviorType());
                     }
 
                     string nameTagText = pawn.getName() + "\n" + pawn.getCurrentBehaviorDescription();
@@ -121,7 +121,7 @@ namespace osg {
                         // choose random nation settlement
                         int numSettlements = nation.getSettlements().Count;
                         if (numSettlements != 0) {
-                            int randomSettlementIndex = Random.Range(0, numSettlements);
+                            int randomSettlementIndex = UnityEngine.Random.Range(0, numSettlements);
                             EntityId randomSettlementId = nation.getSettlements()[randomSettlementIndex];
                             pawn.setHomeSettlementId(randomSettlementId);
                         }
@@ -139,7 +139,7 @@ namespace osg {
                             pawn.getGameObject().transform.position = newPosition;
                         } else {
                             // pawn is not in a settlement, so respawn at spawn
-                            pawn.getGameObject().transform.position = new Vector3(Random.Range(-100, 100), 100, Random.Range(-100, 100));
+                            pawn.getGameObject().transform.position = new Vector3(UnityEngine.Random.Range(-100, 100), 100, UnityEngine.Random.Range(-100, 100));
                         }
                     }
 
@@ -162,7 +162,7 @@ namespace osg {
                                 // pawn is in a settlement, so respawn at settlement
                                 Settlement settlement = (Settlement)entityRepository.getEntity(pawn.getHomeSettlementId());
                                 Vector3 newPosition = settlement.getGameObject().transform.position;
-                                newPosition = new Vector3(newPosition.x + Random.Range(-20, 20), newPosition.y, newPosition.z + Random.Range(-20, 20));
+                                newPosition = new Vector3(newPosition.x + UnityEngine.Random.Range(-20, 20), newPosition.y, newPosition.z + UnityEngine.Random.Range(-20, 20));
                                 pawn.getGameObject().transform.position = newPosition;
                             }
                             else {
@@ -212,7 +212,7 @@ namespace osg {
                     Sapling sapling = (Sapling)entity;
                     if (sapling.isGrown()) {
                         // replace with tree
-                        TreeEntity tree = new TreeEntity(sapling.getGameObject().transform.position, 5);
+                        AppleTree tree = new AppleTree(sapling.getGameObject().transform.position, 5);
                         entityRepository.addEntity(tree);
                         sapling.markForDeletion();
                     }
@@ -237,14 +237,136 @@ namespace osg {
                     // player is in a settlement, so respawn at settlement
                     Settlement settlement = (Settlement)entityRepository.getEntity(player.getSettlementId());
                     Vector3 newPosition = settlement.getGameObject().transform.position;
-                    newPosition = new Vector3(newPosition.x + Random.Range(-20, 20), newPosition.y, newPosition.z + Random.Range(-20, 20));
+                    newPosition = new Vector3(newPosition.x + UnityEngine.Random.Range(-20, 20), newPosition.y, newPosition.z + UnityEngine.Random.Range(-20, 20));
                     player.getGameObject().transform.position = newPosition;
                 }
                 else {
-                    player.getGameObject().transform.position = new Vector3(Random.Range(-100, 100), 10, Random.Range(-100, 100));
+                    player.getGameObject().transform.position = new Vector3(UnityEngine.Random.Range(-100, 100), 10, UnityEngine.Random.Range(-100, 100));
                 }
             }
             deleteEntitiesMarkedForDeletion();
+        }
+
+        // on gui
+        public void OnGUI() {
+            drawCommandButtons();
+            
+            if (showDebugInfo) {
+                GUI.color = Color.black;
+                drawDebugInfo();
+            }
+        }
+
+        private void drawCommandButtons() {
+            int buttonHeight = Screen.height / 20;
+            int buttonWidth = Screen.width / 5;
+            int buttonSpacing = 10;
+            int buttonX = 100;
+            int buttonY = Screen.height - buttonHeight - 10;
+            
+            if (player.getNationId() == null) {
+                // draw create nation
+                if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Create Nation")) {
+                    NationCreateCommand command = new NationCreateCommand(nationRepository, eventProducer);
+                    command.execute(player);
+                }
+                buttonX += buttonWidth + buttonSpacing;
+
+                // draw join nation
+                if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Join Nation")) {
+                    NationJoinCommand command = new NationJoinCommand(nationRepository, eventProducer);
+                    command.execute(player);
+                }
+                buttonX += buttonWidth + buttonSpacing;
+            }
+            else {
+                // draw leave nation
+                if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Leave Nation")) {
+                    NationLeaveCommand command = new NationLeaveCommand(nationRepository, eventProducer, entityRepository);
+                    command.execute(player);
+                }
+                buttonX += buttonWidth + buttonSpacing;
+
+                // if leader and no settlements, draw found settlement
+                Nation nation = nationRepository.getNation(player.getNationId());
+                if (player.getId() == nation.getLeaderId() && nation.getNumberOfSettlements() == 0) {
+                    // draw found settlement
+                    if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Found Settlement")) {
+                        FoundSettlementCommand command = new FoundSettlementCommand(nationRepository, eventProducer, entityRepository);
+                        command.execute(player);
+                    }
+                    buttonX += buttonWidth + buttonSpacing;
+                }
+
+                // teleport home
+                if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Teleport Home")) {
+                    TeleportHomeCommand command = new TeleportHomeCommand(entityRepository);
+                    command.execute(player);
+                }
+                buttonX += buttonWidth + buttonSpacing;
+            }
+        }
+
+        private void drawDebugInfo() {
+            int height = 10;
+                
+                // fps                
+                GUI.Label(new Rect(10, height, 100, 20), "FPS: " + (int)(1.0f / Time.smoothDeltaTime));
+                height += 20;
+                
+                // mtps
+                GUI.Label(new Rect(10, height, 100, 20), "MTPS: " + tickCounter.getMtps());
+                height += 20;
+
+                // tick
+                GUI.Label(new Rect(10, height, 100, 20), "Total ticks: " + tickCounter.getTotalTicks());
+                height += 20;
+
+                // current chunk
+                Chunk currentChunk = environment.getChunkAtPosition(player.getGameObject().transform.position);
+                if (currentChunk != null) {
+                    GUI.Label(new Rect(10, height, 100, 20), "Chunk: " + currentChunk.getX() + ", " + currentChunk.getZ());
+                }
+                else {
+                    GUI.Label(new Rect(10, height, 100, 20), "Chunk: null");
+                }
+                height += 20;
+
+                // number of entities
+                GUI.Label(new Rect(10, height, 100, 20), "Entities: " + entityRepository.getNumberOfEntities());
+                height += 20;
+
+                // number of chunks
+                GUI.Label(new Rect(10, height, 100, 20), "Chunks: " + environment.getNumberOfChunks());
+                height += 20;
+
+                // number of pawns
+                GUI.Label(new Rect(10, height, 100, 20), "Pawns: " + entityRepository.getEntitiesOfType(EntityType.PAWN).Count);
+                height += 20;
+
+                // number of nations
+                GUI.Label(new Rect(10, height, 100, 20), "Nations: " + nationRepository.getNumberOfNations());
+                height += 20;
+
+                // number of settlements
+                GUI.Label(new Rect(10, height, 100, 20), "Settlements: " + entityRepository.getEntitiesOfType(EntityType.SETTLEMENT).Count);
+                height += 20;
+
+                // number of trees
+                GUI.Label(new Rect(10, height, 100, 20), "Trees: " + entityRepository.getEntitiesOfType(EntityType.TREE).Count);
+                height += 20;
+
+                // number of saplings
+                GUI.Label(new Rect(10, height, 100, 20), "Saplings: " + entityRepository.getEntitiesOfType(EntityType.SAPLING).Count);
+                height += 20;
+
+                // number of rocks
+                GUI.Label(new Rect(10, height, 100, 20), "Rocks: " + entityRepository.getEntitiesOfType(EntityType.ROCK).Count);
+                height += 20;
+
+                // events stored
+                GUI.Label(new Rect(10, height, 100, 20), "Events: " + eventRepository.getTotalNumberOfEvents());
+                height += 20;
         }
 
         private void handleCommands() {
@@ -296,6 +418,10 @@ namespace osg {
                 TeleportHomeCommand command = new TeleportHomeCommand(entityRepository);
                 command.execute(player);
             }
+            else if (Input.GetKeyDown(KeyCode.F9)) {
+                // toggle show debug info
+                showDebugInfo = !showDebugInfo;
+            }
         }
 
         private void checkIfPlayerIsFallingIntoVoid() {
@@ -306,11 +432,11 @@ namespace osg {
                     // player is in a settlement, so respawn at settlement
                     Settlement settlement = (Settlement)entityRepository.getEntity(player.getSettlementId());
                     Vector3 newPosition = settlement.getGameObject().transform.position;
-                    newPosition = new Vector3(newPosition.x + Random.Range(-20, 20), newPosition.y, newPosition.z + Random.Range(-20, 20));
+                    newPosition = new Vector3(newPosition.x + UnityEngine.Random.Range(-20, 20), newPosition.y, newPosition.z + UnityEngine.Random.Range(-20, 20));
                     player.getGameObject().transform.position = newPosition;
                 }
                 else {
-                    player.getGameObject().transform.position = new Vector3(Random.Range(-100, 100), 10, Random.Range(-100, 100));
+                    player.getGameObject().transform.position = new Vector3(UnityEngine.Random.Range(-100, 100), 10, UnityEngine.Random.Range(-100, 100));
                 }
                 player.getStatus().update("You fell into the void. You have been teleported to the surface.");
             }

@@ -21,12 +21,12 @@ namespace osgtests {
             Nation nation = new Nation(name, leaderId);
 
             // verify
-            Debug.Assert(nation.getId() != null);
-            Debug.Assert(nation.getName() == name);
-            Debug.Assert(nation.getLeaderId() == leaderId);
-            Debug.Assert(nation.getNumberOfMembers() == 1);
-            Debug.Assert(nation.isMember(leaderId));
-            Debug.Assert(nation.getColor() != null);
+            UnityEngine.Debug.Assert(nation.getId() != null);
+            UnityEngine.Debug.Assert(nation.getName() == name);
+            UnityEngine.Debug.Assert(nation.getLeaderId() == leaderId);
+            UnityEngine.Debug.Assert(nation.getNumberOfMembers() == 1);
+            UnityEngine.Debug.Assert(nation.isMember(leaderId));
+            UnityEngine.Debug.Assert(nation.getColor() != null);
         }
 
         public static void testAddMember() {
@@ -40,8 +40,8 @@ namespace osgtests {
             nation.addMember(memberId);
 
             // verify
-            Debug.Assert(nation.getNumberOfMembers() == 2);
-            Debug.Assert(nation.isMember(memberId));
+            UnityEngine.Debug.Assert(nation.getNumberOfMembers() == 2);
+            UnityEngine.Debug.Assert(nation.isMember(memberId));
         }
 
         public static void testRemoveMember() {
@@ -56,8 +56,8 @@ namespace osgtests {
             nation.removeMember(memberId);
 
             // verify
-            Debug.Assert(nation.getNumberOfMembers() == 1);
-            Debug.Assert(!nation.isMember(memberId));
+            UnityEngine.Debug.Assert(nation.getNumberOfMembers() == 1);
+            UnityEngine.Debug.Assert(!nation.isMember(memberId));
         }
     }
 }

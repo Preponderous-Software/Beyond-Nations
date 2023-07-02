@@ -23,9 +23,9 @@ namespace osgtests {
             Status status = new Status(tickCounter, ticksToExpire);
 
             // verify
-            Debug.Assert(status.getTicksToExpire() == ticksToExpire);
-            Debug.Assert(status.getTickLastSet() == 0);
-            Debug.Assert(status.getStatus() == "Game started.");
+            UnityEngine.Debug.Assert(status.getTicksToExpire() == ticksToExpire);
+            UnityEngine.Debug.Assert(status.getTickLastSet() == 0);
+            UnityEngine.Debug.Assert(status.getStatus() == "Game started.");
 
             // cleanup
             GameObject.Destroy(status.getTextGameObject().getCanvasObject());
@@ -41,8 +41,8 @@ namespace osgtests {
             status.update("test");
 
             // verify
-            Debug.Assert(status.getTickLastSet() == 0);
-            Debug.Assert(status.getStatus() == "test");
+            UnityEngine.Debug.Assert(status.getTickLastSet() == 0);
+            UnityEngine.Debug.Assert(status.getStatus() == "test");
 
             // cleanup
             GameObject.Destroy(status.getTextGameObject().getCanvasObject());
@@ -60,7 +60,7 @@ namespace osgtests {
             status.clearStatusIfExpired();
 
             // verify
-            Debug.Assert(status.getStatus() == "test");
+            UnityEngine.Debug.Assert(status.getStatus() == "test");
 
             // cleanup
             GameObject.Destroy(status.getTextGameObject().getCanvasObject());
@@ -80,7 +80,7 @@ namespace osgtests {
             status.clearStatusIfExpired();
 
             // verify
-            Debug.Assert(status.getStatus() == "");
+            UnityEngine.Debug.Assert(status.getStatus() == "");
 
             // cleanup
             GameObject.Destroy(status.getTextGameObject().getCanvasObject());

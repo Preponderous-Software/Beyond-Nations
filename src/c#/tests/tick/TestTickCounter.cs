@@ -16,7 +16,7 @@ namespace osgtests {
             TickCounter tickCounter = new TickCounter();
 
             // check
-            Debug.Assert(tickCounter.getTick() == 0);
+            UnityEngine.Debug.Assert(tickCounter.getTick() == 0);
         }
 
         public static void testIncrement() {
@@ -27,7 +27,7 @@ namespace osgtests {
             tickCounter.increment();
 
             // check
-            Debug.Assert(tickCounter.getTick() == 1);
+            UnityEngine.Debug.Assert(tickCounter.getTick() == 1);
         }
         
     }

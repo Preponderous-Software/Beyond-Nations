@@ -3,12 +3,12 @@ using UnityEngine;
 
 namespace osg {
 
-    public class TreeEntity : Entity {
+    public class AppleTree : Entity {
         private GameObject trunk;
         private GameObject leaves;
         private int height;
         
-        public TreeEntity(Vector3 position, int height) : base(EntityType.TREE) {
+        public AppleTree(Vector3 position, int height) : base(EntityType.TREE) {
             this.height = height;
             createGameObject(position);
         }

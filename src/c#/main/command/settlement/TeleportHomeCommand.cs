@@ -16,7 +16,7 @@ namespace osg {
                 return;
             }
             Entity homeSettlement = entityRepository.getEntity(homeSettlementId);
-            player.getGameObject().transform.position = homeSettlement.getGameObject().transform.position + new Vector3(Random.Range(-20, 20), 0, Random.Range(-20, 20));
+            player.getGameObject().transform.position = homeSettlement.getGameObject().transform.position + new Vector3(UnityEngine.Random.Range(-20, 20), 0, UnityEngine.Random.Range(-20, 20));
             player.getStatus().update("Welcome home!");
         }
     }

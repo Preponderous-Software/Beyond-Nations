@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace osg {
 
-    public class RockEntity : Entity {
+    public class Rock : Entity {
             
-        public RockEntity(Vector3 position) : base(EntityType.ROCK) {
+        public Rock(Vector3 position) : base(EntityType.ROCK) {
             createGameObject(position);
         }
 

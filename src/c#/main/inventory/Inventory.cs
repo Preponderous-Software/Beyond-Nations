@@ -41,6 +41,11 @@ namespace osg {
             items[ItemType.SAPLING] = 0;
         }
 
+        /**
+        * Transfers the contents of the other inventory to this inventory.
+        * 
+        * @param otherInventory
+        */
         public void transferContentsOfInventory(Inventory otherInventory) {
             items[ItemType.GOLD_COIN] += otherInventory.getNumItems(ItemType.GOLD_COIN);
             items[ItemType.WOOD] += otherInventory.getNumItems(ItemType.WOOD);
@@ -48,6 +53,10 @@ namespace osg {
             items[ItemType.APPLE] += otherInventory.getNumItems(ItemType.APPLE);
             items[ItemType.SAPLING] += otherInventory.getNumItems(ItemType.SAPLING);
             otherInventory.clear();
+        }
+
+        public bool containsAbundanceOfResources() {
+            return getNumItems(ItemType.WOOD) > 10 && getNumItems(ItemType.STONE) > 10 && getNumItems(ItemType.APPLE) > 10;
         }
     }
 }

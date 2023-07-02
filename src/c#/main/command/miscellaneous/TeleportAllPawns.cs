@@ -18,11 +18,11 @@ namespace osg {
                             pawn.setCurrentlyInSettlement(false);
                             Settlement settlement = entityRepository.getEntity(pawn.getHomeSettlementId()) as Settlement;
                             settlement.removeCurrentlyPresentEntity(pawn.getId());
-                            pawn.createGameObject(player.getGameObject().transform.position + new Vector3(Random.Range(-20, 20), 0, Random.Range(-20, 20)));
+                            pawn.createGameObject(player.getGameObject().transform.position + new Vector3(UnityEngine.Random.Range(-20, 20), 0, UnityEngine.Random.Range(-20, 20)));
                             pawn.setColor(settlement.getColor());
                     }
                     else {
-                        pawn.getGameObject().transform.position = player.getGameObject().transform.position + new Vector3(Random.Range(-20, 20), 0, Random.Range(-20, 20));
+                        pawn.getGameObject().transform.position = player.getGameObject().transform.position + new Vector3(UnityEngine.Random.Range(-20, 20), 0, UnityEngine.Random.Range(-20, 20));
                     }
 
                     pawn.setTargetEntity(null);

@@ -92,93 +92,21 @@ namespace osg {
         }
 
         private void executeSellResourcesBehavior(Pawn pawn) {
-            if (!pawn.hasTargetEntity()) {
-                // target nation leader
-                Nation nation = nationRepository.getNation(pawn.getNationId());
-                if (nation != null) {
-                    EntityId nationLeaderId = nation.getLeaderId();
-                    Entity nationLeader = entityRepository.getEntity(nationLeaderId);
-                    if (nationLeader != null) {
-                        pawn.setTargetEntity(nationLeader);
-                    }
-                }
-            }
-            else if (pawn.isAtTargetEntity()) {
-                Entity targetEntity = pawn.getTargetEntity();
-                if (targetEntity.getType() != EntityType.PAWN && targetEntity.getType() != EntityType.PLAYER) {
-                    Debug.LogWarning("Pawn " + pawn + " is at target entity " + targetEntity + " but it is not a pawn or player.");
-                    pawn.setTargetEntity(null);
-                    return;
-                }
-
-                // 50% chance to sell wood
-                if (Random.Range(0, 100) < 50) {
-                    sellItem(pawn, targetEntity, ItemType.WOOD, 1);
-                }
-
-                // 30% chance to sell stone
-                if (Random.Range(0, 100) < 30) {
-                    sellItem(pawn, targetEntity, ItemType.STONE, 1);
-                }
-
-                // 10% chance to sell food if pawn has an abundance
-                if (pawn.getInventory().getNumItems(ItemType.APPLE) > 10 && Random.Range(0, 100) < 10) {
-                    sellItem(pawn, targetEntity, ItemType.APPLE, 1);
-                }
-            }
-            else {
-                // move towards target entity
-                pawn.moveTowardsTargetEntity();
-            }
+            // TODO: go to settlement market and sell resources
         }
 
         private void executeWanderBehavior(Pawn pawn) {
-            // 95% chance to skip
-            if (Random.Range(0, 100) < 95) {
+            // 80% chance to skip
+            if (UnityEngine.Random.Range(0, 100) < 80) {
                 return;
             }
             Vector3 currentPosition = pawn.getPosition();
-            Vector3 targetPosition = currentPosition + new Vector3(Random.Range(-1f, 1f), 0, Random.Range(-1f, 1f));
+            Vector3 targetPosition = currentPosition + new Vector3(UnityEngine.Random.Range(-1f, 1f), 0, UnityEngine.Random.Range(-1f, 1f));
             pawn.getGameObject().GetComponent<Rigidbody>().velocity = (targetPosition - currentPosition).normalized * pawn.getSpeed();
         }
 
         private void executePurchaseFoodBehavior(Pawn pawn) {
-            // purchase food from nation leader
-
-            if (!pawn.hasTargetEntity()) {
-                // target nation leader
-                Nation nation = nationRepository.getNation(pawn.getNationId());
-                if (nation != null) {
-                    EntityId nationLeaderId = nation.getLeaderId();
-                    Entity nationLeader = entityRepository.getEntity(nationLeaderId);
-                    if (nationLeader != null) {
-                        pawn.setTargetEntity(nationLeader);
-                    }
-                }
-            }
-            else if (pawn.isAtTargetEntity()) {
-                Entity targetEntity = pawn.getTargetEntity();
-                EntityType targetEntityType = targetEntity.getType();
-                Inventory targetInventory = null;
-                if (targetEntityType == EntityType.PAWN) {
-                    targetInventory = ((Pawn)targetEntity).getInventory();
-                }
-                else if (targetEntityType == EntityType.PLAYER) {
-                    targetInventory = ((Player)targetEntity).getInventory();
-                }
-                else {
-                    Debug.LogWarning("Pawn " + pawn + " has target entity " + targetEntity + " but it is not a pawn or player.");
-                    pawn.setTargetEntity(null);
-                    return;
-                }
-
-                // buy food
-                buyItem(pawn, targetEntity, ItemType.APPLE, 1);
-            }
-            else {
-                // move towards target entity
-                pawn.moveTowardsTargetEntity();
-            }
+            // TODO: go to settlement market and purchase food
         }
 
         private void executeCreateSettlementBehavior(Pawn pawn) {
@@ -193,6 +121,7 @@ namespace osg {
             nation.addSettlement(settlement.getId());
             entityRepository.addEntity(settlement);
             pawn.setHomeSettlementId(settlement.getId());
+            pawn.setCurrentBehaviorType(BehaviorType.WANDER);
         }
 
         private void executeGoHomeBehavior(Pawn pawn) {
@@ -213,9 +142,6 @@ namespace osg {
                 }
             }
             else if (pawn.isAtTargetEntity(20)) {
-                if (nation.getLeaderId() == pawn.getId()) {
-                    return;
-                }
                 if (settlement == null) {
                     Debug.LogError("Pawn " + pawn + " has no settlement to go to.");
                     return;
@@ -240,10 +166,11 @@ namespace osg {
             }
 
             Vector3 position = pawn.getPosition();
-            position += new Vector3(Random.Range(-5f, 5f), 0, Random.Range(-5f, 5f));
+            position += new Vector3(UnityEngine.Random.Range(-5f, 5f), 0, UnityEngine.Random.Range(-5f, 5f));
             Sapling tree = new Sapling(position, 3);
             entityRepository.addEntity(tree);
             pawn.getInventory().removeItem(ItemType.SAPLING, 1);
+            pawn.setCurrentBehaviorType(BehaviorType.WANDER);
         }
 
         // ---
@@ -288,7 +215,7 @@ namespace osg {
             sellerInventory.addItem(ItemType.GOLD_COIN, price);
 
             // increase relationship
-            int increase = Random.Range(1, 5);
+            int increase = UnityEngine.Random.Range(1, 5);
             buyer.increaseRelationship(seller, increase);
             eventProducer.producePawnRelationshipIncreaseEvent(buyer, seller, increase);
 
@@ -339,7 +266,7 @@ namespace osg {
             sellerInventory.addItem(ItemType.GOLD_COIN, price * numItems);
 
             // increase relationship
-            int increase = Random.Range(1, 5);
+            int increase = UnityEngine.Random.Range(1, 5);
             seller.increaseRelationship(buyer, increase);
             eventProducer.producePawnRelationshipIncreaseEvent(seller, buyer, increase);
 
