@@ -34,11 +34,11 @@ namespace osg {
                 case BehaviorType.PURCHASE_FOOD:
                     executePurchaseFoodBehavior(pawn);
                     break;
-                case BehaviorType.CREATE_SETTLEMENT:
-                    executeCreateSettlementBehavior(pawn);
+                case BehaviorType.CONSTRUCT_SETTLEMENT:
+                    executeConstructSettlementBehavior(pawn);
                     break;
                 case BehaviorType.GO_TO_HOME_SETTLEMENT:
-                    executeGoHomeBehavior(pawn);
+                    executeGoToHomeSettlementBehavior(pawn);
                     break;
                 case BehaviorType.EXIT_SETTLEMENT:
                     executeExitSettlementBehavior(pawn);
@@ -115,7 +115,7 @@ namespace osg {
             // TODO: go to settlement market and purchase food
         }
 
-        private void executeCreateSettlementBehavior(Pawn pawn) {
+        private void executeConstructSettlementBehavior(Pawn pawn) {
             Vector3 targetPosition = pawn.getPosition();
 
             // get nation color
@@ -138,7 +138,7 @@ namespace osg {
             pawn.setCurrentBehaviorType(BehaviorType.WANDER);
         }
 
-        private void executeGoHomeBehavior(Pawn pawn) {
+        private void executeGoToHomeSettlementBehavior(Pawn pawn) {
             Nation nation = nationRepository.getNation(pawn.getNationId());
             Settlement settlement = null;
             if (nation != null && nation.getNumberOfSettlements() > 0) {

@@ -67,8 +67,8 @@ namespace osg {
                     Entity nearestSettlement = environment.getNearestEntityOfType(pawn.getGameObject().transform.position, EntityType.SETTLEMENT);
                     int distanceToNearestSettlement = nearestSettlement == null ? int.MaxValue : (int)Vector3.Distance(nearestSettlement.getGameObject().transform.position, pawn.getGameObject().transform.position);
                     if (nearestSettlement == null || distanceToNearestSettlement > 200) {
-                        UnityEngine.Debug.Log("[PBC] Pawn '" + pawn.getName() + "' is nation leader and no settlements within 200 units. Returning CREATE_SETTLEMENT.");
-                        return BehaviorType.CREATE_SETTLEMENT;
+                        UnityEngine.Debug.Log("[PBC] Pawn '" + pawn.getName() + "' is nation leader and no settlements within 200 units. Returning CONSTRUCT_SETTLEMENT.");
+                        return BehaviorType.CONSTRUCT_SETTLEMENT;
                     }
                     else {
                         UnityEngine.Debug.Log("[PBC] Pawn '" + pawn.getName() + "' is nation leader and settlement within 200 units. Returning GATHER_RESOURCES.");

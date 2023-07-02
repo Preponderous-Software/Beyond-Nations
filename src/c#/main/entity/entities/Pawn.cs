@@ -236,7 +236,7 @@ namespace osg {
             else if (getCurrentBehaviorType() == BehaviorType.PURCHASE_FOOD) {
                 return "(purchasing food)";
             }
-            else if (getCurrentBehaviorType() == BehaviorType.CREATE_SETTLEMENT) {
+            else if (getCurrentBehaviorType() == BehaviorType.CONSTRUCT_SETTLEMENT) {
                 return "(creating settlementing)";
             }
             else if (getCurrentBehaviorType() == BehaviorType.GO_TO_HOME_SETTLEMENT) {

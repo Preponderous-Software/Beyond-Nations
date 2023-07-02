@@ -62,7 +62,7 @@ namespace osgtests {
             BehaviorType behaviorType = calculator.computeBehaviorType(nationLeader);
 
             // check
-            UnityEngine.Debug.Assert(behaviorType == BehaviorType.CREATE_SETTLEMENT);
+            UnityEngine.Debug.Assert(behaviorType == BehaviorType.CONSTRUCT_SETTLEMENT);
 
             // cleanup
             environment.destroyGameObject();
