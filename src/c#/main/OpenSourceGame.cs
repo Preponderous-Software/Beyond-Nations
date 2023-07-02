@@ -299,8 +299,20 @@ namespace osg {
                 }
 
                 // teleport home
-                if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Teleport Home")) {
-                    TeleportHomeCommand command = new TeleportHomeCommand(entityRepository);
+                if (player.getSettlementId() != null) {
+                    Settlement settlement = (Settlement) entityRepository.getEntity(player.getSettlementId());
+                    if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Teleport Home")) {
+                        TeleportHomeCommand command = new TeleportHomeCommand(entityRepository);
+                        command.execute(player);
+                    }
+                    buttonX += buttonWidth + buttonSpacing;
+                }
+            }
+
+            // if saplings, plant sapling
+            if (player.getInventory().getNumItems(ItemType.SAPLING) > 0) {
+                if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Plant Sapling")) {
+                    PlantSaplingCommand command = new PlantSaplingCommand(entityRepository);
                     command.execute(player);
                 }
                 buttonX += buttonWidth + buttonSpacing;
