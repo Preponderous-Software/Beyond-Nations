@@ -239,7 +239,7 @@ namespace osg {
             else if (getCurrentBehaviorType() == BehaviorType.CREATE_SETTLEMENT) {
                 return "(creating settlementing)";
             }
-            else if (getCurrentBehaviorType() == BehaviorType.GO_HOME) {
+            else if (getCurrentBehaviorType() == BehaviorType.GO_TO_HOME_SETTLEMENT) {
                 return "(going home)";
             }
             else if (getCurrentBehaviorType() == BehaviorType.PLANT_SAPLING) {

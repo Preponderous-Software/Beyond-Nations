@@ -82,16 +82,8 @@ namespace osg {
                         pawn.setEnergy(pawn.getEnergy() + 10);
                     }
 
-                    if (pawn.isCurrentlyInSettlement()) { // TODO: replace this by implementing some new behaviors
+                    if (pawn.isCurrentlyInSettlement()) {
                         pawn.setEnergy(pawn.getEnergy() - pawn.getMetabolism() / 10f);
-                        if (pawn.getEnergy() < 80) {
-                            pawn.setCurrentlyInSettlement(false);
-                            Settlement settlement = entityRepository.getEntity(pawn.getHomeSettlementId()) as Settlement;
-                            settlement.removeCurrentlyPresentEntity(pawn.getId());
-                            pawn.createGameObject(settlement.getGameObject().transform.position + new Vector3(UnityEngine.Random.Range(-20, 20), 0, UnityEngine.Random.Range(-20, 20)));
-                            pawn.setColor(settlement.getColor());
-                        }
-                        continue;
                     }
                     else {
                         pawn.setEnergy(pawn.getEnergy() - pawn.getMetabolism());
@@ -107,8 +99,10 @@ namespace osg {
                         pawnBehaviorExecutor.executeBehavior(pawn, pawn.getCurrentBehaviorType());
                     }
 
-                    string nameTagText = pawn.getName() + "\n" + pawn.getCurrentBehaviorDescription();
-                    pawn.setNameTag(nameTagText);
+                    if (!pawn.isCurrentlyInSettlement()) {
+                        string nameTagText = pawn.getName() + "\n" + pawn.getCurrentBehaviorDescription();
+                        pawn.setNameTag(nameTagText);
+                    }
 
                     // create or join nation
                     if (pawn.getNationId() == null) {
@@ -127,28 +121,30 @@ namespace osg {
                         }
                     }
 
-                    // check if pawn is falling into void
-                    float ypos = pawn.getGameObject().transform.position.y;
-                    if (ypos < -10) {
-                        Debug.Log("Entity " + pawn.getId() + " fell into void. Teleporting.");
-                        if (pawn.getHomeSettlementId() != null) {
-                            // pawn is in a settlement, so respawn at settlement
-                            Settlement settlement = (Settlement)entityRepository.getEntity(pawn.getHomeSettlementId());
-                            Vector3 newPosition = settlement.getGameObject().transform.position;
-                            newPosition = new Vector3(newPosition.x, newPosition.y + 1, newPosition.z);
-                            pawn.getGameObject().transform.position = newPosition;
-                        } else {
-                            // pawn is not in a settlement, so respawn at spawn
-                            pawn.getGameObject().transform.position = new Vector3(UnityEngine.Random.Range(-100, 100), 100, UnityEngine.Random.Range(-100, 100));
+                    if (!pawn.isCurrentlyInSettlement()) {
+                        // check if pawn is falling into void
+                        float ypos = pawn.getGameObject().transform.position.y;
+                        if (ypos < -10) {
+                            Debug.Log("Entity " + pawn.getId() + " fell into void. Teleporting.");
+                            if (pawn.getHomeSettlementId() != null) {
+                                // pawn is in a settlement, so respawn at settlement
+                                Settlement settlement = (Settlement)entityRepository.getEntity(pawn.getHomeSettlementId());
+                                Vector3 newPosition = settlement.getGameObject().transform.position;
+                                newPosition = new Vector3(newPosition.x, newPosition.y + 1, newPosition.z);
+                                pawn.getGameObject().transform.position = newPosition;
+                            } else {
+                                // pawn is not in a settlement, so respawn at spawn
+                                pawn.getGameObject().transform.position = new Vector3(UnityEngine.Random.Range(-100, 100), 100, UnityEngine.Random.Range(-100, 100));
+                            }
+                        }
+
+                        // check if pawn is in a new chunk
+                        Chunk retrievedChunk = environment.getChunkAtPosition(pawn.getGameObject().transform.position);
+                        if (retrievedChunk == null) {
+                            positionsToGenerateChunksAt.Add(pawn.getGameObject().transform.position);
                         }
                     }
 
-                    // check if pawn is in a new chunk
-                    Chunk retrievedChunk = environment.getChunkAtPosition(pawn.getGameObject().transform.position);
-                    if (retrievedChunk == null) {
-                        positionsToGenerateChunksAt.Add(pawn.getGameObject().transform.position);
-                    }
-                    
                     // check if pawn is dead
                     if (pawn.getEnergy() <= 0) {
                         eventProducer.producePawnDeathEvent(pawn.getGameObject().transform.position, pawn);
@@ -320,65 +316,86 @@ namespace osg {
         }
 
         private void drawDebugInfo() {
-            int height = 10;
+            int yPos = 10;
+            int width = 500;
+            int height = 20;
                 
-                // fps                
-                GUI.Label(new Rect(10, height, 100, 20), "FPS: " + (int)(1.0f / Time.smoothDeltaTime));
-                height += 20;
-                
-                // mtps
-                GUI.Label(new Rect(10, height, 100, 20), "MTPS: " + tickCounter.getMtps());
-                height += 20;
+            // fps                
+            GUI.Label(new Rect(10, yPos, width, height), "FPS: " + (int)(1.0f / Time.smoothDeltaTime));
+            yPos += 20;
+            
+            // mtps
+            GUI.Label(new Rect(10, yPos, width, height), "MTPS: " + tickCounter.getMtps());
+            yPos += 20;
 
-                // tick
-                GUI.Label(new Rect(10, height, 100, 20), "Total ticks: " + tickCounter.getTotalTicks());
-                height += 20;
+            // tick
+            GUI.Label(new Rect(10, yPos, width, height), "Total ticks: " + tickCounter.getTotalTicks());
+            yPos += 20;
 
-                // current chunk
-                Chunk currentChunk = environment.getChunkAtPosition(player.getGameObject().transform.position);
-                if (currentChunk != null) {
-                    GUI.Label(new Rect(10, height, 100, 20), "Chunk: " + currentChunk.getX() + ", " + currentChunk.getZ());
+            // current chunk
+            Chunk currentChunk = environment.getChunkAtPosition(player.getGameObject().transform.position);
+            if (currentChunk != null) {
+                GUI.Label(new Rect(10, yPos, width, height), "Chunk: " + currentChunk.getX() + ", " + currentChunk.getZ());
+            }
+            else {
+                GUI.Label(new Rect(10, yPos, width, height), "Chunk: null");
+            }
+            yPos += 20;
+
+            // number of entities
+            GUI.Label(new Rect(10, yPos, width, height), "Entities: " + entityRepository.getNumberOfEntities());
+            yPos += 20;
+
+            // number of chunks
+            GUI.Label(new Rect(10, yPos, width, height), "Chunks: " + environment.getNumberOfChunks());
+            yPos += 20;
+
+            // number of pawns
+            GUI.Label(new Rect(10, yPos, width, height), "Pawns: " + entityRepository.getEntitiesOfType(EntityType.PAWN).Count);
+            yPos += 20;
+
+            // number of nations
+            GUI.Label(new Rect(10, yPos, width, height), "Nations: " + nationRepository.getNumberOfNations());
+            yPos += 20;
+
+            // number of settlements
+            GUI.Label(new Rect(10, yPos, width, height), "Settlements: " + entityRepository.getEntitiesOfType(EntityType.SETTLEMENT).Count);
+            yPos += 20;
+
+            // number of trees
+            GUI.Label(new Rect(10, yPos, width, height), "Trees: " + entityRepository.getEntitiesOfType(EntityType.TREE).Count);
+            yPos += 20;
+
+            // number of saplings
+            GUI.Label(new Rect(10, yPos, width, height), "Saplings: " + entityRepository.getEntitiesOfType(EntityType.SAPLING).Count);
+            yPos += 20;
+
+            // number of rocks
+            GUI.Label(new Rect(10, yPos, width, height), "Rocks: " + entityRepository.getEntitiesOfType(EntityType.ROCK).Count);
+            yPos += 20;
+
+            // events stored
+            GUI.Label(new Rect(10, yPos, width, height), "Events: " + eventRepository.getTotalNumberOfEvents());
+            yPos += 20;
+
+            // total num stalls
+            int totalNumStalls = 0;
+            foreach (Settlement settlement in entityRepository.getEntitiesOfType(EntityType.SETTLEMENT)) {
+                totalNumStalls += settlement.getMarket().getNumStalls();
+            }
+            GUI.Label(new Rect(10, yPos, width, height), "Stalls: " + totalNumStalls);
+            yPos += 20;
+
+            // pawns currently in settlement
+            int numPawns = entityRepository.getEntitiesOfType(EntityType.PAWN).Count;
+            int numPawnsCurrentlyInSettlement = 0;
+            foreach (Pawn pawn in entityRepository.getEntitiesOfType(EntityType.PAWN)) {
+                if (pawn.isCurrentlyInSettlement()) {
+                    numPawnsCurrentlyInSettlement++;
                 }
-                else {
-                    GUI.Label(new Rect(10, height, 100, 20), "Chunk: null");
-                }
-                height += 20;
-
-                // number of entities
-                GUI.Label(new Rect(10, height, 100, 20), "Entities: " + entityRepository.getNumberOfEntities());
-                height += 20;
-
-                // number of chunks
-                GUI.Label(new Rect(10, height, 100, 20), "Chunks: " + environment.getNumberOfChunks());
-                height += 20;
-
-                // number of pawns
-                GUI.Label(new Rect(10, height, 100, 20), "Pawns: " + entityRepository.getEntitiesOfType(EntityType.PAWN).Count);
-                height += 20;
-
-                // number of nations
-                GUI.Label(new Rect(10, height, 100, 20), "Nations: " + nationRepository.getNumberOfNations());
-                height += 20;
-
-                // number of settlements
-                GUI.Label(new Rect(10, height, 100, 20), "Settlements: " + entityRepository.getEntitiesOfType(EntityType.SETTLEMENT).Count);
-                height += 20;
-
-                // number of trees
-                GUI.Label(new Rect(10, height, 100, 20), "Trees: " + entityRepository.getEntitiesOfType(EntityType.TREE).Count);
-                height += 20;
-
-                // number of saplings
-                GUI.Label(new Rect(10, height, 100, 20), "Saplings: " + entityRepository.getEntitiesOfType(EntityType.SAPLING).Count);
-                height += 20;
-
-                // number of rocks
-                GUI.Label(new Rect(10, height, 100, 20), "Rocks: " + entityRepository.getEntitiesOfType(EntityType.ROCK).Count);
-                height += 20;
-
-                // events stored
-                GUI.Label(new Rect(10, height, 100, 20), "Events: " + eventRepository.getTotalNumberOfEvents());
-                height += 20;
+            }
+            GUI.Label(new Rect(10, yPos, width, height), "Pawns currently inside settlements: " + numPawnsCurrentlyInSettlement + " / " + numPawns);
+            yPos += 20;
         }
 
         private void handleCommands() {

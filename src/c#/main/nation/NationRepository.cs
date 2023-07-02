@@ -49,5 +49,13 @@ namespace osg {
             NationId randomNationId = nationIds[randomIndex];
             return nations[randomNationId];
         }
+
+        public List<Nation> getNations() {
+            List<Nation> nationList = new List<Nation>();
+            foreach (Nation nation in nations.Values) {
+                nationList.Add(nation);
+            }
+            return nationList;
+        }
     }
 }

@@ -39,7 +39,7 @@ namespace osg {
 
         public void addMember(EntityId memberId) {
             members.Add(memberId);
-            roles[memberId] = NationRole.CITIZEN;
+            roles[memberId] = NationRole.SERF;
         }
 
         public void removeMember(EntityId memberId) {

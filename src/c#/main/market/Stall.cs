@@ -6,6 +6,8 @@ namespace osg {
         private EntityId ownerId;
         private Inventory inventory;
 
+        public static readonly int WOOD_COST_TO_BUILD = 50;
+
         public Stall() {
             ownerId = null;
             inventory = new Inventory(0);

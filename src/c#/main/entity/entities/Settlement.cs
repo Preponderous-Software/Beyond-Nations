@@ -10,7 +10,9 @@ namespace osg {
         private string nationName;
         private List<EntityId> currentlyPresentEntities = new List<EntityId>();
         private Market market;
-            
+
+        public static readonly int WOOD_COST_TO_BUILD = 100;
+
         public Settlement(Vector3 position, NationId nationId, Color color, string nationName) : base(EntityType.SETTLEMENT) {
             this.color = color;
             this.nationId = nationId;
@@ -18,7 +20,6 @@ namespace osg {
             this.nationName = nationName;
             initializeNameTag();
             market = new Market(4);
-            market.createStall();
         }
 
         public override void createGameObject(Vector3 position) {

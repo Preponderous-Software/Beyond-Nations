@@ -37,11 +37,17 @@ namespace osg {
                 case BehaviorType.CREATE_SETTLEMENT:
                     executeCreateSettlementBehavior(pawn);
                     break;
-                case BehaviorType.GO_HOME:
+                case BehaviorType.GO_TO_HOME_SETTLEMENT:
                     executeGoHomeBehavior(pawn);
+                    break;
+                case BehaviorType.EXIT_SETTLEMENT:
+                    executeExitSettlementBehavior(pawn);
                     break;
                 case BehaviorType.PLANT_SAPLING:
                     executePlantSaplingBehavior(pawn);
+                    break;
+                case BehaviorType.CONSTRUCT_STALL:
+                    executeConstructStallBehavior(pawn);
                     break;
                 default:
                     break;
@@ -116,6 +122,14 @@ namespace osg {
             Nation nation = nationRepository.getNation(pawn.getNationId());
             Color nationColor = nation.getColor();
 
+            // remove wood
+            Inventory inventory = pawn.getInventory();
+            if (inventory.getNumItems(ItemType.WOOD) < Settlement.WOOD_COST_TO_BUILD) {
+                Debug.LogError("Pawn " + pawn + " does not have enough wood to build a settlement but is trying to.");
+                return;
+            }
+            inventory.removeItem(ItemType.WOOD, Settlement.WOOD_COST_TO_BUILD);
+
             // create settlement
             Settlement settlement = new Settlement(targetPosition, nation.getId(), nationColor, nation.getName());
             nation.addSettlement(settlement.getId());
@@ -150,12 +164,27 @@ namespace osg {
                 pawn.setCurrentlyInSettlement(true);
                 pawn.destroyGameObject();
                 pawn.setTargetEntity(null);
+                pawn.setCurrentBehaviorType(BehaviorType.NONE);
                 return;
             }
             else {
                 // move towards target entity
                 pawn.moveTowardsTargetEntity();
             }
+        }
+
+        private void executeExitSettlementBehavior(Pawn pawn) {
+            // if not in settlement
+            if (!pawn.isCurrentlyInSettlement()) {
+                Debug.LogError("Pawn " + pawn + " is not currently in a settlement but is trying to exit one.");
+                return;
+            }
+
+            pawn.setCurrentlyInSettlement(false);
+            Settlement settlement = entityRepository.getEntity(pawn.getHomeSettlementId()) as Settlement;
+            settlement.removeCurrentlyPresentEntity(pawn.getId());
+            pawn.createGameObject(settlement.getGameObject().transform.position + new Vector3(UnityEngine.Random.Range(-20, 20), 0, UnityEngine.Random.Range(-20, 20)));
+            pawn.setColor(settlement.getColor());
         }
 
         private void executePlantSaplingBehavior(Pawn pawn) {
@@ -171,6 +200,38 @@ namespace osg {
             entityRepository.addEntity(tree);
             pawn.getInventory().removeItem(ItemType.SAPLING, 1);
             pawn.setCurrentBehaviorType(BehaviorType.WANDER);
+        }
+
+        private void executeConstructStallBehavior(Pawn pawn) {
+            // if not enough wood
+            if (pawn.getInventory().getNumItems(ItemType.WOOD) < Stall.WOOD_COST_TO_BUILD) {
+                Debug.LogError("Pawn " + pawn + " does not have enough wood to build a stall, but is trying to.");
+                return;
+            }
+
+            // if not leader
+            Nation nation = nationRepository.getNation(pawn.getNationId());
+            if (nation.getRole(pawn.getId()) != NationRole.LEADER) {
+                Debug.LogError("Pawn " + pawn + " is not a leader but is trying to build a stall.");
+                return;
+            }
+
+            // if no home settlement
+            EntityId homeSettlementId = pawn.getHomeSettlementId();
+            if (homeSettlementId == null) {
+                Debug.LogError("Pawn " + pawn + " has no home settlement id.");
+                return;
+            }
+
+            // remove wood
+            pawn.getInventory().removeItem(ItemType.WOOD, Stall.WOOD_COST_TO_BUILD);
+            
+            // build stall
+            Settlement homeSettlement = (Settlement) entityRepository.getEntity(homeSettlementId);
+            Market market = homeSettlement.getMarket();
+
+            market.createStall();
+            pawn.setCurrentBehaviorType(BehaviorType.WANDER);       
         }
 
         // ---

@@ -25,9 +25,9 @@ namespace osg {
                 player.getStatus().update("You are not the leader of a nation.");
                 return;
             }
-            // if not enough money
-            if (player.getInventory().getNumItems(ItemType.GOLD_COIN) < 100) {
-                player.getStatus().update("You don't have enough money.");
+            // if not enough wood
+            if (player.getInventory().getNumItems(ItemType.WOOD) < Settlement.WOOD_COST_TO_BUILD) {
+                player.getStatus().update("Not enough wood. Need " + (Settlement.WOOD_COST_TO_BUILD - player.getInventory().getNumItems(ItemType.WOOD)) + " more.");
                 return;
             }
 
@@ -43,7 +43,10 @@ namespace osg {
                 }
             }
 
-            player.getInventory().removeItem(ItemType.GOLD_COIN, 100);
+            // remove wood
+            player.getInventory().removeItem(ItemType.WOOD, Settlement.WOOD_COST_TO_BUILD);
+
+            // create settlement
             Settlement settlement = new Settlement(player.getGameObject().transform.position, player.getNationId(), nation.getColor(), nation.getName());
             entityRepository.addEntity(settlement);
             nationRepository.getNation(player.getNationId()).addSettlement(settlement.getId());

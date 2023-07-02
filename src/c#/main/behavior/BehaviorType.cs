@@ -7,9 +7,10 @@ namespace osg {
         WANDER,
         PURCHASE_FOOD,
         CREATE_SETTLEMENT,
-        GO_HOME,
+        GO_TO_HOME_SETTLEMENT,
+        EXIT_SETTLEMENT,
         PLANT_SAPLING,
-        CREATE_STALL, // TODO: implement
+        CONSTRUCT_STALL,
         BUY_STALL, // TODO: implement
         TRANSFER_ITEMS_TO_STALL, // TODO: implement
         COLLECT_PROFIT_FROM_STALL, // TODO: implement
