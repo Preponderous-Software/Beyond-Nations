@@ -423,18 +423,6 @@ namespace osg {
                 InteractCommand command = new InteractCommand(environment, nationRepository, eventProducer, entityRepository);
                 command.execute(player);
             }
-            else if (Input.GetKeyDown(KeyCode.F1)) {
-                SpawnPawnCommand command = new SpawnPawnCommand(eventProducer, entityRepository);
-                command.execute(player);
-            }
-            else if (Input.GetKeyDown(KeyCode.F2)) {
-                GenerateLandCommand command = new GenerateLandCommand(environment, worldGenerator);
-                command.execute(player);
-            }
-            else if (Input.GetKeyDown(KeyCode.F3)) {
-                SpawnMoneyCommand command = new SpawnMoneyCommand();
-                command.execute(player);
-            }
             else if (Input.GetKeyDown(KeyCode.F)) {
                 FoundSettlementCommand command = new FoundSettlementCommand(nationRepository, eventProducer, entityRepository);
                 command.execute(player);
@@ -450,6 +438,18 @@ namespace osg {
             else if (Input.GetKeyDown(KeyCode.F9)) {
                 // toggle show debug info
                 showDebugInfo = !showDebugInfo;
+            }
+            else if (Input.GetKeyDown(KeyCode.F10)) {
+                SpawnPawnCommand command = new SpawnPawnCommand(eventProducer, entityRepository);
+                command.execute(player);
+            }
+            else if (Input.GetKeyDown(KeyCode.F11)) {
+                GenerateLandCommand command = new GenerateLandCommand(environment, worldGenerator);
+                command.execute(player);
+            }
+            else if (Input.GetKeyDown(KeyCode.F12)) {
+                SpawnMoneyCommand command = new SpawnMoneyCommand();
+                command.execute(player);
             }
         }
 
