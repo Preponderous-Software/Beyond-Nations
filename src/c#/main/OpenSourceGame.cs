@@ -351,7 +351,8 @@ namespace osg {
             yPos += 20;
 
             // number of pawns
-            GUI.Label(new Rect(10, yPos, width, height), "Pawns: " + entityRepository.getEntitiesOfType(EntityType.PAWN).Count);
+            int numPawns = entityRepository.getEntitiesOfType(EntityType.PAWN).Count;
+            GUI.Label(new Rect(10, yPos, width, height), "Pawns: " + numPawns);
             yPos += 20;
 
             // number of nations
@@ -387,14 +388,13 @@ namespace osg {
             yPos += 20;
 
             // pawns currently in settlement
-            int numPawns = entityRepository.getEntitiesOfType(EntityType.PAWN).Count;
             int numPawnsCurrentlyInSettlement = 0;
             foreach (Pawn pawn in entityRepository.getEntitiesOfType(EntityType.PAWN)) {
                 if (pawn.isCurrentlyInSettlement()) {
                     numPawnsCurrentlyInSettlement++;
                 }
             }
-            GUI.Label(new Rect(10, yPos, width, height), "Pawns currently inside settlements: " + numPawnsCurrentlyInSettlement + " / " + numPawns);
+            GUI.Label(new Rect(10, yPos, width, height), "PCIS: " + numPawnsCurrentlyInSettlement + " / " + numPawns);
             yPos += 20;
         }
 

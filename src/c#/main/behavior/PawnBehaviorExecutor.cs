@@ -185,6 +185,7 @@ namespace osg {
             settlement.removeCurrentlyPresentEntity(pawn.getId());
             pawn.createGameObject(settlement.getGameObject().transform.position + new Vector3(UnityEngine.Random.Range(-20, 20), 0, UnityEngine.Random.Range(-20, 20)));
             pawn.setColor(settlement.getColor());
+            pawn.setCurrentBehaviorType(BehaviorType.WANDER);
         }
 
         private void executePlantSaplingBehavior(Pawn pawn) {

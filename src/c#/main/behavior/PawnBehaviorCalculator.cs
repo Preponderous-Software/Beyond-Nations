@@ -23,30 +23,56 @@ namespace osg {
                 return BehaviorType.NONE;
             }
 
-            bool foodNeeded = pawnNeedsFood(pawn);
             if (pawn.isCurrentlyInSettlement()) {
-                if (foodNeeded) {
-                    UnityEngine.Debug.Log("[PBC] Pawn '" + pawn.getName() + "' needs food and is in settlement. Returning EXIT_SETTLEMENT.");
-                    return BehaviorType.EXIT_SETTLEMENT;
-                }
-                else {
-                    UnityEngine.Debug.Log("[PBC] Pawn '" + pawn.getName() + "' is in settlement and does not need food. Returning NONE.");
-                    return BehaviorType.NONE;
+                return computeBehaviorTypeInSettlement(pawn);
+            }
+            else {
+                return computeBehaviorTypeOutsideSettlement(pawn);
+            }
+        }
+
+        private BehaviorType computeBehaviorTypeInSettlement(Pawn pawn) {
+            if (pawnNeedsFood(pawn)) {
+                return BehaviorType.EXIT_SETTLEMENT;
+            }
+
+            Nation nation = nationRepository.getNation(pawn.getNationId());
+            NationRole role = nation.getRole(pawn.getId());
+
+            Settlement homeSettlement = (Settlement)entityRepository.getEntity(pawn.getHomeSettlementId());
+            if (homeSettlement == null) {
+                return BehaviorType.NONE;
+            }
+
+            Market homeMarket = homeSettlement.getMarket();
+
+            if (role == NationRole.LEADER) {
+                if (homeMarket.getNumStalls() < homeMarket.getMaxNumStalls()) {
+                    // if not enough wood
+                    if (pawn.getInventory().getNumItems(ItemType.WOOD) <= Stall.WOOD_COST_TO_BUILD) {
+                        return BehaviorType.EXIT_SETTLEMENT;
+                    }
+                    return BehaviorType.CONSTRUCT_STALL;
                 }
             }
 
-            if (foodNeeded) {
-                UnityEngine.Debug.Log("[PBC] Pawn '" + pawn.getName() + "' needs food. Returning GATHER_RESOURCES.");
+            if (homeMarket.getNumStalls() < homeMarket.getMaxNumStalls() && role == NationRole.LEADER) {
+
+            }
+
+            return BehaviorType.NONE;
+        }
+
+        private BehaviorType computeBehaviorTypeOutsideSettlement(Pawn pawn) {
+            if (pawnNeedsFood(pawn)) {
                 return BehaviorType.GATHER_RESOURCES;
             }
 
             if (shouldPlantSapling(pawn)) {
-                UnityEngine.Debug.Log("[PBC] Pawn '" + pawn.getName() + "' should plant sapling. Returning PLANT_SAPLING.");
                 return BehaviorType.PLANT_SAPLING;
             }
 
             if (pawn.getNationId() == null) {
-                UnityEngine.Debug.Log("[PBC] Pawn '" + pawn.getName() + "' has no nation. Returning WANDER.");
                 return BehaviorType.WANDER;
             }
 
@@ -59,7 +85,6 @@ namespace osg {
                 if (role == NationRole.LEADER) {
 
                     if (pawn.getInventory().getNumItems(ItemType.WOOD) <= Settlement.WOOD_COST_TO_BUILD) {
-                        UnityEngine.Debug.Log("[PBC] Pawn '" + pawn.getName() + "' is nation leader and not enough wood to build settlement. Returning GATHER_RESOURCES.");
                         return BehaviorType.GATHER_RESOURCES;
                     }
 
@@ -67,11 +92,9 @@ namespace osg {
                     Entity nearestSettlement = environment.getNearestEntityOfType(pawn.getGameObject().transform.position, EntityType.SETTLEMENT);
                     int distanceToNearestSettlement = nearestSettlement == null ? int.MaxValue : (int)Vector3.Distance(nearestSettlement.getGameObject().transform.position, pawn.getGameObject().transform.position);
                     if (nearestSettlement == null || distanceToNearestSettlement > 200) {
-                        UnityEngine.Debug.Log("[PBC] Pawn '" + pawn.getName() + "' is nation leader and no settlements within 200 units. Returning CONSTRUCT_SETTLEMENT.");
                         return BehaviorType.CONSTRUCT_SETTLEMENT;
                     }
                     else {
-                        UnityEngine.Debug.Log("[PBC] Pawn '" + pawn.getName() + "' is nation leader and settlement within 200 units. Returning GATHER_RESOURCES.");
                         return BehaviorType.GATHER_RESOURCES;
                     }
                 }
@@ -81,43 +104,25 @@ namespace osg {
                 // join random settlement
                 EntityId randomSettlementId = nation.getRandomSettlementId();
                 if (randomSettlementId == null) {
-                    UnityEngine.Debug.LogError("[PBC] Random settlement id is null. Returning NONE.");
                     return BehaviorType.NONE;
                 }
                 pawn.setHomeSettlementId(randomSettlementId);
             }
 
-            if (pawn.getHomeSettlementId() == null) {
-                UnityEngine.Debug.Log("[PBC] Pawn '" + pawn.getName() + "' has no home settlement. Returning WANDER.");
-                return BehaviorType.WANDER;
-            }
-            Settlement homeSettlement = (Settlement)entityRepository.getEntity(pawn.getHomeSettlementId());
-            if (homeSettlement == null) {
-                UnityEngine.Debug.LogError("[PBC] Home settlement is null. Returning NONE.");
-                return BehaviorType.NONE;
-            }
-
-            Market homeMarket = homeSettlement.getMarket();
-            if (homeMarket.getNumStalls() < homeMarket.getMaxNumStalls() && role == NationRole.LEADER) {
-                // if not enough wood
+            if (role == NationRole.LEADER) {
+                // if not enough wood for stall, gather resources
                 if (pawn.getInventory().getNumItems(ItemType.WOOD) <= Stall.WOOD_COST_TO_BUILD) {
-                    UnityEngine.Debug.Log("[PBC] Pawn '" + pawn.getName() + "' is nation leader and not enough wood to build stall. Returning GATHER_RESOURCES.");
                     return BehaviorType.GATHER_RESOURCES;
                 }
-                UnityEngine.Debug.Log("[PBC] Pawn '" + pawn.getName() + "' is nation leader and home settlement has room for more stalls. Returning CONSTRUCT_STALL.");
-                return BehaviorType.CONSTRUCT_STALL;
             }
-
+            
             if (pawn.getInventory().containsAbundanceOfResources() && numNationSettlements > 0) {
-                UnityEngine.Debug.Log("[PBC] Pawn '" + pawn.getName() + "' has an abundance of resources. Returning GO_HOME.");
                 return BehaviorType.GO_TO_HOME_SETTLEMENT;
             }
             else {
-                UnityEngine.Debug.Log("[PBC] Pawn '" + pawn.getName() + "' does not have an abundance of resources. Returning GATHER_RESOURCES.");
                 return BehaviorType.GATHER_RESOURCES;
             }
 
-            UnityEngine.Debug.LogError("[PBC] Pawn '" + pawn.getName() + "' behavior type could not be determined. Returning NONE.");
             return BehaviorType.NONE;
         }
 
