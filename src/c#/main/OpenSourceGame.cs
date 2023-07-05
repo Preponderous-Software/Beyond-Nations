@@ -66,8 +66,8 @@ namespace osg {
             tickCounter.increment();
             worldGenerator.update();
             checkIfPlayerIsFallingIntoVoid();
-            screenOverlay.update();
             player.getStatus().clearStatusIfExpired();
+            screenOverlay.update();
 
             // list of positions to generate chunks at
             List<Vector3> positionsToGenerateChunksAt = new List<Vector3>();

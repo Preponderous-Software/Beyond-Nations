@@ -106,6 +106,11 @@ namespace osg {
             if (UnityEngine.Random.Range(0, 100) < 80) {
                 return;
             }
+
+            if (pawn.isCurrentlyInSettlement()) {
+                Debug.LogError("Pawn " + pawn + " is currently in a settlement but is trying to wander.");
+                return;
+            }
             Vector3 currentPosition = pawn.getPosition();
             Vector3 targetPosition = currentPosition + new Vector3(UnityEngine.Random.Range(-1f, 1f), 0, UnityEngine.Random.Range(-1f, 1f));
             pawn.getGameObject().GetComponent<Rigidbody>().velocity = (targetPosition - currentPosition).normalized * pawn.getSpeed();
@@ -185,7 +190,7 @@ namespace osg {
             settlement.removeCurrentlyPresentEntity(pawn.getId());
             pawn.createGameObject(settlement.getGameObject().transform.position + new Vector3(UnityEngine.Random.Range(-20, 20), 0, UnityEngine.Random.Range(-20, 20)));
             pawn.setColor(settlement.getColor());
-            pawn.setCurrentBehaviorType(BehaviorType.WANDER);
+            pawn.setCurrentBehaviorType(BehaviorType.NONE);
         }
 
         private void executePlantSaplingBehavior(Pawn pawn) {
