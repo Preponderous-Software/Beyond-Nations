@@ -58,6 +58,10 @@ namespace osg {
             return this.color;
         }
 
+        public NationId getNationId() {
+            return this.nationId;
+        }
+
         public string getNameTagText() {
             return nameTag.GetComponent<TextMesh>().text;
         }

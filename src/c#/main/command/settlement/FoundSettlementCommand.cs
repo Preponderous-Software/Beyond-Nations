@@ -6,11 +6,13 @@ namespace osg {
         private NationRepository nationRepository;
         private EventProducer eventProducer;
         private EntityRepository entityRepository;
+        private GameConfig gameConfig;
 
-        public FoundSettlementCommand(NationRepository nationRepository, EventProducer eventProducer, EntityRepository entityRepository) {
+        public FoundSettlementCommand(NationRepository nationRepository, EventProducer eventProducer, EntityRepository entityRepository, GameConfig gameConfig) {
             this.nationRepository = nationRepository;
             this.eventProducer = eventProducer;
             this.entityRepository = entityRepository;
+            this.gameConfig = gameConfig;
         }
 
         public void execute(Player player) {
@@ -36,7 +38,7 @@ namespace osg {
                 if (entity.getType() == EntityType.SETTLEMENT) {
                     Settlement settlementToCheck = (Settlement)entity;
                     int distance = (int)Vector3.Distance(player.getGameObject().transform.position, settlementToCheck.getPosition());
-                    if (distance < 200) {
+                    if (distance < gameConfig.getMinDistanceBetweenSettlements()) {
                         player.getStatus().update("Too close to another settlement.");
                         return;
                     }

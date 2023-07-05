@@ -10,11 +10,13 @@ namespace osg {
         private Environment environment;
         private EntityRepository entityRepository;
         private NationRepository nationRepository;
+        private GameConfig gameConfig = new GameConfig();
 
-        public PawnBehaviorCalculator(Environment environment, EntityRepository entityRepository, NationRepository nationRepository) {
+        public PawnBehaviorCalculator(Environment environment, EntityRepository entityRepository, NationRepository nationRepository, GameConfig gameConfig) {
             this.environment = environment;
             this.entityRepository = entityRepository;
             this.nationRepository = nationRepository;
+            this.gameConfig = gameConfig;
         }
         
         public BehaviorType computeBehaviorType(Pawn pawn) {
@@ -91,7 +93,7 @@ namespace osg {
                     // if no settlements within x units, create settlement
                     Entity nearestSettlement = environment.getNearestEntityOfType(pawn.getGameObject().transform.position, EntityType.SETTLEMENT);
                     int distanceToNearestSettlement = nearestSettlement == null ? int.MaxValue : (int)Vector3.Distance(nearestSettlement.getGameObject().transform.position, pawn.getGameObject().transform.position);
-                    if (nearestSettlement == null || distanceToNearestSettlement > 200) {
+                    if (nearestSettlement == null || distanceToNearestSettlement > gameConfig.getMinDistanceBetweenSettlements()) {
                         return BehaviorType.CONSTRUCT_SETTLEMENT;
                     }
                     else {

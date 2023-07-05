@@ -21,8 +21,9 @@ namespace osgtests {
             NationRepository nationRepository = new NationRepository();
             Pawn pawn = new Pawn(new Vector3(0, 0, 0), "test");
             entityRepository.addEntity(pawn);
+            GameConfig gameConfig = new GameConfig();
 
-            PawnBehaviorCalculator calculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository);
+            PawnBehaviorCalculator calculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository, gameConfig);
 
             // run
             BehaviorType behaviorType = calculator.computeBehaviorType(pawn);
@@ -55,8 +56,9 @@ namespace osgtests {
             nation.addMember(pawn.getId());
             pawn.setNationId(nation.getId());
             nationRepository.addNation(nation);
+            GameConfig gameConfig = new GameConfig();
 
-            PawnBehaviorCalculator calculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository);
+            PawnBehaviorCalculator calculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository, gameConfig);
 
             // run
             BehaviorType behaviorType = calculator.computeBehaviorType(nationLeader);

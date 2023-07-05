@@ -49,7 +49,7 @@ namespace osg {
             environment = new Environment(gameConfig.getChunkSize(), gameConfig.getLocationScale(), entityRepository);
             worldGenerator = new WorldGenerator(environment, player, eventProducer, entityRepository);
             nationRepository = new NationRepository();
-            pawnBehaviorCalculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository);
+            pawnBehaviorCalculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository, gameConfig);
             pawnBehaviorExecutor = new PawnBehaviorExecutor(environment, nationRepository, eventProducer, entityRepository);
             entityRepository.addEntity(player);
             player.getStatus().update("Press " + KeyBindings.createNewNation + " to create a nation.");
@@ -300,7 +300,7 @@ namespace osg {
                 if (player.getId() == nation.getLeaderId() && nation.getNumberOfSettlements() == 0) {
                     // draw found settlement
                     if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Found Settlement")) {
-                        FoundSettlementCommand command = new FoundSettlementCommand(nationRepository, eventProducer, entityRepository);
+                        FoundSettlementCommand command = new FoundSettlementCommand(nationRepository, eventProducer, entityRepository, gameConfig);
                         command.execute(player);
                     }
                     buttonX += buttonWidth + buttonSpacing;
@@ -436,7 +436,7 @@ namespace osg {
                 command.execute(player);
             }
             else if (Input.GetKeyDown(KeyBindings.foundSettlement)) {
-                FoundSettlementCommand command = new FoundSettlementCommand(nationRepository, eventProducer, entityRepository);
+                FoundSettlementCommand command = new FoundSettlementCommand(nationRepository, eventProducer, entityRepository, gameConfig);
                 command.execute(player);
             }
             else if (Input.GetKeyDown(KeyBindings.plantSapling)) {
@@ -495,7 +495,18 @@ namespace osg {
         }
 
         private void createOrJoinNation(Pawn pawn) {
-            if (nationRepository.getNumberOfNations() <= gameConfig.getNumStartingNations()) {
+            // if settlement within range, join that settlement's nation
+            Settlement nearestSettlement = (Settlement) environment.getNearestEntityOfType(pawn.getGameObject().transform.position, EntityType.SETTLEMENT);
+            if (nearestSettlement != null && Vector3.Distance(pawn.getGameObject().transform.position, nearestSettlement.getGameObject().transform.position) < gameConfig.getSettlementJoinRange()) {
+                Nation nation = nationRepository.getNation(nearestSettlement.getNationId());
+                nation.addMember(pawn.getId());
+                pawn.setNationId(nation.getId());
+                pawn.setColor(nation.getColor());
+                eventProducer.produceNationJoinEvent(nation, pawn.getId());
+                player.getStatus().update(pawn.getName() + " joined nation " + nation.getName() + ". Members: " + nation.getNumberOfMembers() + ".");
+                return;
+            }
+            else {
                 // create a new nation
                 Nation nation = new Nation(NationNameGenerator.generate(), pawn.getId());
                 nationRepository.addNation(nation);
@@ -503,15 +514,6 @@ namespace osg {
                 pawn.setColor(nation.getColor());
                 eventProducer.produceNationCreationEvent(nation);
                 player.getStatus().update(pawn.getName() + " created nation " + nation.getName() + ".");
-            }
-            else {
-                // join a random nation
-                Nation nation = nationRepository.getRandomNation();
-                nation.addMember(pawn.getId());
-                pawn.setNationId(nation.getId());
-                pawn.setColor(nation.getColor());
-                eventProducer.produceNationJoinEvent(nation, pawn.getId());
-                player.getStatus().update(pawn.getName() + " joined nation " + nation.getName() + ". Members: " + nation.getNumberOfMembers() + ".");
             }
         }
 
