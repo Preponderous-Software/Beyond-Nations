@@ -48,11 +48,5 @@ namespace osg {
         public int getNumberOfEntities() {
             return entities.Count;
         }
-
-        public Entity getRandomEntity() {
-            int randomIndex = UnityEngine.Random.Range(0, entityIds.Count);
-            EntityId randomEntityId = entityIds[randomIndex];
-            return entities[randomEntityId];
-        }
     }
 }

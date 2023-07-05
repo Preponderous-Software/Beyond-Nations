@@ -52,7 +52,7 @@ namespace osg {
             pawnBehaviorCalculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository);
             pawnBehaviorExecutor = new PawnBehaviorExecutor(environment, nationRepository, eventProducer, entityRepository);
             entityRepository.addEntity(player);
-            player.getStatus().update("Press N to create a nation.");
+            player.getStatus().update("Press " + KeyBindings.createNewNation + " to create a nation.");
         }
 
         // Per-frame updates
@@ -411,55 +411,54 @@ namespace osg {
         }
 
         private void handleCommands() {
-            if (Input.GetKeyDown(KeyCode.N)) {
+            if (Input.GetKeyDown(KeyBindings.createNewNation)) {
                 NationCreateCommand command = new NationCreateCommand(nationRepository, eventProducer);
                 command.execute(player);
             }
-            else if (Input.GetKeyDown(KeyCode.J)) {
+            else if (Input.GetKeyDown(KeyBindings.joinNation)) {
                 NationJoinCommand command = new NationJoinCommand(nationRepository, eventProducer);
                 command.execute(player);
             }
-            else if (Input.GetKeyDown(KeyCode.T)) {
+            else if (Input.GetKeyDown(KeyBindings.teleportAllToPlayer)) {
                 TeleportAllPawnsCommand command = new TeleportAllPawnsCommand(entityRepository);
                 command.execute(player);
             }
-            else if (Input.GetKeyDown(KeyCode.Numlock)) {
+            else if (Input.GetKeyDown(KeyBindings.toggleAutoWalk)) {
                 ToggleAutoWalkCommand command = new ToggleAutoWalkCommand();
                 command.execute(player);
             }
-            else if (Input.GetKeyDown(KeyCode.L)) {
+            else if (Input.GetKeyDown(KeyBindings.leaveNation)) {
                 NationLeaveCommand command = new NationLeaveCommand(nationRepository, eventProducer, entityRepository);
                 command.execute(player);
             }
-            else if (Input.GetKeyDown(KeyCode.E)) {
+            else if (Input.GetKeyDown(KeyBindings.interact)) {
                 InteractCommand command = new InteractCommand(environment, nationRepository, eventProducer, entityRepository);
                 command.execute(player);
             }
-            else if (Input.GetKeyDown(KeyCode.F)) {
+            else if (Input.GetKeyDown(KeyBindings.foundSettlement)) {
                 FoundSettlementCommand command = new FoundSettlementCommand(nationRepository, eventProducer, entityRepository);
                 command.execute(player);
             }
-            else if (Input.GetKeyDown(KeyCode.P)) {
+            else if (Input.GetKeyDown(KeyBindings.plantSapling)) {
                 PlantSaplingCommand command = new PlantSaplingCommand(entityRepository);
                 command.execute(player);
             }
-            else if (Input.GetKeyDown(KeyCode.H)) {
+            else if (Input.GetKeyDown(KeyBindings.teleportToHomeSettlement)) {
                 TeleportHomeCommand command = new TeleportHomeCommand(entityRepository);
                 command.execute(player);
             }
-            else if (Input.GetKeyDown(KeyCode.F9)) {
-                // toggle show debug info
+            else if (Input.GetKeyDown(KeyBindings.toggleDebugInfo)) {
                 showDebugInfo = !showDebugInfo;
             }
-            else if (Input.GetKeyDown(KeyCode.F10)) {
+            else if (Input.GetKeyDown(KeyBindings.spawnNewPawn)) {
                 SpawnPawnCommand command = new SpawnPawnCommand(eventProducer, entityRepository);
                 command.execute(player);
             }
-            else if (Input.GetKeyDown(KeyCode.F11)) {
+            else if (Input.GetKeyDown(KeyBindings.generateNearbyLand)) {
                 GenerateLandCommand command = new GenerateLandCommand(environment, worldGenerator);
                 command.execute(player);
             }
-            else if (Input.GetKeyDown(KeyCode.F12)) {
+            else if (Input.GetKeyDown(KeyBindings.spawnMoney)) {
                 SpawnMoneyCommand command = new SpawnMoneyCommand();
                 command.execute(player);
             }
