@@ -237,7 +237,7 @@ namespace osg {
             Market market = homeSettlement.getMarket();
 
             market.createStall();
-            pawn.setCurrentBehaviorType(BehaviorType.WANDER);       
+            pawn.setCurrentBehaviorType(BehaviorType.NONE);       
         }
 
         // ---

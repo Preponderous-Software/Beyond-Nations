@@ -122,8 +122,6 @@ namespace osg {
             else {
                 return BehaviorType.GATHER_RESOURCES;
             }
-
-            return BehaviorType.NONE;
         }
 
 

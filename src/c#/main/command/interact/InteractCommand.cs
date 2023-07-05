@@ -24,21 +24,40 @@ namespace osg {
             Settlement settlement = (Settlement) environment.getNearestEntityOfType(player.getGameObject().transform.position, EntityType.SETTLEMENT);
 
             if (settlement != null && Vector3.Distance(player.getGameObject().transform.position, settlement.getGameObject().transform.position) < 5) {
-                if (settlement.getCurrentlyPresentEntitiesCount() == 0) {
-                    player.getStatus().update("No one is home.");
-                    return;
+                List<string> possibleStrings = new List<string>();
+                
+                int numCurrentlyPresentEntities = settlement.getCurrentlyPresentEntitiesCount();
+                if (numCurrentlyPresentEntities == 0) {
+                    possibleStrings.Add("This settlement is empty.");
                 }
-                string listOfPresentPawns = "";
-                foreach (EntityId entityId in settlement.getCurrentlyPresentEntities()) {
-                    Pawn pawnInSettlement = (Pawn) entityRepository.getEntity(entityId);
-                    string pawnName = pawnInSettlement.getName();
-                    listOfPresentPawns += pawnName + ", ";
-                    if (listOfPresentPawns.Length > 50) {
-                        listOfPresentPawns += "...";
-                        break;
+                else {
+                    possibleStrings.Add("This settlement is occupied by " + numCurrentlyPresentEntities + " pawns at the moment.");
+                }
+
+                int numStalls = settlement.getMarket().getNumStalls();
+                if (numStalls == 0) {
+                    possibleStrings.Add("The market is barren. No stalls have been built.");
+                }
+                else {
+                    int numStallsForSale = settlement.getMarket().getNumStallsForSale();
+                    if (numStallsForSale == 0) {
+                        possibleStrings.Add("The market is full. All " + numStalls + " stalls have been built.");
+                    }
+                    else {
+                        possibleStrings.Add("The market has " + numStallsForSale + " stalls for sale.");
                     }
                 }
-                player.getStatus().update("Settlement contains: " + listOfPresentPawns);
+
+                int numCoins = settlement.getInventory().getNumItems(ItemType.GOLD_COIN);
+                if (numCoins == 0) {
+                    possibleStrings.Add("This settlement is destitute. It has no gold coins.");
+                }
+                else {
+                    possibleStrings.Add("The wealth of this settlement amounts to " + numCoins + " gold coins.");
+                }
+
+                string statusUpdate = possibleStrings[UnityEngine.Random.Range(0, possibleStrings.Count)];
+                player.getStatus().update(statusUpdate);
             }
             else if (pawn != null && Vector3.Distance(player.getGameObject().transform.position, pawn.getGameObject().transform.position) < 5) {
                 Nation pawnsNation = nationRepository.getNation(pawn.getNationId());

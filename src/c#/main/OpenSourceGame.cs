@@ -213,6 +213,18 @@ namespace osg {
                         sapling.markForDeletion();
                     }
                 }
+                else if (entity.getType() == EntityType.SETTLEMENT) {
+                    Settlement settlement = (Settlement)entity;
+
+                    int totalTicks = tickCounter.getTotalTicks();
+                    if (totalTicks % 1000 == 0) {
+                        int numCoinsToGenerate = settlement.getMarket().getNumStalls();
+                        if (numCoinsToGenerate > 0) {
+                            settlement.getInventory().addItem(ItemType.GOLD_COIN, numCoinsToGenerate);
+                            UnityEngine.Debug.Log("Generated " + numCoinsToGenerate + " coins for settlement " + settlement.getNameTagText());
+                        }
+                    }
+                }
             }
 
             foreach (Vector3 position in positionsToGenerateChunksAt) {
