@@ -25,7 +25,7 @@ namespace osg {
         private Player player; // TODO: move to player repository
         private ScreenOverlay screenOverlay;
         public bool runTests = false;
-        public bool showDebugInfo = true;
+        public bool debugMode = false;
 
         // Initialization
         public void Start() {
@@ -259,7 +259,7 @@ namespace osg {
         public void OnGUI() {
             drawCommandButtons();
             
-            if (showDebugInfo) {
+            if (debugMode) {
                 GUI.color = Color.black;
                 drawDebugInfo();
             }
@@ -447,18 +447,30 @@ namespace osg {
                 TeleportHomeCommand command = new TeleportHomeCommand(entityRepository);
                 command.execute(player);
             }
-            else if (Input.GetKeyDown(KeyBindings.toggleDebugInfo)) {
-                showDebugInfo = !showDebugInfo;
+            else if (Input.GetKeyDown(KeyBindings.toggleDebugMode)) {
+                debugMode = !debugMode;
             }
             else if (Input.GetKeyDown(KeyBindings.spawnNewPawn)) {
+                if (!debugMode) {
+                    player.getStatus().update("Debug mode must be enabled to spawn a pawn. Press " + KeyBindings.toggleDebugMode + " to enable debug mode.");
+                    return;
+                }
                 SpawnPawnCommand command = new SpawnPawnCommand(eventProducer, entityRepository);
                 command.execute(player);
             }
             else if (Input.GetKeyDown(KeyBindings.generateNearbyLand)) {
+                if (!debugMode) {
+                    player.getStatus().update("Debug mode must be enabled to generate nearby land. Press " + KeyBindings.toggleDebugMode + " to enable debug mode.");
+                    return;
+                }
                 GenerateLandCommand command = new GenerateLandCommand(environment, worldGenerator);
                 command.execute(player);
             }
             else if (Input.GetKeyDown(KeyBindings.spawnMoney)) {
+                if (!debugMode) {
+                    player.getStatus().update("Debug mode must be enabled to spawn money. Press " + KeyBindings.toggleDebugMode + " to enable debug mode.");
+                    return;
+                }
                 SpawnMoneyCommand command = new SpawnMoneyCommand();
                 command.execute(player);
             }

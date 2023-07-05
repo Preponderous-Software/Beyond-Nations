@@ -30,10 +30,10 @@ The following controls are available in the game:
 | `P` | Plant a sapling |
 | `H` | Teleport to home settlement |
 | `Num Lock` | Toggle auto-walk |
-| `F9` | Toggle show debug menu |
-| `F10` | Spawn a new pawn |
-| `F11` | Generate nearby land |
-| `F12` | Spawn money |
+| `F3` | Toggle show debug menu |
+| `F1` | Spawn a new pawn |
+| `F2` | Generate nearby land |
+| `F4` | Spawn money |
 
 ## Game Systems
 There are a number of systems that will be implemented in the game. These systems will be used to create a rich and engaging gameplay experience. Details can be found in the [Systems Document](./docs/SYSTEMS.md).

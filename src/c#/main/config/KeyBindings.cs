@@ -17,9 +17,9 @@ namespace osg {
         public static readonly KeyCode plantSapling = KeyCode.P;
         public static readonly KeyCode teleportToHomeSettlement = KeyCode.H;
         public static readonly KeyCode toggleAutoWalk = KeyCode.Numlock;
-        public static readonly KeyCode toggleDebugInfo = KeyCode.F9;
-        public static readonly KeyCode spawnNewPawn = KeyCode.F10;
-        public static readonly KeyCode generateNearbyLand = KeyCode.F11;
-        public static readonly KeyCode spawnMoney = KeyCode.F12;
+        public static readonly KeyCode toggleDebugMode = KeyCode.F3;
+        public static readonly KeyCode spawnNewPawn = KeyCode.F1;
+        public static readonly KeyCode generateNearbyLand = KeyCode.F2;
+        public static readonly KeyCode spawnMoney = KeyCode.F4;
     }
 }
