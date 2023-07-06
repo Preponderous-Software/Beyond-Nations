@@ -209,6 +209,7 @@ namespace osg {
 
             Vector3 position = pawn.getPosition();
             position += new Vector3(UnityEngine.Random.Range(-5f, 5f), 0, UnityEngine.Random.Range(-5f, 5f));
+            position.y = 2;
             Sapling tree = new Sapling(position, 3);
             entityRepository.addEntity(tree);
             pawn.getInventory().removeItem(ItemType.SAPLING, 1);
