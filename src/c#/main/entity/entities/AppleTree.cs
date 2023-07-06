@@ -37,8 +37,8 @@ namespace osg {
             setGameObject(gameObject);
 
             getInventory().addItem(ItemType.WOOD, UnityEngine.Random.Range(3, 6));
-            getInventory().addItem(ItemType.APPLE, UnityEngine.Random.Range(0, 4));
-            getInventory().addItem(ItemType.SAPLING, UnityEngine.Random.Range(0, 3));
+            getInventory().addItem(ItemType.APPLE, UnityEngine.Random.Range(0, 3));
+            getInventory().addItem(ItemType.SAPLING, UnityEngine.Random.Range(0, 2));
         }
 
         public override void destroyGameObject() {

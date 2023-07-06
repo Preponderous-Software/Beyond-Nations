@@ -86,7 +86,7 @@ namespace osg {
                     pawn.getInventory().transferContentsOfInventory(targetEntity.getInventory());
                     pawn.setTargetEntity(null);
 
-                    if (targetEntity.getType() == EntityType.TREE) {
+                    if (targetEntity.getType() == EntityType.TREE && pawn.getInventory().getNumItems(ItemType.SAPLING) > 0) {
                         pawn.setCurrentBehaviorType(BehaviorType.PLANT_SAPLING);
                     }
                     else {
