@@ -108,16 +108,18 @@ namespace osg {
                     if (pawn.getNationId() == null) {
                         createOrJoinNation(pawn);
                     }
-                    Nation nation = nationRepository.getNation(pawn.getNationId());
+                    if (pawn.getNationId() != null) {
+                        Nation nation = nationRepository.getNation(pawn.getNationId());
 
-                    // join settlement if not already in one
-                    if (pawn.getHomeSettlementId() == null) {
-                        // choose random nation settlement
-                        int numSettlements = nation.getSettlements().Count;
-                        if (numSettlements != 0) {
-                            int randomSettlementIndex = UnityEngine.Random.Range(0, numSettlements);
-                            EntityId randomSettlementId = nation.getSettlements()[randomSettlementIndex];
-                            pawn.setHomeSettlementId(randomSettlementId);
+                        // join settlement if not already in one
+                        if (pawn.getHomeSettlementId() == null) {
+                            // choose random nation settlement
+                            int numSettlements = nation.getSettlements().Count;
+                            if (numSettlements != 0) {
+                                int randomSettlementIndex = UnityEngine.Random.Range(0, numSettlements);
+                                EntityId randomSettlementId = nation.getSettlements()[randomSettlementIndex];
+                                pawn.setHomeSettlementId(randomSettlementId);
+                            }
                         }
                     }
 
@@ -168,37 +170,42 @@ namespace osg {
                         }
                         else {
                             pawn.markForDeletion();
-                            nation.removeMember(pawn.getId());
-                            if (nation.getLeaderId() == pawn.getId()) {
-                                // transfer leadership to another pawn
-                                if (nation.getNumberOfMembers() > 0) {
-                                    nation.setLeaderId(nation.getOldestMemberId());
-                                    if (pawn.getType() == EntityType.PAWN) {
-                                        Pawn newLeader = (Pawn) entityRepository.getEntity(nation.getLeaderId());
-                                        player.getStatus().update(newLeader.getName() + " is now the leader of " + nation.getName() + ".");
-                                    }
-                                    else if (pawn.getType() == EntityType.PLAYER) {
-                                        Player newLeader = (Player) entityRepository.getEntity(nation.getLeaderId());
-                                        player.getStatus().update("You are now the leader of " + nation.getName() + ".");
+
+                            if (player.getNationId() != null) {
+                                Nation nation = nationRepository.getNation(player.getNationId());
+
+                                nation.removeMember(pawn.getId());
+                                if (nation.getLeaderId() == pawn.getId()) {
+                                    // transfer leadership to another pawn
+                                    if (nation.getNumberOfMembers() > 0) {
+                                        nation.setLeaderId(nation.getOldestMemberId());
+                                        if (pawn.getType() == EntityType.PAWN) {
+                                            Pawn newLeader = (Pawn) entityRepository.getEntity(nation.getLeaderId());
+                                            player.getStatus().update(newLeader.getName() + " is now the leader of " + nation.getName() + ".");
+                                        }
+                                        else if (pawn.getType() == EntityType.PLAYER) {
+                                            Player newLeader = (Player) entityRepository.getEntity(nation.getLeaderId());
+                                            player.getStatus().update("You are now the leader of " + nation.getName() + ".");
+                                        }
+                                        else {
+                                            Debug.Log("ERROR: Oldest member of nation " + nation.getName() + " is not a pawn or player.");
+                                        }
+                                        
                                     }
                                     else {
-                                        Debug.Log("ERROR: Oldest member of nation " + nation.getName() + " is not a pawn or player.");
+                                        nationRepository.removeNation(nation);
+
+                                        // remove settlements
+                                        foreach (EntityId settlementId in nation.getSettlements()) {
+                                            Settlement settlement = (Settlement) entityRepository.getEntity(settlementId);
+                                            settlement.markForDeletion();
+                                        }
+
+                                        // clear settlements
+                                        nation.getSettlements().Clear();
+
+                                        player.getStatus().update(nation.getName() + " has been disbanded.");
                                     }
-                                    
-                                }
-                                else {
-                                    nationRepository.removeNation(nation);
-
-                                    // remove settlements
-                                    foreach (EntityId settlementId in nation.getSettlements()) {
-                                        Settlement settlement = (Settlement) entityRepository.getEntity(settlementId);
-                                        settlement.markForDeletion();
-                                    }
-
-                                    // clear settlements
-                                    nation.getSettlements().Clear();
-
-                                    player.getStatus().update(nation.getName() + " has been disbanded.");
                                 }
                             }
                         }
@@ -408,6 +415,16 @@ namespace osg {
             }
             GUI.Label(new Rect(10, yPos, width, height), "PCIS: " + numPawnsCurrentlyInSettlement + " / " + numPawns);
             yPos += 20;
+
+            // nationless pawns
+            int numNationlessPawns = 0;
+            foreach (Pawn pawn in entityRepository.getEntitiesOfType(EntityType.PAWN)) {
+                if (pawn.getNationId() == null) {
+                    numNationlessPawns++;
+                }
+            }
+            GUI.Label(new Rect(10, yPos, width, height), "Nationless Pawns: " + numNationlessPawns + " / " + numPawns);
+            yPos += 20;
         }
 
         private void handleCommands() {
@@ -506,7 +523,7 @@ namespace osg {
                 player.getStatus().update(pawn.getName() + " joined nation " + nation.getName() + ". Members: " + nation.getNumberOfMembers() + ".");
                 return;
             }
-            else {
+            else if (pawn.getInventory().getNumItems(ItemType.WOOD) > Settlement.WOOD_COST_TO_BUILD) {
                 // create a new nation
                 Nation nation = new Nation(NationNameGenerator.generate(), pawn.getId());
                 nationRepository.addNation(nation);
@@ -514,6 +531,9 @@ namespace osg {
                 pawn.setColor(nation.getColor());
                 eventProducer.produceNationCreationEvent(nation);
                 player.getStatus().update(pawn.getName() + " created nation " + nation.getName() + ".");
+            }
+            else {
+                // no settlement within range, and not enough wood to create a new nation, so do nothing
             }
         }
 

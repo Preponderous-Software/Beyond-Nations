@@ -23,8 +23,8 @@ namespace osg {
             keepInventoryOnDeath = true;
             ticksBetweenBehaviorCalculations = 1000;
             ticksBetweenBehaviorExecutions = 5;
-            minDistanceBetweenSettlements = 1000;
-            settlementJoinRange = 1000;
+            minDistanceBetweenSettlements = 250;
+            settlementJoinRange = 500;
         }
 
         public int getChunkSize() {

@@ -20,16 +20,6 @@ namespace osg {
             }
         }
 
-        public void addNation(Nation nation) {
-            nations.Add(nation.getId(), nation);
-            nationIds.Add(nation.getId());
-        }
-
-        public void removeNation(Nation nation) {
-            nations.Remove(nation.getId());
-            nationIds.Remove(nation.getId());
-        }
-
         public Nation getNation(EntityId entityId) {
             foreach (Nation nation in nations.Values) {
                 if (nation.getLeaderId().Equals(entityId)) {
@@ -38,6 +28,16 @@ namespace osg {
             }
 
             return null;
+        }
+
+        public void addNation(Nation nation) {
+            nations.Add(nation.getId(), nation);
+            nationIds.Add(nation.getId());
+        }
+
+        public void removeNation(Nation nation) {
+            nations.Remove(nation.getId());
+            nationIds.Remove(nation.getId());
         }
 
         public int getNumberOfNations() {

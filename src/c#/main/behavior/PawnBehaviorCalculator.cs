@@ -38,6 +38,10 @@ namespace osg {
                 return BehaviorType.EXIT_SETTLEMENT;
             }
 
+            if (pawn.getNationId() == null) {
+                return BehaviorType.NONE;
+            }
+
             Nation nation = nationRepository.getNation(pawn.getNationId());
             NationRole role = nation.getRole(pawn.getId());
 
@@ -75,7 +79,7 @@ namespace osg {
             }
 
             if (pawn.getNationId() == null) {
-                return BehaviorType.WANDER;
+                return BehaviorType.GATHER_RESOURCES;
             }
 
             Nation nation = nationRepository.getNation(pawn.getNationId());
@@ -147,37 +151,6 @@ namespace osg {
             int distanceToNearestSapling = nearestSapling == null ? int.MaxValue : (int)Vector3.Distance(nearestSapling.getGameObject().transform.position, pawn.getGameObject().transform.position);
 
             return (nearestTree == null || distanceToNearestTree > threshold) && (nearestSapling == null || distanceToNearestSapling > threshold);
-        }
-
-        private bool nationLeaderHasApples(Pawn pawn) {
-            NationId nationId = pawn.getNationId();
-            if (nationId == null) {
-                UnityEngine.Debug.LogWarning("nationId is null");
-                return false;
-            }
-
-            Nation nation = nationRepository.getNation(nationId);
-            if (nation == null) {
-                UnityEngine.Debug.LogWarning("nation is null");
-                return false;
-            }
-
-            if (nation.getLeaderId() == null) {
-                UnityEngine.Debug.LogWarning("nation leader id is null");
-                return false;
-            }
-
-            Entity nationLeader = entityRepository.getEntity(nation.getLeaderId());
-            if (nationLeader == null) {
-                UnityEngine.Debug.LogWarning("nation leader is null");
-                return false;
-            }
-
-            return nationLeader.getInventory().getNumItems(ItemType.APPLE) > 0;
-        }
-
-        private bool pawnIsNationLeader(Pawn pawn) {
-            return nationRepository.getNation(pawn.getNationId()).getLeaderId() == pawn.getId();
         }
 
         private bool pawnNeedsFood(Pawn pawn) {

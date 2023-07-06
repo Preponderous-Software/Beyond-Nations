@@ -85,6 +85,13 @@ namespace osg {
                     targetEntity.markForDeletion();
                     pawn.getInventory().transferContentsOfInventory(targetEntity.getInventory());
                     pawn.setTargetEntity(null);
+
+                    if (targetEntity.getType() == EntityType.TREE) {
+                        pawn.setCurrentBehaviorType(BehaviorType.PLANT_SAPLING);
+                    }
+                    else {
+                        pawn.setCurrentBehaviorType(BehaviorType.NONE);
+                    }
                 }
                 else {
                     Debug.LogWarning("Pawn " + pawn + " is at target entity " + targetEntity + " but it is not a tree or rock.");
