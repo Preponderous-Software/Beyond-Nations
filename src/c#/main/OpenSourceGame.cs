@@ -207,6 +207,17 @@ namespace osg {
                                         player.getStatus().update(nation.getName() + " has been disbanded.");
                                     }
                                 }
+                                else if (nation.getRole(pawn.getId()) == NationRole.MERCHANT) {
+                                    // remove stall ownership
+                                    foreach (EntityId settlementId in nation.getSettlements()) {
+                                        Settlement settlement = (Settlement)entityRepository.getEntity(settlementId);
+                                        foreach (Stall stall in settlement.getMarket().getStalls()) {
+                                            if (stall.getOwnerId() == pawn.getId()) {
+                                                stall.setOwnerId(null);
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -423,7 +434,34 @@ namespace osg {
                     numNationlessPawns++;
                 }
             }
-            GUI.Label(new Rect(10, yPos, width, height), "Nationless Pawns: " + numNationlessPawns + " / " + numPawns);
+            GUI.Label(new Rect(10, yPos, width, height), "Nationless: " + numNationlessPawns + " / " + numPawns);
+            yPos += 20;
+
+            // num leaders/merchants/serfs
+            int numLeaders = 0;
+            int numMerchants = 0;
+            int numSerfs = 0;
+            foreach (Pawn pawn in entityRepository.getEntitiesOfType(EntityType.PAWN)) {
+                if (pawn.getNationId() == null) {
+                    continue;
+                }
+                Nation nation = nationRepository.getNation(pawn.getNationId());
+                NationRole role = nation.getRole(pawn.getId());
+                if (role == NationRole.LEADER) {
+                    numLeaders++;
+                }
+                else if (role == NationRole.MERCHANT) {
+                    numMerchants++;
+                }
+                else if (role == NationRole.SERF) {
+                    numSerfs++;
+                }
+            }
+            GUI.Label(new Rect(10, yPos, width, height), "Leaders: " + numLeaders);
+            yPos += 20;
+            GUI.Label(new Rect(10, yPos, width, height), "Merchants: " + numMerchants);
+            yPos += 20;
+            GUI.Label(new Rect(10, yPos, width, height), "Serfs: " + numSerfs);
             yPos += 20;
         }
 
