@@ -58,15 +58,53 @@ namespace osg {
                     if (pawn.getInventory().getNumItems(ItemType.WOOD) <= Stall.WOOD_COST_TO_BUILD) {
                         return BehaviorType.EXIT_SETTLEMENT;
                     }
-                    return BehaviorType.CONSTRUCT_STALL;
+                    else {
+                        return BehaviorType.CONSTRUCT_STALL;
+                    }
+                }
+                else {
+                    // 10% chance to exit settlement
+                    if (Random.Range(0, 100) < 10) {
+                        return BehaviorType.EXIT_SETTLEMENT;
+                    }
+                    else {
+                        return BehaviorType.NONE;
+                    }
                 }
             }
-
-            if (homeMarket.getNumStalls() < homeMarket.getMaxNumStalls() && role == NationRole.LEADER) {
-
+            else if (role == NationRole.SERF) {
+                // if enough coins and stall for sale
+                if (pawn.getInventory().getNumItems(ItemType.COIN) >= Stall.COIN_COST_TO_PURCHASE && homeMarket.getNumStallsForSale() > 0) {
+                    return BehaviorType.PURCHASE_STALL;
+                }
+                else {
+                    // 10% chance to exit settlement
+                    if (Random.Range(0, 100) < 10) {
+                        return BehaviorType.EXIT_SETTLEMENT;
+                    }
+                    else {
+                        return BehaviorType.NONE;
+                    }
+                }
             }
-
-            return BehaviorType.NONE;
+            else if (role == NationRole.MERCHANT) {
+                // transfer items to stall if pawn has wood or stone
+                if (pawn.getInventory().getNumItems(ItemType.WOOD) > 0 && pawn.getInventory().getNumItems(ItemType.STONE) > 0) {
+                    return BehaviorType.TRANSFER_ITEMS_TO_STALL;
+                }
+                else {
+                    // 10% chance to exit settlement
+                    if (Random.Range(0, 100) < 10) {
+                        return BehaviorType.EXIT_SETTLEMENT;
+                    }
+                    else {
+                        return BehaviorType.NONE;
+                    }
+                }
+            }
+            else {
+                return BehaviorType.NONE;
+            }            
         }
 
         private BehaviorType computeBehaviorTypeOutsideSettlement(Pawn pawn) {

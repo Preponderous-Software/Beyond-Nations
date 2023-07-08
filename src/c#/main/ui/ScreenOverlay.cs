@@ -22,7 +22,7 @@ namespace osg {
         public void initialize() {
             int resourcesX = -Screen.width / 4;
             int resourcesY = -Screen.height / 4;
-            numGoldCoinsText = new TextGameObject("Gold Coins: 0", 20, resourcesX, resourcesY);
+            numGoldCoinsText = new TextGameObject("Coins: 0", 20, resourcesX, resourcesY);
             numWoodText = new TextGameObject("Wood: 0", 20, resourcesX, resourcesY - 20);
             numStoneText = new TextGameObject("Stone: 0", 20, resourcesX, resourcesY - 40);
             numApplesText = new TextGameObject("Apples: 0", 20, resourcesX, resourcesY - 60);
@@ -31,7 +31,7 @@ namespace osg {
         }
 
         public void update() {
-            numGoldCoinsText.updateText("Gold Coins: " + player.getInventory().getNumItems(ItemType.GOLD_COIN));
+            numGoldCoinsText.updateText("Coins: " + player.getInventory().getNumItems(ItemType.COIN));
             numWoodText.updateText("Wood: " + player.getInventory().getNumItems(ItemType.WOOD));
             numStoneText.updateText("Stone: " + player.getInventory().getNumItems(ItemType.STONE));
             numApplesText.updateText("Apples: " + player.getInventory().getNumItems(ItemType.APPLE));

@@ -7,6 +7,7 @@ namespace osg {
         private Inventory inventory;
 
         public static readonly int WOOD_COST_TO_BUILD = 50;
+        public static readonly int COIN_COST_TO_PURCHASE = 100;
 
         public Stall() {
             ownerId = null;

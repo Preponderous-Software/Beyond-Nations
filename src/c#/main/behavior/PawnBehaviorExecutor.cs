@@ -49,6 +49,12 @@ namespace osg {
                 case BehaviorType.CONSTRUCT_STALL:
                     executeConstructStallBehavior(pawn);
                     break;
+                case BehaviorType.PURCHASE_STALL:
+                    executePurchaseStallBehavior(pawn);
+                    break;
+                case BehaviorType.TRANSFER_ITEMS_TO_STALL:
+                    executeTransferItemsToStallBehavior(pawn);
+                    break;
                 default:
                     break;
             }
@@ -248,6 +254,68 @@ namespace osg {
             pawn.setCurrentBehaviorType(BehaviorType.NONE);       
         }
 
+        private void executePurchaseStallBehavior(Pawn pawn) {
+            // pawn is assumed to be in home settlement
+            EntityId homeSettlementId = pawn.getHomeSettlementId();
+            if (homeSettlementId == null) {
+                Debug.LogError("Pawn " + pawn + " has no home settlement id.");
+                return;
+            }
+            Settlement homeSettlement = (Settlement) entityRepository.getEntity(homeSettlementId);
+            Market market = homeSettlement.getMarket();
+
+            // if no stalls for sale
+            if (market.getNumStallsForSale() == 0) {
+                Debug.LogWarning("Pawn " + pawn + " is trying to purchase a stall but there are none for sale.");
+                return;
+            }
+
+            // if not enough money
+            if (pawn.getInventory().getNumItems(ItemType.COIN) < Stall.COIN_COST_TO_PURCHASE) {
+                Debug.LogWarning("Pawn " + pawn + " is trying to purchase a stall but does not have enough money.");
+                return;
+            }
+
+            // remove money
+            pawn.getInventory().removeItem(ItemType.COIN, Stall.COIN_COST_TO_PURCHASE);
+
+            // assign ownership of stall to pawn
+            Stall stall = market.getStallForSale();
+            stall.setOwnerId(pawn.getId());
+            Nation nation = nationRepository.getNation(pawn.getNationId());
+            nation.setRole(pawn.getId(), NationRole.MERCHANT);
+            pawn.setCurrentBehaviorType(BehaviorType.NONE);
+        }
+
+        private void executeTransferItemsToStallBehavior(Pawn pawn) {
+            // pawn is assumed to be in home settlement
+            EntityId homeSettlementId = pawn.getHomeSettlementId();
+            if (homeSettlementId == null) {
+                Debug.LogError("Pawn " + pawn + " has no home settlement id.");
+                return;
+            }
+            Settlement homeSettlement = (Settlement) entityRepository.getEntity(homeSettlementId);
+            Market market = homeSettlement.getMarket();
+
+            // if no stalls owned
+            if (market.getStall(pawn.getId()) == null) {
+                Debug.LogWarning("Pawn " + pawn + " is trying to transfer items to a stall but does not own any stalls.");
+                return;
+            }
+
+            // if no wood or stone
+            if (pawn.getInventory().getNumItems(ItemType.WOOD) == 0 && pawn.getInventory().getNumItems(ItemType.STONE) == 0) {
+                Debug.LogWarning("Pawn " + pawn + " is trying to transfer items to a stall but has no wood or stone.");
+                return;
+            }
+
+            // transfer items
+            Stall stall = market.getStall(pawn.getId());
+            stall.transferContentsFromEntity(pawn);
+            Debug.Log("Pawn " + pawn.getName() + " transferred items to their stall.");
+            pawn.setCurrentBehaviorType(BehaviorType.NONE);
+        }
+
         // ---
 
         private void buyItem(Pawn buyer, Entity seller, ItemType itemType, int numItems) {
@@ -277,17 +345,17 @@ namespace osg {
                     return;
             }
 
-            // check if buyer has enough gold coins
-            if (buyerInventory.getNumItems(ItemType.GOLD_COIN) < price) {
-                Debug.LogWarning("Buyer " + buyer + " does not have enough gold coins to buy item type " + itemType + ". Price: " + price + ", Buyer gold coins: " + buyerInventory.getNumItems(ItemType.GOLD_COIN));
+            // check if buyer has enough coins
+            if (buyerInventory.getNumItems(ItemType.COIN) < price) {
+                Debug.LogWarning("Buyer " + buyer + " does not have enough coins to buy item type " + itemType + ". Price: " + price + ", Buyer coins: " + buyerInventory.getNumItems(ItemType.COIN));
                 return;
             }
 
             // transfer items
             sellerInventory.removeItem(itemType, numItems);
             buyerInventory.addItem(itemType, numItems);
-            buyerInventory.removeItem(ItemType.GOLD_COIN, price);
-            sellerInventory.addItem(ItemType.GOLD_COIN, price);
+            buyerInventory.removeItem(ItemType.COIN, price);
+            sellerInventory.addItem(ItemType.COIN, price);
 
             // increase relationship
             int increase = UnityEngine.Random.Range(1, 5);
@@ -328,17 +396,17 @@ namespace osg {
                     return;
             }
 
-            // check if buyer has enough gold coins
-            if (buyerInventory.getNumItems(ItemType.GOLD_COIN) < price * numItems) {
-                Debug.LogWarning("Buyer " + buyer + " does not have enough gold coins to purchase " + numItems + " of item type " + itemType + ".");
+            // check if buyer has enough coins
+            if (buyerInventory.getNumItems(ItemType.COIN) < price * numItems) {
+                Debug.LogWarning("Buyer " + buyer + " does not have enough coins to purchase " + numItems + " of item type " + itemType + ".");
                 return;
             }
 
             // transfer items
             sellerInventory.removeItem(itemType, numItems);
             buyerInventory.addItem(itemType, numItems);
-            buyerInventory.removeItem(ItemType.GOLD_COIN, price * numItems);
-            sellerInventory.addItem(ItemType.GOLD_COIN, price * numItems);
+            buyerInventory.removeItem(ItemType.COIN, price * numItems);
+            sellerInventory.addItem(ItemType.COIN, price * numItems);
 
             // increase relationship
             int increase = UnityEngine.Random.Range(1, 5);

@@ -21,7 +21,7 @@ namespace osgtests {
             Inventory inventory = new Inventory(0);
 
             // check
-            UnityEngine.Debug.Assert(inventory.getNumItems(ItemType.GOLD_COIN) == 0);
+            UnityEngine.Debug.Assert(inventory.getNumItems(ItemType.COIN) == 0);
             UnityEngine.Debug.Assert(inventory.getNumItems(ItemType.WOOD) == 0);
             UnityEngine.Debug.Assert(inventory.getNumItems(ItemType.STONE) == 0);
         }

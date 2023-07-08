@@ -227,7 +227,7 @@ namespace osg {
                     if (totalTicks % 1000 == 0) {
                         int numCoinsToGenerate = settlement.getMarket().getNumStalls();
                         if (numCoinsToGenerate > 0) {
-                            settlement.getInventory().addItem(ItemType.GOLD_COIN, numCoinsToGenerate);
+                            settlement.getInventory().addItem(ItemType.COIN, numCoinsToGenerate);
                             UnityEngine.Debug.Log("Generated " + numCoinsToGenerate + " coins for settlement " + settlement.getNameTagText());
                         }
                     }

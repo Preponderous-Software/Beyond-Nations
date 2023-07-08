@@ -15,8 +15,8 @@ namespace osg {
         // trading
         SELL_RESOURCES, // TODO: reimplement
         PURCHASE_FOOD, // TODO: reimplement
-        PURCHASE_STALL, // TODO: implement
-        TRANSFER_ITEMS_TO_STALL, // TODO: implement
+        PURCHASE_STALL,
+        TRANSFER_ITEMS_TO_STALL,
         COLLECT_PROFIT_FROM_STALL, // TODO: implement
 
         // construction

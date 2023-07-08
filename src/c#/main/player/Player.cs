@@ -28,7 +28,7 @@ namespace osg {
             this.runSpeed = runSpeed;
             status = new Status(tickCounter, statusExpirationTicks);
             this.currentSpeed = walkSpeed;
-            getInventory().addItem(ItemType.GOLD_COIN, UnityEngine.Random.Range(100, 400));
+            getInventory().addItem(ItemType.COIN, UnityEngine.Random.Range(100, 400));
         }
 
         private void setupCamera() {

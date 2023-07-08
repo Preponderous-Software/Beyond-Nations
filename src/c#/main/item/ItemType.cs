@@ -1,6 +1,6 @@
 namespace osg {
     public enum ItemType {
-        GOLD_COIN,
+        COIN,
         WOOD,
         STONE,
         APPLE,

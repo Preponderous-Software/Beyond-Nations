@@ -44,16 +44,16 @@ namespace osg {
                         possibleStrings.Add("The market is full. All " + numStalls + " stalls have been built.");
                     }
                     else {
-                        possibleStrings.Add("The market has " + numStallsForSale + " stalls for sale.");
+                        possibleStrings.Add("The market has " + numStallsForSale + "/" + numStalls + " stalls for sale.");
                     }
                 }
 
-                int numCoins = settlement.getInventory().getNumItems(ItemType.GOLD_COIN);
+                int numCoins = settlement.getInventory().getNumItems(ItemType.COIN);
                 if (numCoins == 0) {
-                    possibleStrings.Add("This settlement is destitute. It has no gold coins.");
+                    possibleStrings.Add("This settlement is destitute. It has no coins.");
                 }
                 else {
-                    possibleStrings.Add("The wealth of this settlement amounts to " + numCoins + " gold coins.");
+                    possibleStrings.Add("The wealth of this settlement amounts to " + numCoins + " coins.");
                 }
 
                 string statusUpdate = possibleStrings[UnityEngine.Random.Range(0, possibleStrings.Count)];
@@ -121,8 +121,8 @@ namespace osg {
                 return;
             }
 
-            if (pawn.getInventory().getNumItems(ItemType.GOLD_COIN) < cost) {
-                player.getStatus().update(pawn.getName() + " doesn't have enough gold coins to buy your items.");
+            if (pawn.getInventory().getNumItems(ItemType.COIN) < cost) {
+                player.getStatus().update(pawn.getName() + " doesn't have enough coins to buy your items.");
                 return;
             }
 
@@ -132,9 +132,9 @@ namespace osg {
             pawn.getInventory().addItem(ItemType.WOOD, numWood);
             pawn.getInventory().addItem(ItemType.STONE, numStone);
             pawn.getInventory().addItem(ItemType.APPLE, numApples);
-            player.getInventory().addItem(ItemType.GOLD_COIN, cost);
-            pawn.getInventory().removeItem(ItemType.GOLD_COIN, cost);
-            player.getStatus().update("Sold " + numWood + " wood, " + numStone + " stone, and " + numApples + " apples to " + pawn.getName() + " for " + cost + " gold coins.");
+            player.getInventory().addItem(ItemType.COIN, cost);
+            pawn.getInventory().removeItem(ItemType.COIN, cost);
+            player.getStatus().update("Sold " + numWood + " wood, " + numStone + " stone, and " + numApples + " apples to " + pawn.getName() + " for " + cost + " coins.");
             return;
         }
     }

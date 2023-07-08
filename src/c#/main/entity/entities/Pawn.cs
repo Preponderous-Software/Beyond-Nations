@@ -29,7 +29,7 @@ namespace osg {
             this.name = name;
             createGameObject(position);
             int startingGoldCoins = UnityEngine.Random.Range(50, 200);
-            getInventory().addItem(ItemType.GOLD_COIN, startingGoldCoins);
+            getInventory().addItem(ItemType.COIN, startingGoldCoins);
         }
 
         public string getName() {
