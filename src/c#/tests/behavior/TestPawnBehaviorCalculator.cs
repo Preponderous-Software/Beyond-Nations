@@ -7,16 +7,17 @@ namespace osgtests {
     public static class TestPawnBehaviorCalculator{
 
         public static void runTests() {
-            testComputeBehaviorTypeNoNationShouldWander();
-            testComputeBehaviorTypeNationlessShouldJoinNation();
-            testComputeBehaviorTypeNationlessShouldCreateSettlement();
-            testComputeBehaviorTypePawnInSettlementShouldPurchaseFood();
+            testComputeBehaviorType_Nationless_ShouldGatherResources();
+            testComputeBehaviorType_Nationless_ShouldJoinNation();
+            testComputeBehaviorType_Nationless_ShouldCreateSettlement();
+            testComputeBehaviorType_InSettlement_ShouldPurchaseFood();
         }
+
         /**
             * Input: pawn is nationless, no settlements nearby and does not have enough wood to create a settlement
             * Expected output: GATHER_RESOURCES
         */
-        public static void testComputeBehaviorTypeNoNationShouldWander() {
+        public static void testComputeBehaviorType_Nationless_ShouldGatherResources() {
             // prepare
             EntityRepository entityRepository = new EntityRepository();
             Environment environment = new Environment(5, 5, entityRepository);
@@ -42,7 +43,7 @@ namespace osgtests {
             * Input: pawn is nationless, settlement within range
             * Expected output: JOIN_NATION
         */
-        public static void testComputeBehaviorTypeNationlessShouldJoinNation() {
+        public static void testComputeBehaviorType_Nationless_ShouldJoinNation() {
             // prepare world
             EntityRepository entityRepository = new EntityRepository();
             Environment environment = new Environment(5, 5, entityRepository);
@@ -81,7 +82,7 @@ namespace osgtests {
             * Input: pawn is nationless, settlement not within range, enough wood to create settlement
             * Expected output: CREATE_NATION
         */
-        public static void testComputeBehaviorTypeNationlessShouldCreateSettlement() {
+        public static void testComputeBehaviorType_Nationless_ShouldCreateSettlement() {
             // prepare world
             EntityRepository entityRepository = new EntityRepository();
             Environment environment = new Environment(5, 5, entityRepository);
@@ -113,7 +114,7 @@ namespace osgtests {
 
         // TODO: write test for PURCHASE_STALL behavior
 
-        private static void testComputeBehaviorTypePawnInSettlementShouldPurchaseFood() {
+        private static void testComputeBehaviorType_InSettlement_ShouldPurchaseFood() {
             // prepare world
             EntityRepository entityRepository = new EntityRepository();
             Environment environment = new Environment(5, 5, entityRepository);
