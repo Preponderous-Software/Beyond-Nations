@@ -10,6 +10,7 @@ namespace osgtests {
             testComputeBehaviorTypeNoNationShouldWander();
             testComputeBehaviorTypeNationlessShouldJoinNation();
             testComputeBehaviorTypeNationlessShouldCreateSettlement();
+            testComputeBehaviorTypePawnInSettlementShouldPurchaseFood();
         }
         /**
             * Input: pawn is nationless, no settlements nearby and does not have enough wood to create a settlement
@@ -112,6 +113,52 @@ namespace osgtests {
 
         // TODO: write test for PURCHASE_STALL behavior
 
-        // TODO: write test for PURCHASE_FOOD behavior
+        private static void testComputeBehaviorTypePawnInSettlementShouldPurchaseFood() {
+            // prepare world
+            EntityRepository entityRepository = new EntityRepository();
+            Environment environment = new Environment(5, 5, entityRepository);
+            NationRepository nationRepository = new NationRepository();
+
+            // prepare existing nation & settlement
+            Pawn nationLeader = new Pawn(new Vector3(0, 0, 0), "test");
+            entityRepository.addEntity(nationLeader);
+            Nation nation = new Nation("test", nationLeader.getId());
+            nationRepository.addNation(nation);
+            Settlement settlement = new Settlement(new Vector3(0, 0, 0), nation.getId(), nation.getColor(), nation.getName());
+            entityRepository.addEntity(settlement);
+
+            // prepare existing stall & merchant
+            Pawn merchant = new Pawn(new Vector3(0, 0, 0), "test");
+            entityRepository.addEntity(merchant);
+            settlement.getMarket().createStall();
+            Stall stall = settlement.getMarket().getStallForSale();
+            stall.setOwnerId(merchant.getId());
+            stall.getInventory().addItem(ItemType.APPLE, 10);
+
+            // prepare pawn
+            Pawn pawn = new Pawn(new Vector3(0, 0, 0), "test");
+            pawn.setEnergy(10);
+            pawn.getInventory().addItem(ItemType.COIN, 10);
+            entityRepository.addEntity(pawn);
+            pawn.setHomeSettlementId(settlement.getId());
+            pawn.setCurrentlyInSettlement(true);
+
+            // prepare calculator
+            GameConfig gameConfig = new GameConfig();
+            PawnBehaviorCalculator calculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository, gameConfig);
+
+            // execute
+            BehaviorType behaviorType = calculator.computeBehaviorType(pawn);
+
+            // verify
+            UnityEngine.Debug.Assert(behaviorType == BehaviorType.PURCHASE_FOOD);
+
+            // cleanup
+            environment.destroyGameObject();
+            pawn.destroyGameObject();
+            settlement.destroyGameObject();
+            nationLeader.destroyGameObject();
+            merchant.destroyGameObject();
+        }
     }
 }
