@@ -10,6 +10,7 @@ namespace osgtests {
             testComputeBehaviorType_Nationless_ShouldGatherResources();
             testComputeBehaviorType_Nationless_ShouldJoinNation();
             testComputeBehaviorType_Nationless_ShouldCreateSettlement();
+            testComputeBehaviorType_InNation_ShouldJoinRandomSettlement();
             testComputeBehaviorType_InSettlement_ShouldPurchaseFood();
         }
 
@@ -106,6 +107,48 @@ namespace osgtests {
             // cleanup
             environment.destroyGameObject();
             pawn.destroyGameObject();
+        }
+
+        /**
+            * Input: pawn is in nation but not in settlement
+            * Expected output: JOIN_RANDOM_SETTLEMENT
+        */
+        private static void testComputeBehaviorType_InNation_ShouldJoinRandomSettlement() {
+            // prepare world
+            EntityRepository entityRepository = new EntityRepository();
+            Environment environment = new Environment(5, 5, entityRepository);
+            NationRepository nationRepository = new NationRepository();
+
+            // prepare existing nation & settlement
+            Pawn nationLeader = new Pawn(new Vector3(0, 0, 0), "test");
+            entityRepository.addEntity(nationLeader);
+            Nation nation = new Nation("test", nationLeader.getId());
+            nationRepository.addNation(nation);
+            Settlement settlement = new Settlement(new Vector3(0, 0, 0), nation.getId(), nation.getColor(), nation.getName());
+            entityRepository.addEntity(settlement);
+            nation.addSettlement(settlement.getId());
+
+            // prepare pawn
+            Pawn pawn = new Pawn(new Vector3(0, 0, 0), "test");
+            entityRepository.addEntity(pawn);
+            nation.addMember(pawn.getId());
+            pawn.setNationId(nation.getId());
+
+            // prepare calculator
+            GameConfig gameConfig = new GameConfig();
+            PawnBehaviorCalculator calculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository, gameConfig);
+
+            // execute
+            BehaviorType behaviorType = calculator.computeBehaviorType(pawn);
+
+            // verify
+            UnityEngine.Debug.Assert(behaviorType == BehaviorType.JOIN_RANDOM_SETTLEMENT);
+
+            // cleanup
+            environment.destroyGameObject();
+            pawn.destroyGameObject();
+            settlement.destroyGameObject();
+            nationLeader.destroyGameObject();
         }
 
         // TODO: write test for CONSTRUCT_SETTLEMENT behavior

@@ -26,5 +26,6 @@ namespace osg {
         // nation
         CREATE_NATION,
         JOIN_NATION,
+        JOIN_RANDOM_SETTLEMENT
     }
 }

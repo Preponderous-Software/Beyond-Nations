@@ -61,6 +61,9 @@ namespace osg {
                 case BehaviorType.CREATE_NATION:
                     executeCreateNationBehavior(pawn);
                     break;
+                case BehaviorType.JOIN_RANDOM_SETTLEMENT:
+                    executeJoinRandomSettlementBehavior(pawn);
+                    break;
                 default:
                     break;
             }
@@ -349,7 +352,7 @@ namespace osg {
             pawn.setNationId(nation.getId());
             pawn.setColor(nation.getColor());
             eventProducer.produceNationJoinEvent(nation, pawn.getId());
-            return;
+            pawn.setCurrentBehaviorType(BehaviorType.NONE);
         }
 
         private void executeCreateNationBehavior(Pawn pawn) {
@@ -358,6 +361,26 @@ namespace osg {
             pawn.setNationId(nation.getId());
             pawn.setColor(nation.getColor());
             eventProducer.produceNationCreationEvent(nation);
+            pawn.setCurrentBehaviorType(BehaviorType.NONE);
+        }
+
+        private void executeJoinRandomSettlementBehavior(Pawn pawn) {
+            // get nation
+            Nation nation = nationRepository.getNation(pawn.getNationId());
+
+            // if no settlements
+            if (nation.getNumberOfSettlements() == 0) {
+                Debug.LogWarning("Pawn " + pawn + " is trying to join a random settlement but their nation has no settlements.");
+                return;
+            }
+
+            // get random settlement
+            EntityId settlementId = nation.getRandomSettlementId();
+            Settlement settlement = (Settlement) entityRepository.getEntity(settlementId);
+
+            // join settlement
+            pawn.setHomeSettlementId(settlementId);
+            pawn.setCurrentBehaviorType(BehaviorType.NONE);
         }
     }
 }

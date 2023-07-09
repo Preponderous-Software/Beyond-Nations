@@ -160,12 +160,7 @@ namespace osg {
             }
 
             if (pawn.getHomeSettlementId() == null && numNationSettlements > 0) {
-                // join random settlement
-                EntityId randomSettlementId = nation.getRandomSettlementId();
-                if (randomSettlementId == null) {
-                    return BehaviorType.NONE;
-                }
-                pawn.setHomeSettlementId(randomSettlementId);
+                return BehaviorType.JOIN_RANDOM_SETTLEMENT;
             }
 
             if (role == NationRole.LEADER) {
