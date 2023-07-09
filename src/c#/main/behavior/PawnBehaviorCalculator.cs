@@ -35,11 +35,14 @@ namespace osg {
 
         private BehaviorType computeBehaviorTypeInSettlement(Pawn pawn) {
             if (pawnNeedsFood(pawn)) {
-                return BehaviorType.EXIT_SETTLEMENT;
-            }
-
-            if (pawn.getNationId() == null) {
-                return BehaviorType.NONE;
+                int expectedFoodCost = 1;
+                if (pawn.getInventory().getNumItems(ItemType.COIN) >= expectedFoodCost) {
+                    UnityEngine.Debug.Log("[PBC DEBUG] Pawn '" + pawn.getName() + "' has enough coins to purchase food. Returning PURCHASE_FOOD.");
+                    return BehaviorType.PURCHASE_FOOD;
+                }
+                else {
+                    return BehaviorType.EXIT_SETTLEMENT;
+                }
             }
 
             Nation nation = nationRepository.getNation(pawn.getNationId());
@@ -117,7 +120,19 @@ namespace osg {
             }
 
             if (pawn.getNationId() == null) {
-                return BehaviorType.GATHER_RESOURCES;
+                Settlement nearestSettlement = (Settlement) environment.getNearestEntityOfType(pawn.getGameObject().transform.position, EntityType.SETTLEMENT);
+                if (nearestSettlement != null && Vector3.Distance(pawn.getGameObject().transform.position, nearestSettlement.getGameObject().transform.position) < gameConfig.getSettlementJoinRange()) {
+                    return BehaviorType.JOIN_NATION;
+                }
+                else {
+                    // if enough wood to build settlement, create nation
+                    if (pawn.getInventory().getNumItems(ItemType.WOOD) >= Settlement.WOOD_COST_TO_BUILD) {
+                        return BehaviorType.CREATE_NATION;
+                    }
+                    else {
+                        return BehaviorType.GATHER_RESOURCES;
+                    }
+                }
             }
 
             Nation nation = nationRepository.getNation(pawn.getNationId());

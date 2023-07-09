@@ -14,7 +14,7 @@ namespace osg {
 
         // trading
         SELL_RESOURCES, // TODO: reimplement
-        PURCHASE_FOOD, // TODO: reimplement
+        PURCHASE_FOOD,
         PURCHASE_STALL,
         TRANSFER_ITEMS_TO_STALL,
         COLLECT_PROFIT_FROM_STALL, // TODO: implement
@@ -22,5 +22,9 @@ namespace osg {
         // construction
         CONSTRUCT_SETTLEMENT,        
         CONSTRUCT_STALL,
+
+        // nation
+        CREATE_NATION,
+        JOIN_NATION,
     }
 }

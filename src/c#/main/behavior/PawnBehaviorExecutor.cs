@@ -55,6 +55,12 @@ namespace osg {
                 case BehaviorType.TRANSFER_ITEMS_TO_STALL:
                     executeTransferItemsToStallBehavior(pawn);
                     break;
+                case BehaviorType.JOIN_NATION:
+                    executeJoinNationBehavior(pawn);
+                    break;
+                case BehaviorType.CREATE_NATION:
+                    executeCreateNationBehavior(pawn);
+                    break;
                 default:
                     break;
             }
@@ -130,7 +136,27 @@ namespace osg {
         }
 
         private void executePurchaseFoodBehavior(Pawn pawn) {
-            // TODO: go to settlement market and purchase food
+            // pawn is assumed to be in a settlement
+            if (!pawn.isCurrentlyInSettlement()) {
+                Debug.LogError("Pawn " + pawn + " is not currently in a settlement but is trying to purchase food.");
+                return;
+            }
+
+            // purchase food from settlement market
+            Settlement settlement = (Settlement) entityRepository.getEntity(pawn.getHomeSettlementId());
+            if (settlement == null) {
+                Debug.LogError("Pawn " + pawn + " is trying to purchase food from settlement " + pawn.getHomeSettlementId() + " but it does not exist.");
+                return;
+            }
+            Market market = settlement.getMarket();
+            bool result = market.purchaseFood(pawn);
+            if (!result) {
+                Debug.LogWarning("Pawn " + pawn + " tried to purchase food from settlement " + settlement + " but there was not enough food.");
+            }
+            else {
+                Debug.Log("[PBE DEBUG] Pawn " + pawn + " purchased food from settlement " + settlement + ".");
+            }
+            pawn.setCurrentBehaviorType(BehaviorType.NONE);
         }
 
         private void executeConstructSettlementBehavior(Pawn pawn) {
@@ -314,6 +340,24 @@ namespace osg {
             stall.transferContentsFromEntity(pawn);
             Debug.Log("Pawn " + pawn.getName() + " transferred items to their stall.");
             pawn.setCurrentBehaviorType(BehaviorType.NONE);
+        }
+
+        private void executeJoinNationBehavior(Pawn pawn) {
+            Settlement nearestSettlement = (Settlement) environment.getNearestEntityOfType(pawn.getGameObject().transform.position, EntityType.SETTLEMENT);
+            Nation nation = nationRepository.getNation(nearestSettlement.getNationId());
+            nation.addMember(pawn.getId());
+            pawn.setNationId(nation.getId());
+            pawn.setColor(nation.getColor());
+            eventProducer.produceNationJoinEvent(nation, pawn.getId());
+            return;
+        }
+
+        private void executeCreateNationBehavior(Pawn pawn) {
+            Nation nation = new Nation(NationNameGenerator.generate(), pawn.getId());
+            nationRepository.addNation(nation);
+            pawn.setNationId(nation.getId());
+            pawn.setColor(nation.getColor());
+            eventProducer.produceNationCreationEvent(nation);
         }
     }
 }

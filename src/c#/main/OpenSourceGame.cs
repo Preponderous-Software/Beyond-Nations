@@ -104,25 +104,6 @@ namespace osg {
                         pawn.setNameTag(nameTagText);
                     }
 
-                    // create or join nation
-                    if (pawn.getNationId() == null) {
-                        createOrJoinNation(pawn);
-                    }
-                    if (pawn.getNationId() != null) {
-                        Nation nation = nationRepository.getNation(pawn.getNationId());
-
-                        // join settlement if not already in one
-                        if (pawn.getHomeSettlementId() == null) {
-                            // choose random nation settlement
-                            int numSettlements = nation.getSettlements().Count;
-                            if (numSettlements != 0) {
-                                int randomSettlementIndex = UnityEngine.Random.Range(0, numSettlements);
-                                EntityId randomSettlementId = nation.getSettlements()[randomSettlementIndex];
-                                pawn.setHomeSettlementId(randomSettlementId);
-                            }
-                        }
-                    }
-
                     if (!pawn.isCurrentlyInSettlement()) {
                         // check if pawn is falling into void
                         float ypos = pawn.getGameObject().transform.position.y;
@@ -239,7 +220,6 @@ namespace osg {
                         int numCoinsToGenerate = settlement.getMarket().getNumStalls();
                         if (numCoinsToGenerate > 0) {
                             settlement.getInventory().addItem(ItemType.COIN, numCoinsToGenerate);
-                            UnityEngine.Debug.Log("Generated " + numCoinsToGenerate + " coins for settlement " + settlement.getNameTagText());
                         }
                     }
                 }
@@ -546,32 +526,6 @@ namespace osg {
                     player.getGameObject().transform.position = new Vector3(UnityEngine.Random.Range(-100, 100), 10, UnityEngine.Random.Range(-100, 100));
                 }
                 player.getStatus().update("You fell into the void. You have been teleported to the surface.");
-            }
-        }
-
-        private void createOrJoinNation(Pawn pawn) {
-            // if settlement within range, join that settlement's nation
-            Settlement nearestSettlement = (Settlement) environment.getNearestEntityOfType(pawn.getGameObject().transform.position, EntityType.SETTLEMENT);
-            if (nearestSettlement != null && Vector3.Distance(pawn.getGameObject().transform.position, nearestSettlement.getGameObject().transform.position) < gameConfig.getSettlementJoinRange()) {
-                Nation nation = nationRepository.getNation(nearestSettlement.getNationId());
-                nation.addMember(pawn.getId());
-                pawn.setNationId(nation.getId());
-                pawn.setColor(nation.getColor());
-                eventProducer.produceNationJoinEvent(nation, pawn.getId());
-                player.getStatus().update(pawn.getName() + " joined nation " + nation.getName() + ". Members: " + nation.getNumberOfMembers() + ".");
-                return;
-            }
-            else if (pawn.getInventory().getNumItems(ItemType.WOOD) > Settlement.WOOD_COST_TO_BUILD) {
-                // create a new nation
-                Nation nation = new Nation(NationNameGenerator.generate(), pawn.getId());
-                nationRepository.addNation(nation);
-                pawn.setNationId(nation.getId());
-                pawn.setColor(nation.getColor());
-                eventProducer.produceNationCreationEvent(nation);
-                player.getStatus().update(pawn.getName() + " created nation " + nation.getName() + ".");
-            }
-            else {
-                // no settlement within range, and not enough wood to create a new nation, so do nothing
             }
         }
 
