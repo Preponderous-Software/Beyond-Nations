@@ -13,6 +13,7 @@ namespace osgtests {
             testComputeBehaviorType_InNation_ShouldJoinRandomSettlement();
             testComputeBehaviorType_InSettlement_ShouldPurchaseFood();
             testComputeBehaviorType_InSettlement_ShouldSellResources();
+            testComputeBehaviorType_InSettlement_ShouldCollectProfitFromStall();
         }
 
         /**
@@ -256,6 +257,50 @@ namespace osgtests {
             settlement.destroyGameObject();
             nationLeader.destroyGameObject();
             merchant.destroyGameObject();
+        }
+
+        private static void testComputeBehaviorType_InSettlement_ShouldCollectProfitFromStall() {
+            // prepare world
+            EntityRepository entityRepository = new EntityRepository();
+            Environment environment = new Environment(5, 5, entityRepository);
+            NationRepository nationRepository = new NationRepository();
+
+            // prepare existing nation & settlement
+            Pawn nationLeader = new Pawn(new Vector3(0, 0, 0), "test");
+            entityRepository.addEntity(nationLeader);
+            Nation nation = new Nation("test", nationLeader.getId());
+            nationRepository.addNation(nation);
+            Settlement settlement = new Settlement(new Vector3(0, 0, 0), nation.getId(), nation.getColor(), nation.getName());
+            entityRepository.addEntity(settlement);
+
+            // prepare existing stall & merchant
+            Pawn merchant = new Pawn(new Vector3(0, 0, 0), "test");
+            nation.addMember(merchant.getId());
+            nation.setRole(merchant.getId(), NationRole.MERCHANT);
+            merchant.setNationId(nation.getId());
+            merchant.setHomeSettlementId(settlement.getId());
+            merchant.setCurrentlyInSettlement(true);
+            entityRepository.addEntity(merchant);
+            settlement.getMarket().createStall();
+            Stall stall = settlement.getMarket().getStallForSale();
+            stall.setOwnerId(merchant.getId());
+            stall.getInventory().addItem(ItemType.COIN, 10);
+
+            // prepare calculator
+            GameConfig gameConfig = new GameConfig();
+            PawnBehaviorCalculator calculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository, gameConfig);
+
+            // execute
+            BehaviorType behaviorType = calculator.computeBehaviorType(merchant);
+
+            // verify
+            UnityEngine.Debug.Assert(behaviorType == BehaviorType.COLLECT_PROFIT_FROM_STALL);
+
+            // cleanup
+            environment.destroyGameObject();
+            merchant.destroyGameObject();
+            settlement.destroyGameObject();
+            nationLeader.destroyGameObject();
         }
     }
 }

@@ -22,6 +22,8 @@ namespace osg {
 
         public void executeBehavior(Pawn pawn, BehaviorType behaviorType) {
             switch (behaviorType) {
+                case BehaviorType.NONE:
+                    break;
                 case BehaviorType.GATHER_RESOURCES:
                     executeGatherResourcesBehavior(pawn);
                     break;
@@ -64,7 +66,11 @@ namespace osg {
                 case BehaviorType.JOIN_RANDOM_SETTLEMENT:
                     executeJoinRandomSettlementBehavior(pawn);
                     break;
+                case BehaviorType.COLLECT_PROFIT_FROM_STALL:
+                    executeCollectProfitFromStallBehavior(pawn);
+                    break;
                 default:
+                    Debug.LogError("Behavior type " + behaviorType + " is not implemented.");
                     break;
             }
         }
@@ -124,6 +130,7 @@ namespace osg {
             
             Market market = settlement.getMarket();
             market.sellResources(pawn);
+            pawn.setCurrentBehaviorType(BehaviorType.NONE);
         }
 
         private void executeWanderBehavior(Pawn pawn) {
@@ -151,16 +158,16 @@ namespace osg {
             // purchase food from settlement market
             Settlement settlement = (Settlement) entityRepository.getEntity(pawn.getHomeSettlementId());
             if (settlement == null) {
-                Debug.LogError("Pawn " + pawn + " is trying to purchase food from settlement " + pawn.getHomeSettlementId() + " but it does not exist.");
+                Debug.LogError("Pawn " + pawn + " is trying to purchase food from settlement market " + pawn.getHomeSettlementId() + " but it does not exist.");
                 return;
             }
             Market market = settlement.getMarket();
             bool result = market.purchaseFood(pawn);
             if (!result) {
-                Debug.LogWarning("Pawn " + pawn + " tried to purchase food from settlement " + settlement + " but there was not enough food.");
+                Debug.LogWarning("Pawn " + pawn + " tried to purchase food from settlement market " + settlement + " but there was not enough food.");
             }
             else {
-                Debug.Log("[PBE DEBUG] Pawn " + pawn + " purchased food from settlement " + settlement + ".");
+                Debug.Log("[PBE DEBUG] Pawn " + pawn + " purchased food from settlement market " + settlement + ".");
             }
             pawn.setCurrentBehaviorType(BehaviorType.NONE);
         }
@@ -344,6 +351,13 @@ namespace osg {
             // transfer items
             Stall stall = market.getStall(pawn.getId());
             stall.transferContentsFromEntity(pawn);
+
+            // get half of coins from stall
+            int numCoins = stall.getInventory().getNumItems(ItemType.COIN);
+            int numCoinsToTransfer = numCoins / 2;
+            stall.getInventory().removeItem(ItemType.COIN, numCoinsToTransfer);
+            pawn.getInventory().addItem(ItemType.COIN, numCoinsToTransfer);
+
             Debug.Log("Pawn " + pawn.getName() + " transferred items to their stall.");
             pawn.setCurrentBehaviorType(BehaviorType.NONE);
         }
@@ -383,6 +397,31 @@ namespace osg {
 
             // join settlement
             pawn.setHomeSettlementId(settlementId);
+            pawn.setCurrentBehaviorType(BehaviorType.NONE);
+        }
+
+        private void executeCollectProfitFromStallBehavior(Pawn pawn) {
+            // pawn is assumed to be in home settlement
+            EntityId homeSettlementId = pawn.getHomeSettlementId();
+            if (homeSettlementId == null) {
+                Debug.LogError("Pawn " + pawn + " has no home settlement id.");
+                return;
+            }
+            Settlement homeSettlement = (Settlement) entityRepository.getEntity(homeSettlementId);
+            Market market = homeSettlement.getMarket();
+
+            // if no stalls owned
+            if (market.getStall(pawn.getId()) == null) {
+                Debug.LogWarning("Pawn " + pawn + " is trying to collect profit from a stall but does not own any stalls.");
+                return;
+            }
+
+            // collect profit
+            Stall stall = market.getStall(pawn.getId());
+            int profit = stall.getInventory().getNumItems(ItemType.COIN);
+            pawn.getInventory().addItem(ItemType.COIN, profit);
+            stall.getInventory().removeItem(ItemType.COIN, profit);
+            Debug.Log("Pawn " + pawn.getName() + " collected " + profit + " coins from their stall.");
             pawn.setCurrentBehaviorType(BehaviorType.NONE);
         }
     }

@@ -17,7 +17,7 @@ namespace osg {
         PURCHASE_FOOD,
         PURCHASE_STALL,
         TRANSFER_ITEMS_TO_STALL,
-        COLLECT_PROFIT_FROM_STALL, // TODO: implement
+        COLLECT_PROFIT_FROM_STALL,
 
         // construction
         CONSTRUCT_SETTLEMENT,        

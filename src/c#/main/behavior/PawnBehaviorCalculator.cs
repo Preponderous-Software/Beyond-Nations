@@ -101,14 +101,18 @@ namespace osg {
                 if (pawn.getInventory().getNumItems(ItemType.WOOD) > 0 && pawn.getInventory().getNumItems(ItemType.STONE) > 0) {
                     return BehaviorType.TRANSFER_ITEMS_TO_STALL;
                 }
+
+                Market market = homeSettlement.getMarket();
+                Stall stall = market.getStall(pawn.getId());
+                if (stall.getInventory().hasItem(ItemType.COIN)) {
+                    return BehaviorType.COLLECT_PROFIT_FROM_STALL;
+                }
+                
+                if (Random.Range(0, 100) < 10) {
+                    return BehaviorType.EXIT_SETTLEMENT;
+                }
                 else {
-                    // 10% chance to exit settlement
-                    if (Random.Range(0, 100) < 10) {
-                        return BehaviorType.EXIT_SETTLEMENT;
-                    }
-                    else {
-                        return BehaviorType.NONE;
-                    }
+                    return BehaviorType.NONE;
                 }
             }
             else {

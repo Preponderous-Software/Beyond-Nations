@@ -293,9 +293,9 @@ namespace osg {
                 }
                 buttonX += buttonWidth + buttonSpacing;
 
-                // if leader and no settlements, draw found settlement
+                // if leader and no settlements and enough resources, draw found settlement
                 Nation nation = nationRepository.getNation(player.getNationId());
-                if (player.getId() == nation.getLeaderId() && nation.getNumberOfSettlements() == 0) {
+                if (player.getId() == nation.getLeaderId() && nation.getNumberOfSettlements() == 0 && player.getInventory().getNumItems(ItemType.WOOD) >= Settlement.WOOD_COST_TO_BUILD) {
                     // draw found settlement
                     if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Found Settlement")) {
                         FoundSettlementCommand command = new FoundSettlementCommand(nationRepository, eventProducer, entityRepository, gameConfig);
@@ -312,6 +312,18 @@ namespace osg {
                         command.execute(player);
                     }
                     buttonX += buttonWidth + buttonSpacing;
+                }
+
+                // if leader and no stalls and enough resources, draw build stall
+                if (player.getSettlementId() != null) {
+                    Settlement settlement = (Settlement) entityRepository.getEntity(player.getSettlementId());
+                    if (player.getId() == nation.getLeaderId() && settlement.getMarket().getNumStalls() < settlement.getMarket().getMaxNumStalls() && player.getInventory().getNumItems(ItemType.WOOD) >= Stall.WOOD_COST_TO_BUILD) {
+                        if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Build Stall")) {
+                            BuildStallCommand command = new BuildStallCommand(nationRepository, entityRepository);
+                            command.execute(player);
+                        }
+                        buttonX += buttonWidth + buttonSpacing;
+                    }
                 }
             }
 
@@ -482,6 +494,10 @@ namespace osg {
                 TeleportHomeCommand command = new TeleportHomeCommand(entityRepository);
                 command.execute(player);
             }
+            else if (Input.GetKeyDown(KeyBindings.buildStall)) {
+                BuildStallCommand command = new BuildStallCommand(nationRepository, entityRepository);
+                command.execute(player);
+            }
             else if (Input.GetKeyDown(KeyBindings.toggleDebugMode)) {
                 debugMode = !debugMode;
             }
@@ -507,6 +523,14 @@ namespace osg {
                     return;
                 }
                 SpawnMoneyCommand command = new SpawnMoneyCommand();
+                command.execute(player);
+            }
+            else if (Input.GetKeyDown(KeyBindings.spawnWood)) {
+                if (!debugMode) {
+                    player.getStatus().update("Debug mode must be enabled to spawn wood. Press " + KeyBindings.toggleDebugMode + " to enable debug mode.");
+                    return;
+                }
+                SpawnWoodCommand command = new SpawnWoodCommand();
                 command.execute(player);
             }
         }

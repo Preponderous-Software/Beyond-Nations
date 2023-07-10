@@ -7,6 +7,9 @@ namespace osg {
     public class Market {
         private List<Stall> stalls = new List<Stall>();
         private int maxNumStalls;
+        
+        private int totalNumItemsBought = 0;
+        private int totalNumItemsSold = 0;
 
         public Market(int maxNumStalls) {
             this.maxNumStalls = maxNumStalls;
@@ -78,6 +81,13 @@ namespace osg {
             return maxNumStalls;
         }
 
+        public int getTotalNumItemsBought() {
+            return totalNumItemsBought;
+        }
+
+        public int getTotalNumItemsSold() {
+            return totalNumItemsSold;
+        }
 
         public bool purchaseFood(Pawn pawn) {
             return buyItem(pawn, ItemType.APPLE, 1);
@@ -110,8 +120,9 @@ namespace osg {
                 pawn.getInventory().addItem(itemType, quantity);
                 stall.getInventory().removeItem(itemType, quantity);
 
-                UnityEngine.Debug.Log("Pawn " + pawn.getName() + " bought " + quantity + " " + itemType + " from " + stall.getOwnerId());
+                totalNumItemsBought += quantity;
 
+                UnityEngine.Debug.Log("Pawn " + pawn.getName() + " bought " + quantity + " " + itemType + " from " + stall.getOwnerId());
                 return true;
             }
             return false;
@@ -145,6 +156,8 @@ namespace osg {
                     // transfer coins
                     pawn.getInventory().addItem(ItemType.COIN, cost_for_anything);
                     stall.getInventory().removeItem(ItemType.COIN, cost_for_anything);
+
+                    totalNumItemsSold++;
 
                     Debug.Log("Pawn " + pawn.getName() + " sold 1 " + itemType + " to " + stall.getOwnerId());
                 }

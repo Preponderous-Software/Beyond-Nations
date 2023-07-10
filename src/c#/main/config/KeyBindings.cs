@@ -17,10 +17,12 @@ namespace osg {
         public static readonly KeyCode foundSettlement = KeyCode.F;
         public static readonly KeyCode plantSapling = KeyCode.P;
         public static readonly KeyCode teleportToHomeSettlement = KeyCode.H;
+        public static readonly KeyCode buildStall = KeyCode.B;
         public static readonly KeyCode toggleAutoWalk = KeyCode.Insert;
         public static readonly KeyCode toggleDebugMode = KeyCode.F3;
         public static readonly KeyCode spawnNewPawn = KeyCode.F1;
         public static readonly KeyCode generateNearbyLand = KeyCode.F2;
         public static readonly KeyCode spawnMoney = KeyCode.F4;
+        public static readonly KeyCode spawnWood = KeyCode.F5;
     }
 }

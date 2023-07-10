@@ -41,7 +41,7 @@ namespace osg {
                 else {
                     int numStallsForSale = settlement.getMarket().getNumStallsForSale();
                     if (numStallsForSale == 0) {
-                        possibleStrings.Add("The market is full. All " + numStalls + " stalls have been built.");
+                        possibleStrings.Add("The market is full. All " + numStalls + " stalls have been built and are owned by someone.");
                     }
                     else {
                         possibleStrings.Add("The market has " + numStallsForSale + "/" + numStalls + " stalls for sale.");
@@ -54,6 +54,22 @@ namespace osg {
                 }
                 else {
                     possibleStrings.Add("The wealth of this settlement amounts to " + numCoins + " coins.");
+                }
+
+                int numItemsBought = settlement.getMarket().getTotalNumItemsBought();
+                if (numItemsBought == 0) {
+                    possibleStrings.Add("No items have been bought at this settlement's market.");
+                }
+                else {
+                    possibleStrings.Add(numItemsBought + " items have been bought at this settlement's market.");
+                }
+
+                int numItemsSold = settlement.getMarket().getTotalNumItemsSold();
+                if (numItemsSold == 0) {
+                    possibleStrings.Add("No items have been sold at this settlement's market.");
+                }
+                else {
+                    possibleStrings.Add(numItemsSold + " items have been sold at this settlement's market.");
                 }
 
                 string statusUpdate = possibleStrings[UnityEngine.Random.Range(0, possibleStrings.Count)];
@@ -107,35 +123,6 @@ namespace osg {
             }
 
             return phrases;
-        }
-
-        private void attemptToSellItemsToPawn(Player player, Pawn pawn) {
-            int numWood = player.getInventory().getNumItems(ItemType.WOOD);
-            int numStone = player.getInventory().getNumItems(ItemType.STONE);
-            int numApples = player.getInventory().getNumItems(ItemType.APPLE);
-
-            int cost = (numWood * 5) + (numStone * 10) + (numApples * 1);
-
-            if (cost == 0) {
-                player.getStatus().update("You don't have anything to sell.");
-                return;
-            }
-
-            if (pawn.getInventory().getNumItems(ItemType.COIN) < cost) {
-                player.getStatus().update(pawn.getName() + " doesn't have enough coins to buy your items.");
-                return;
-            }
-
-            player.getInventory().removeItem(ItemType.WOOD, numWood);
-            player.getInventory().removeItem(ItemType.STONE, numStone);
-            player.getInventory().removeItem(ItemType.APPLE, numApples);
-            pawn.getInventory().addItem(ItemType.WOOD, numWood);
-            pawn.getInventory().addItem(ItemType.STONE, numStone);
-            pawn.getInventory().addItem(ItemType.APPLE, numApples);
-            player.getInventory().addItem(ItemType.COIN, cost);
-            pawn.getInventory().removeItem(ItemType.COIN, cost);
-            player.getStatus().update("Sold " + numWood + " wood, " + numStone + " stone, and " + numApples + " apples to " + pawn.getName() + " for " + cost + " coins.");
-            return;
         }
     }
 }
