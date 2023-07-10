@@ -94,7 +94,7 @@ namespace osg {
         }
 
         public bool buyItem(Pawn pawn, ItemType itemType, int quantity) {
-            int cost_for_anything = 1;
+            int cost_for_anything = 2;
             foreach(Stall stall in stalls) {
                 if (stall.getOwnerId() == null) {
                     continue;
