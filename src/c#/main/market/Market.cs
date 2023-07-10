@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Enum = System.Enum;
 
 namespace osg {
 
@@ -114,6 +115,40 @@ namespace osg {
                 return true;
             }
             return false;
+        }
+
+        public void sellResources(Pawn pawn) {
+            int cost_for_anything = 1;
+            foreach(Stall stall in stalls) {
+                if (stall.getOwnerId() == null) {
+                    continue;
+                }
+                if (stall.getOwnerId() == pawn.getId()) {
+                    continue;
+                }
+                if (stall.getInventory().getNumItems(ItemType.COIN) < cost_for_anything) {
+                    continue;
+                }
+                foreach(ItemType itemType in Enum.GetValues(typeof(ItemType))) {
+                    if (!pawn.getInventory().hasItem(itemType)) {
+                        continue;
+                    }
+
+                    if (itemType == ItemType.COIN) {
+                        continue;
+                    }
+                    
+                    // transfer items
+                    pawn.getInventory().removeItem(itemType, 1);
+                    stall.getInventory().addItem(itemType, 1);
+
+                    // transfer coins
+                    pawn.getInventory().addItem(ItemType.COIN, cost_for_anything);
+                    stall.getInventory().removeItem(ItemType.COIN, cost_for_anything);
+
+                    Debug.Log("Pawn " + pawn.getName() + " sold 1 " + itemType + " to " + stall.getOwnerId());
+                }
+            }
         }
     }
 }

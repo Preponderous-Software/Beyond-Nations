@@ -13,7 +13,7 @@ namespace osg {
         EXIT_SETTLEMENT,
 
         // trading
-        SELL_RESOURCES, // TODO: reimplement
+        SELL_RESOURCES,
         PURCHASE_FOOD,
         PURCHASE_STALL,
         TRANSFER_ITEMS_TO_STALL,

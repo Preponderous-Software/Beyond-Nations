@@ -120,7 +120,10 @@ namespace osg {
         }
 
         private void executeSellResourcesBehavior(Pawn pawn) {
-            // TODO: go to settlement market and sell resources
+            Settlement settlement = (Settlement) entityRepository.getEntity(pawn.getHomeSettlementId());
+            
+            Market market = settlement.getMarket();
+            market.sellResources(pawn);
         }
 
         private void executeWanderBehavior(Pawn pawn) {

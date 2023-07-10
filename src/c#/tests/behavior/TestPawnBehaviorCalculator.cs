@@ -12,6 +12,7 @@ namespace osgtests {
             testComputeBehaviorType_Nationless_ShouldCreateSettlement();
             testComputeBehaviorType_InNation_ShouldJoinRandomSettlement();
             testComputeBehaviorType_InSettlement_ShouldPurchaseFood();
+            testComputeBehaviorType_InSettlement_ShouldSellResources();
         }
 
         /**
@@ -196,6 +197,58 @@ namespace osgtests {
 
             // verify
             UnityEngine.Debug.Assert(behaviorType == BehaviorType.PURCHASE_FOOD);
+
+            // cleanup
+            environment.destroyGameObject();
+            pawn.destroyGameObject();
+            settlement.destroyGameObject();
+            nationLeader.destroyGameObject();
+            merchant.destroyGameObject();
+        }
+
+        public static void testComputeBehaviorType_InSettlement_ShouldSellResources() {
+            // prepare world
+            EntityRepository entityRepository = new EntityRepository();
+            Environment environment = new Environment(5, 5, entityRepository);
+            NationRepository nationRepository = new NationRepository();
+
+            // prepare existing nation & settlement
+            Pawn nationLeader = new Pawn(new Vector3(0, 0, 0), "test");
+            entityRepository.addEntity(nationLeader);
+            Nation nation = new Nation("test", nationLeader.getId());
+            nationRepository.addNation(nation);
+            Settlement settlement = new Settlement(new Vector3(0, 0, 0), nation.getId(), nation.getColor(), nation.getName());
+            entityRepository.addEntity(settlement);
+
+            // prepare existing stall & merchant
+            Pawn merchant = new Pawn(new Vector3(0, 0, 0), "test");
+            entityRepository.addEntity(merchant);
+            settlement.getMarket().createStall();
+            Stall stall = settlement.getMarket().getStallForSale();
+            stall.setOwnerId(merchant.getId());
+
+            // prepare pawn
+            Pawn pawn = new Pawn(new Vector3(0, 0, 0), "test");
+            Inventory inventory = pawn.getInventory();
+            inventory.addItem(ItemType.WOOD, 100);
+            inventory.addItem(ItemType.STONE, 100);
+            inventory.addItem(ItemType.COIN, 100);
+            inventory.addItem(ItemType.APPLE, 100);
+            entityRepository.addEntity(pawn);
+            nation.addMember(pawn.getId());
+            pawn.setNationId(nation.getId());
+            pawn.setHomeSettlementId(settlement.getId());
+            pawn.setCurrentlyInSettlement(true);
+
+            // prepare calculator
+            GameConfig gameConfig = new GameConfig();
+            PawnBehaviorCalculator calculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository, gameConfig);
+
+            // execute
+            BehaviorType behaviorType = calculator.computeBehaviorType(pawn);
+
+            // verify
+            UnityEngine.Debug.Assert(behaviorType == BehaviorType.SELL_RESOURCES);
 
             // cleanup
             environment.destroyGameObject();

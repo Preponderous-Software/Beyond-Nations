@@ -1,4 +1,5 @@
 using UnityEngine;
+
 namespace osg {
 
     public class KeyBindings {
@@ -16,7 +17,7 @@ namespace osg {
         public static readonly KeyCode foundSettlement = KeyCode.F;
         public static readonly KeyCode plantSapling = KeyCode.P;
         public static readonly KeyCode teleportToHomeSettlement = KeyCode.H;
-        public static readonly KeyCode toggleAutoWalk = KeyCode.Numlock;
+        public static readonly KeyCode toggleAutoWalk = KeyCode.Insert;
         public static readonly KeyCode toggleDebugMode = KeyCode.F3;
         public static readonly KeyCode spawnNewPawn = KeyCode.F1;
         public static readonly KeyCode generateNearbyLand = KeyCode.F2;

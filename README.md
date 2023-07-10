@@ -29,7 +29,7 @@ The following controls are available in the game:
 | `F` | Found a settlement |
 | `P` | Plant a sapling |
 | `H` | Teleport to home settlement |
-| `Num Lock` | Toggle auto-walk |
+| `Insert` | Toggle auto-walk |
 | `F3` | Toggle show debug menu |
 | `F1` | Spawn a new pawn |
 | `F2` | Generate nearby land |

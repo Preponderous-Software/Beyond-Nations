@@ -81,6 +81,12 @@ namespace osg {
                     return BehaviorType.PURCHASE_STALL;
                 }
                 else {
+
+                    // if pawn has an abundance of resources, sell them
+                    if (pawn.getInventory().containsAbundanceOfResources()) {
+                        return BehaviorType.SELL_RESOURCES;
+                    }
+
                     // 10% chance to exit settlement
                     if (Random.Range(0, 100) < 10) {
                         return BehaviorType.EXIT_SETTLEMENT;
@@ -112,7 +118,10 @@ namespace osg {
 
         private BehaviorType computeBehaviorTypeOutsideSettlement(Pawn pawn) {
             if (pawnNeedsFood(pawn)) {
-                return BehaviorType.GATHER_RESOURCES;
+                int expectedFoodCost = 1;
+                if (pawn.getInventory().getNumItems(ItemType.COIN) >= expectedFoodCost) {
+                    return BehaviorType.GO_TO_HOME_SETTLEMENT;
+                }
             }
 
             if (shouldPlantSapling(pawn)) {
