@@ -325,6 +325,18 @@ namespace osg {
                         buttonX += buttonWidth + buttonSpacing;
                     }
                 }
+
+                // if serf, enough gold and stall for sale, draw purchase stall
+                if (player.getSettlementId() != null) {
+                    Settlement settlement = (Settlement) entityRepository.getEntity(player.getSettlementId());
+                    if (nation.getRole(player.getId()) == NationRole.SERF && player.getInventory().getNumItems(ItemType.COIN) >= Stall.COIN_COST_TO_PURCHASE && settlement.getMarket().getNumStallsForSale() > 0) {
+                        if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Purchase Stall")) {
+                            PurchaseStallCommand command = new PurchaseStallCommand(nationRepository, entityRepository);
+                            command.execute(player);
+                        }
+                        buttonX += buttonWidth + buttonSpacing;
+                    }
+                }
             }
 
             // if saplings, plant sapling
