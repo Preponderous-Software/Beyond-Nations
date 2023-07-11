@@ -58,7 +58,7 @@ namespace osg {
             if (role == NationRole.LEADER) {
                 if (homeMarket.getNumStalls() < homeMarket.getMaxNumStalls()) {
                     // if not enough wood
-                    if (pawn.getInventory().getNumItems(ItemType.WOOD) <= Stall.WOOD_COST_TO_BUILD) {
+                    if (pawn.getInventory().getNumItems(ItemType.WOOD) < Stall.WOOD_COST_TO_BUILD) {
                         return BehaviorType.EXIT_SETTLEMENT;
                     }
                     else {
@@ -156,7 +156,7 @@ namespace osg {
             if (numNationSettlements == 0) {
                 if (role == NationRole.LEADER) {
 
-                    if (pawn.getInventory().getNumItems(ItemType.WOOD) <= Settlement.WOOD_COST_TO_BUILD) {
+                    if (pawn.getInventory().getNumItems(ItemType.WOOD) < Settlement.WOOD_COST_TO_BUILD) {
                         return BehaviorType.GATHER_RESOURCES;
                     }
 
@@ -199,12 +199,7 @@ namespace osg {
                 return false;
             }
 
-            // 80% chance to skip planting sapling
-            if (UnityEngine.Random.Range(0, 100) < 80) {
-                return false;
-            }
-
-            // if no tree within x units, plant sapling
+            // if no tree or sapling within x units, plant sapling
             int threshold = 25;
             AppleTree nearestTree = environment.getNearestTree(pawn.getGameObject().transform.position);
             Sapling nearestSapling = (Sapling)environment.getNearestEntityOfType(pawn.getGameObject().transform.position, EntityType.SAPLING);

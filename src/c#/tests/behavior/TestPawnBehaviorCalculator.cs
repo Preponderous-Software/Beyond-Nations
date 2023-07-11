@@ -11,6 +11,9 @@ namespace osgtests {
             testComputeBehaviorType_Nationless_ShouldJoinNation();
             testComputeBehaviorType_Nationless_ShouldCreateSettlement();
             testComputeBehaviorType_InNation_ShouldJoinRandomSettlement();
+            testComputeBehaviorType_IsLeaderAndHasEnoughWood_ShouldConstructSettlement();
+            testComputeBehaviorType_IsLeaderAndHasEnoughWood_ShouldConstructStall();
+            testComputeBehaviorType_IsLeaderAndHasEnoughWoodButMarketFull_ShouldExitOrDoNothing();
             testComputeBehaviorType_InSettlement_ShouldPurchaseFood();
             testComputeBehaviorType_InSettlement_ShouldSellResources();
             testComputeBehaviorType_InSettlement_ShouldCollectProfitFromStall();
@@ -153,11 +156,125 @@ namespace osgtests {
             nationLeader.destroyGameObject();
         }
 
-        // TODO: write test for CONSTRUCT_SETTLEMENT behavior
+        /**
+            * Input: pawn is leader of nation and has enough wood to create a settlement
+            * Expected output: CONSTRUCT_SETTLEMENT
+        */
+        private static void testComputeBehaviorType_IsLeaderAndHasEnoughWood_ShouldConstructSettlement() {
+            // prepare world
+            EntityRepository entityRepository = new EntityRepository();
+            Environment environment = new Environment(5, 5, entityRepository);
+            NationRepository nationRepository = new NationRepository();
 
-        // TODO: write test or CONSTRUCT_STALL behavior
+            // prepare pawn & nation
+            Pawn nationLeader = new Pawn(new Vector3(0, 0, 0), "test");
+            nationLeader.getInventory().addItem(ItemType.WOOD, Settlement.WOOD_COST_TO_BUILD);
+            entityRepository.addEntity(nationLeader);
+            Nation nation = new Nation("test", nationLeader.getId());
+            nationLeader.setNationId(nation.getId());
+            nationRepository.addNation(nation);
 
-        // TODO: write test for PURCHASE_STALL behavior
+            // prepare calculator
+            GameConfig gameConfig = new GameConfig();
+            PawnBehaviorCalculator calculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository, gameConfig);
+
+            // execute
+            BehaviorType behaviorType = calculator.computeBehaviorType(nationLeader);
+
+            // verify
+            UnityEngine.Debug.Assert(behaviorType == BehaviorType.CONSTRUCT_SETTLEMENT);
+
+            // cleanup
+            environment.destroyGameObject();
+            nationLeader.destroyGameObject();
+        }
+
+        /**
+            * Input: pawn is leader of nation, has enough wood to build a stall & market is not full
+            * Expected output: CONSTRUCT_STALL
+        */
+        private static void testComputeBehaviorType_IsLeaderAndHasEnoughWood_ShouldConstructStall() {
+            // prepare world
+            EntityRepository entityRepository = new EntityRepository();
+            Environment environment = new Environment(5, 5, entityRepository);
+            NationRepository nationRepository = new NationRepository();
+
+            // prepare pawn & nation
+            Pawn nationLeader = new Pawn(new Vector3(0, 0, 0), "test");
+            nationLeader.getInventory().addItem(ItemType.WOOD, Stall.WOOD_COST_TO_BUILD);
+            entityRepository.addEntity(nationLeader);
+            Nation nation = new Nation("test", nationLeader.getId());
+            nationLeader.setNationId(nation.getId());
+            nationRepository.addNation(nation);
+
+            // prepare settlement
+            Settlement settlement = new Settlement(new Vector3(0, 0, 0), nation.getId(), nation.getColor(), nation.getName());
+            entityRepository.addEntity(settlement);
+            nation.addSettlement(settlement.getId());
+            nationLeader.setHomeSettlementId(settlement.getId());
+            nationLeader.setCurrentlyInSettlement(true);
+
+            // prepare calculator
+            GameConfig gameConfig = new GameConfig();
+            PawnBehaviorCalculator calculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository, gameConfig);
+
+            // execute
+            BehaviorType behaviorType = calculator.computeBehaviorType(nationLeader);
+
+            // verify
+            UnityEngine.Debug.Assert(behaviorType == BehaviorType.CONSTRUCT_STALL);
+
+            // cleanup
+            environment.destroyGameObject();
+            nationLeader.destroyGameObject();
+            settlement.destroyGameObject();
+        }
+        
+        /**
+            * Input: pawn is leader of nation, has enough wood to build a stall & market is full
+            * Expected output: EXIT_SETTLEMENT or NONE
+        */
+        private static void testComputeBehaviorType_IsLeaderAndHasEnoughWoodButMarketFull_ShouldExitOrDoNothing() {
+            // prepare world
+            EntityRepository entityRepository = new EntityRepository();
+            Environment environment = new Environment(5, 5, entityRepository);
+            NationRepository nationRepository = new NationRepository();
+
+            // prepare pawn & nation
+            Pawn nationLeader = new Pawn(new Vector3(0, 0, 0), "test");
+            nationLeader.getInventory().addItem(ItemType.WOOD, Stall.WOOD_COST_TO_BUILD);
+            entityRepository.addEntity(nationLeader);
+            Nation nation = new Nation("test", nationLeader.getId());
+            nationLeader.setNationId(nation.getId());
+            nationRepository.addNation(nation);
+
+            // prepare settlement
+            Settlement settlement = new Settlement(new Vector3(0, 0, 0), nation.getId(), nation.getColor(), nation.getName());
+            entityRepository.addEntity(settlement);
+            nation.addSettlement(settlement.getId());
+            nationLeader.setHomeSettlementId(settlement.getId());
+            nationLeader.setCurrentlyInSettlement(true);
+
+            // prepare market
+            for (int i = 0; i < settlement.getMarket().getMaxNumStalls(); i++) {
+                settlement.getMarket().createStall();
+            }
+
+            // prepare calculator
+            GameConfig gameConfig = new GameConfig();
+            PawnBehaviorCalculator calculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository, gameConfig);
+
+            // execute
+            BehaviorType behaviorType = calculator.computeBehaviorType(nationLeader);
+
+            // verify
+            UnityEngine.Debug.Assert(behaviorType == BehaviorType.EXIT_SETTLEMENT || behaviorType == BehaviorType.NONE);
+
+            // cleanup
+            environment.destroyGameObject();
+            nationLeader.destroyGameObject();
+            settlement.destroyGameObject();
+        }
 
         private static void testComputeBehaviorType_InSettlement_ShouldPurchaseFood() {
             // prepare world
