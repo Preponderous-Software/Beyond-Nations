@@ -94,7 +94,7 @@ namespace osg {
         }
 
         public bool buyItem(Pawn pawn, ItemType itemType, int quantity) {
-            int cost_for_anything = 2;
+            int cost = ItemCostCalculator.calculateCostBasedOnSupply(itemType, this);
             foreach(Stall stall in stalls) {
                 if (stall.getOwnerId() == null) {
                     continue;
@@ -108,13 +108,13 @@ namespace osg {
                 if (stall.getInventory().getNumItems(itemType) < quantity) {
                     continue;
                 }
-                if (pawn.getInventory().getNumItems(ItemType.COIN) < cost_for_anything * quantity) {
+                if (pawn.getInventory().getNumItems(ItemType.COIN) < cost * quantity) {
                     continue;
                 }
 
                 // transfer coins
-                pawn.getInventory().removeItem(ItemType.COIN, cost_for_anything * quantity);
-                stall.getInventory().addItem(ItemType.COIN, cost_for_anything * quantity);
+                pawn.getInventory().removeItem(ItemType.COIN, cost * quantity);
+                stall.getInventory().addItem(ItemType.COIN, cost * quantity);
 
                 // transfer items
                 pawn.getInventory().addItem(itemType, quantity);
@@ -122,22 +122,18 @@ namespace osg {
 
                 totalNumItemsBought += quantity;
 
-                UnityEngine.Debug.Log("Pawn " + pawn.getName() + " bought " + quantity + " " + itemType + " from " + stall.getOwnerId());
+                UnityEngine.Debug.Log("Pawn " + pawn.getName() + " bought " + quantity + " " + itemType + " from " + stall.getOwnerId() + " for " + cost * quantity + " coins");
                 return true;
             }
             return false;
         }
 
         public void sellResources(Pawn pawn) {
-            int cost_for_anything = 1;
             foreach(Stall stall in stalls) {
                 if (stall.getOwnerId() == null) {
                     continue;
                 }
                 if (stall.getOwnerId() == pawn.getId()) {
-                    continue;
-                }
-                if (stall.getInventory().getNumItems(ItemType.COIN) < cost_for_anything) {
                     continue;
                 }
                 foreach(ItemType itemType in Enum.GetValues(typeof(ItemType))) {
@@ -148,20 +144,40 @@ namespace osg {
                     if (itemType == ItemType.COIN) {
                         continue;
                     }
+
+                    int cost = ItemCostCalculator.calculateCostBasedOnSupply(itemType, this);
+
+                    if (stall.getInventory().getNumItems(ItemType.COIN) < cost) {
+                        continue;
+                    }
                     
                     // transfer items
                     pawn.getInventory().removeItem(itemType, 1);
                     stall.getInventory().addItem(itemType, 1);
 
                     // transfer coins
-                    pawn.getInventory().addItem(ItemType.COIN, cost_for_anything);
-                    stall.getInventory().removeItem(ItemType.COIN, cost_for_anything);
+                    pawn.getInventory().addItem(ItemType.COIN, cost);
+                    stall.getInventory().removeItem(ItemType.COIN, cost);
 
                     totalNumItemsSold++;
 
-                    Debug.Log("Pawn " + pawn.getName() + " sold 1 " + itemType + " to " + stall.getOwnerId());
+                    Debug.Log("Pawn " + pawn.getName() + " sold 1 " + itemType + " to " + stall.getOwnerId() + " for " + cost + " coins");
                 }
             }
+        }
+
+        public int getQuantityAvailable(ItemType itemType) {
+            int quantityAvailable = 0;
+            foreach(Stall stall in stalls) {
+                if (stall.getOwnerId() == null) {
+                    continue;
+                }
+                if (!stall.getInventory().hasItem(itemType)) {
+                    continue;
+                }
+                quantityAvailable += stall.getInventory().getNumItems(itemType);
+            }
+            return quantityAvailable;
         }
     }
 }
