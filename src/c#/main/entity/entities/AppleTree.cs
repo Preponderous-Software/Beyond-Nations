@@ -16,7 +16,7 @@ namespace osg {
         public override void createGameObject(Vector3 position) {
             GameObject gameObject = new GameObject();
             gameObject.transform.position = position;
-            gameObject.name = "Tree";
+            gameObject.name = "AppleTree";
 
             trunk = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
             trunk.transform.localScale = new Vector3(1, height, 1);
@@ -38,7 +38,7 @@ namespace osg {
 
             getInventory().addItem(ItemType.WOOD, UnityEngine.Random.Range(3, 6));
             getInventory().addItem(ItemType.APPLE, UnityEngine.Random.Range(0, 3));
-            getInventory().addItem(ItemType.SAPLING, UnityEngine.Random.Range(0, 2));
+            getInventory().addItem(ItemType.SAPLING, UnityEngine.Random.Range(0, 3));
         }
 
         public override void destroyGameObject() {

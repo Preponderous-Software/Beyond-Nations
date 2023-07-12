@@ -140,7 +140,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fbc832387cfdc514d8fcd883770e7556, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  runTests: 0
+  runTests: 1
   debugMode: 1
 --- !u!1 &672275114
 GameObject:

@@ -17,7 +17,7 @@ namespace osgtests {
 
             // check
             UnityEngine.Debug.Assert(tree.getType() == EntityType.TREE);
-            UnityEngine.Debug.Assert(tree.getGameObject().name == "Tree");
+            UnityEngine.Debug.Assert(tree.getGameObject().name == "AppleTree");
             UnityEngine.Debug.Assert(tree.getGameObject().transform.position == new Vector3(0, 0, 0));
             UnityEngine.Debug.Assert(tree.getGameObject().transform.localScale == new Vector3(1, 1, 1));
             UnityEngine.Debug.Assert(tree.getGameObject().transform.childCount == 2);

@@ -265,7 +265,7 @@ namespace osg {
 
         private void drawCommandButtons() {
             int buttonHeight = Screen.height / 20;
-            int buttonWidth = Screen.width / 5;
+            int buttonWidth = Screen.width / 10;
             int buttonSpacing = 10;
             int buttonX = 100;
             int buttonY = Screen.height - buttonHeight - 10;
@@ -332,6 +332,24 @@ namespace osg {
                     if (nation.getRole(player.getId()) == NationRole.SERF && player.getInventory().getNumItems(ItemType.COIN) >= Stall.COIN_COST_TO_PURCHASE && settlement.getMarket().getNumStallsForSale() > 0) {
                         if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Purchase Stall")) {
                             PurchaseStallCommand command = new PurchaseStallCommand(nationRepository, entityRepository);
+                            command.execute(player);
+                        }
+                        buttonX += buttonWidth + buttonSpacing;
+                    }
+                }
+
+                // if merchant, draw transfer items & collect profit
+                if (player.getSettlementId() != null) {
+                    Settlement settlement = (Settlement) entityRepository.getEntity(player.getSettlementId());
+                    if (nation.getRole(player.getId()) == NationRole.MERCHANT) {
+                        if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Transfer Items to Stall")) {
+                            TransferItemsToStallCommand command = new TransferItemsToStallCommand(nationRepository, entityRepository);
+                            command.execute(player);
+                        }
+                        buttonX += buttonWidth + buttonSpacing;
+
+                        if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Collect Profit from Stall")) {
+                            CollectProfitFromStallCommand command = new CollectProfitFromStallCommand(nationRepository, entityRepository);
                             command.execute(player);
                         }
                         buttonX += buttonWidth + buttonSpacing;
