@@ -12,6 +12,7 @@ namespace osg {
         private int ticksBetweenBehaviorExecutions;
         private int minDistanceBetweenSettlements;
         private int settlementJoinRange;
+        private float settlementMetabolismMultiplier;
 
         public GameConfig() {
             chunkSize = 9;
@@ -25,6 +26,7 @@ namespace osg {
             ticksBetweenBehaviorExecutions = 5;
             minDistanceBetweenSettlements = 250;
             settlementJoinRange = 500;
+            settlementMetabolismMultiplier = 0.8f;
         }
 
         public int getChunkSize() {
@@ -69,6 +71,10 @@ namespace osg {
 
         public int getSettlementJoinRange() {
             return settlementJoinRange;
+        }
+
+        public float getSettlementMetabolismMultiplier() {
+            return settlementMetabolismMultiplier;
         }
     }
 }

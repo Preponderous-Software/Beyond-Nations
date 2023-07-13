@@ -83,7 +83,7 @@ namespace osg {
                     }
 
                     if (pawn.isCurrentlyInSettlement()) {
-                        pawn.setEnergy(pawn.getEnergy() - pawn.getMetabolism() / 10f);
+                        pawn.setEnergy(pawn.getEnergy() - pawn.getMetabolism() * gameConfig.getSettlementMetabolismMultiplier());
                     }
                     else {
                         pawn.setEnergy(pawn.getEnergy() - pawn.getMetabolism());
