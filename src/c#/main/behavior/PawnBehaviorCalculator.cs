@@ -38,8 +38,9 @@ namespace osg {
         private BehaviorType computeBehaviorTypeInSettlement(Pawn pawn) {
             if (pawnNeedsFood(pawn)) {
                 int expectedFoodCost = 1;
-                if (pawn.getInventory().getNumItems(ItemType.COIN) >= expectedFoodCost) {
-                    UnityEngine.Debug.Log("[PBC DEBUG] Pawn '" + pawn.getName() + "' has enough coins to purchase food. Returning PURCHASE_FOOD.");
+                Settlement settlement = (Settlement)entityRepository.getEntity(pawn.getHomeSettlementId());
+                Market market = settlement.getMarket();
+                if (pawn.getInventory().getNumItems(ItemType.COIN) >= expectedFoodCost && market.getQuantityAvailable(ItemType.APPLE) > 0) {
                     return BehaviorType.PURCHASE_FOOD;
                 }
                 else {
