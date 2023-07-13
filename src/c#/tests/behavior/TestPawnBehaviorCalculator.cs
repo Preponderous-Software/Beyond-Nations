@@ -31,8 +31,9 @@ namespace osgtests {
             Pawn pawn = new Pawn(new Vector3(0, 0, 0), "test");
             entityRepository.addEntity(pawn);
             GameConfig gameConfig = new GameConfig();
+            TickCounter tickCounter = new TickCounter();
 
-            PawnBehaviorCalculator calculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository, gameConfig);
+            PawnBehaviorCalculator calculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository, gameConfig, tickCounter);
 
             // run
             BehaviorType behaviorType = calculator.computeBehaviorType(pawn);
@@ -69,7 +70,8 @@ namespace osgtests {
 
             // prepare calculator
             GameConfig gameConfig = new GameConfig();
-            PawnBehaviorCalculator calculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository, gameConfig);
+            TickCounter tickCounter = new TickCounter();
+            PawnBehaviorCalculator calculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository, gameConfig, tickCounter);
 
             // execute
             BehaviorType behaviorType = calculator.computeBehaviorType(pawn);
@@ -101,7 +103,8 @@ namespace osgtests {
 
             // prepare calculator
             GameConfig gameConfig = new GameConfig();
-            PawnBehaviorCalculator calculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository, gameConfig);
+            TickCounter tickCounter = new TickCounter();
+            PawnBehaviorCalculator calculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository, gameConfig, tickCounter);
 
             // execute
             BehaviorType behaviorType = calculator.computeBehaviorType(pawn);
@@ -141,7 +144,8 @@ namespace osgtests {
 
             // prepare calculator
             GameConfig gameConfig = new GameConfig();
-            PawnBehaviorCalculator calculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository, gameConfig);
+            TickCounter tickCounter = new TickCounter();
+            PawnBehaviorCalculator calculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository, gameConfig, tickCounter);
 
             // execute
             BehaviorType behaviorType = calculator.computeBehaviorType(pawn);
@@ -176,7 +180,8 @@ namespace osgtests {
 
             // prepare calculator
             GameConfig gameConfig = new GameConfig();
-            PawnBehaviorCalculator calculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository, gameConfig);
+            TickCounter tickCounter = new TickCounter();
+            PawnBehaviorCalculator calculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository, gameConfig, tickCounter);
 
             // execute
             BehaviorType behaviorType = calculator.computeBehaviorType(nationLeader);
@@ -216,7 +221,8 @@ namespace osgtests {
 
             // prepare calculator
             GameConfig gameConfig = new GameConfig();
-            PawnBehaviorCalculator calculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository, gameConfig);
+            TickCounter tickCounter = new TickCounter();
+            PawnBehaviorCalculator calculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository, gameConfig, tickCounter);
 
             // execute
             BehaviorType behaviorType = calculator.computeBehaviorType(nationLeader);
@@ -262,7 +268,8 @@ namespace osgtests {
 
             // prepare calculator
             GameConfig gameConfig = new GameConfig();
-            PawnBehaviorCalculator calculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository, gameConfig);
+            TickCounter tickCounter = new TickCounter();
+            PawnBehaviorCalculator calculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository, gameConfig, tickCounter);
 
             // execute
             BehaviorType behaviorType = calculator.computeBehaviorType(nationLeader);
@@ -308,7 +315,8 @@ namespace osgtests {
 
             // prepare calculator
             GameConfig gameConfig = new GameConfig();
-            PawnBehaviorCalculator calculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository, gameConfig);
+            TickCounter tickCounter = new TickCounter();
+            PawnBehaviorCalculator calculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository, gameConfig, tickCounter);
 
             // execute
             BehaviorType behaviorType = calculator.computeBehaviorType(pawn);
@@ -360,7 +368,8 @@ namespace osgtests {
 
             // prepare calculator
             GameConfig gameConfig = new GameConfig();
-            PawnBehaviorCalculator calculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository, gameConfig);
+            TickCounter tickCounter = new TickCounter();
+            PawnBehaviorCalculator calculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository, gameConfig, tickCounter);
 
             // execute
             BehaviorType behaviorType = calculator.computeBehaviorType(pawn);
@@ -405,7 +414,8 @@ namespace osgtests {
 
             // prepare calculator
             GameConfig gameConfig = new GameConfig();
-            PawnBehaviorCalculator calculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository, gameConfig);
+            TickCounter tickCounter = new TickCounter();
+            PawnBehaviorCalculator calculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository, gameConfig, tickCounter);
 
             // execute
             BehaviorType behaviorType = calculator.computeBehaviorType(merchant);

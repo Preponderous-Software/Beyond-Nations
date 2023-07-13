@@ -49,7 +49,7 @@ namespace osg {
             environment = new Environment(gameConfig.getChunkSize(), gameConfig.getLocationScale(), entityRepository);
             worldGenerator = new WorldGenerator(environment, player, eventProducer, entityRepository);
             nationRepository = new NationRepository();
-            pawnBehaviorCalculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository, gameConfig);
+            pawnBehaviorCalculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository, gameConfig, tickCounter);
             pawnBehaviorExecutor = new PawnBehaviorExecutor(environment, nationRepository, eventProducer, entityRepository);
             entityRepository.addEntity(player);
             player.getStatus().update("Press " + KeyBindings.createNewNation + " to create a nation.");

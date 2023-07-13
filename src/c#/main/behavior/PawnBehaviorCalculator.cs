@@ -10,13 +10,15 @@ namespace osg {
         private Environment environment;
         private EntityRepository entityRepository;
         private NationRepository nationRepository;
-        private GameConfig gameConfig = new GameConfig();
+        private GameConfig gameConfig;
+        private TickCounter tickCounter;
 
-        public PawnBehaviorCalculator(Environment environment, EntityRepository entityRepository, NationRepository nationRepository, GameConfig gameConfig) {
+        public PawnBehaviorCalculator(Environment environment, EntityRepository entityRepository, NationRepository nationRepository, GameConfig gameConfig, TickCounter tickCounter) {
             this.environment = environment;
             this.entityRepository = entityRepository;
             this.nationRepository = nationRepository;
             this.gameConfig = gameConfig;
+            this.tickCounter = tickCounter;
         }
         
         public BehaviorType computeBehaviorType(Pawn pawn) {
@@ -194,8 +196,11 @@ namespace osg {
 
         // helper methods
         private bool shouldPlantSapling(Pawn pawn) {
-
             if (pawn.getInventory().getNumItems(ItemType.SAPLING) == 0) {
+                return false;
+            }
+
+            if (tickCounter.getTotalTicks() % 100 != 0) {
                 return false;
             }
 

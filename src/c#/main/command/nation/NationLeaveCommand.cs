@@ -35,6 +35,17 @@ namespace osg {
             eventProducer.produceNationLeaveEvent(nation, player.getId());
             player.getStatus().update("You left nation " + nation.getName() + ". Members: " + nation.getNumberOfMembers() + ".");
 
+            // get settlement
+            Settlement settlement = (Settlement) entityRepository.getEntity(player.getSettlementId());
+            Market market = settlement.getMarket();
+
+            // remove stall ownership
+            Stall stall = market.getStall(player.getId());
+            if (stall != null) {
+                player.getInventory().transferContentsOfInventory(stall.getInventory());
+                stall.setOwnerId(null);
+            }
+
             player.setSettlementId(null);
         }
 
