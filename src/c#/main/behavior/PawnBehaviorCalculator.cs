@@ -40,6 +40,12 @@ namespace osg {
                 int expectedFoodCost = 1;
                 Settlement settlement = (Settlement)entityRepository.getEntity(pawn.getHomeSettlementId());
                 Market market = settlement.getMarket();
+
+                Stall stall = market.getStall(pawn.getId());
+                if (stall != null && stall.getInventory().getNumItems(ItemType.APPLE) > 0) {
+                    return BehaviorType.COLLECT_FOOD_FROM_STALL;
+                }
+
                 if (pawn.getInventory().getNumItems(ItemType.COIN) >= expectedFoodCost && market.getQuantityAvailable(ItemType.APPLE) > 0) {
                     return BehaviorType.PURCHASE_FOOD;
                 }
@@ -201,7 +207,7 @@ namespace osg {
                 return false;
             }
 
-            if (tickCounter.getTotalTicks() % 100 != 0) {
+            if (tickCounter.getTotalTicks() % 1000 != 0) {
                 return false;
             }
 

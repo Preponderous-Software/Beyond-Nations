@@ -2,11 +2,11 @@ using UnityEngine;
 
 namespace osg {
 
-    public class CollectProfitFromStallCommand {
+    public class CollectFoodFromStallCommand {
         private NationRepository nationRepository;
         private EntityRepository entityRepository;
 
-        public CollectProfitFromStallCommand(NationRepository nationRepository, EntityRepository entityRepository) {
+        public CollectFoodFromStallCommand(NationRepository nationRepository, EntityRepository entityRepository) {
             this.nationRepository = nationRepository;
             this.entityRepository = entityRepository;
         }
@@ -35,13 +35,13 @@ namespace osg {
                 return;
             }
 
-            int coinsToTransfer = stall.getInventory().getNumItems(ItemType.COIN)/2;
-            if (coinsToTransfer == 0) {
-                coinsToTransfer = 1;
+            int applesToTransfer = stall.getInventory().getNumItems(ItemType.APPLE)/2;
+            if (applesToTransfer == 0) {
+                applesToTransfer = 1;
             }
-            stall.getInventory().removeItem(ItemType.COIN, coinsToTransfer);
-            player.getInventory().addItem(ItemType.COIN, coinsToTransfer);
-            player.getStatus().update("Collected " + coinsToTransfer + " coins from stall.");
+            stall.getInventory().removeItem(ItemType.APPLE, applesToTransfer);
+            player.getInventory().addItem(ItemType.APPLE, applesToTransfer);
+            player.getStatus().update("Collected " + applesToTransfer + " apples from stall.");
         }
     }
 }

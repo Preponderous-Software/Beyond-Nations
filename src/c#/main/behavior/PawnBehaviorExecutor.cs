@@ -69,6 +69,9 @@ namespace osg {
                 case BehaviorType.COLLECT_PROFIT_FROM_STALL:
                     executeCollectProfitFromStallBehavior(pawn);
                     break;
+                case BehaviorType.COLLECT_FOOD_FROM_STALL:
+                    executeCollectFoodFromStallBehavior(pawn);
+                    break;
                 default:
                     Debug.LogError("Behavior type " + behaviorType + " is not implemented.");
                     break;
@@ -422,6 +425,36 @@ namespace osg {
             pawn.getInventory().addItem(ItemType.COIN, profit);
             stall.getInventory().removeItem(ItemType.COIN, profit);
             Debug.Log("Pawn " + pawn.getName() + " collected " + profit + " coins from their stall.");
+            pawn.setCurrentBehaviorType(BehaviorType.NONE);
+        }
+
+        // collect half of food from stall
+        private void executeCollectFoodFromStallBehavior(Pawn pawn) {
+            // pawn is assumed to be in home settlement
+            EntityId homeSettlementId = pawn.getHomeSettlementId();
+            if (homeSettlementId == null) {
+                Debug.LogError("Pawn " + pawn + " has no home settlement id.");
+                return;
+            }
+            Settlement homeSettlement = (Settlement) entityRepository.getEntity(homeSettlementId);
+            Market market = homeSettlement.getMarket();
+
+            // if no stalls owned
+            if (market.getStall(pawn.getId()) == null) {
+                Debug.LogWarning("Pawn " + pawn + " is trying to collect food from a stall but does not own any stalls.");
+                return;
+            }
+
+            // collect food
+            Stall stall = market.getStall(pawn.getId());
+            int food = stall.getInventory().getNumItems(ItemType.APPLE);
+            int foodToTransfer = food / 2;
+            if (foodToTransfer == 0) {
+                foodToTransfer = 1;
+            }
+            pawn.getInventory().addItem(ItemType.APPLE, foodToTransfer);
+            stall.getInventory().removeItem(ItemType.APPLE, foodToTransfer);
+            Debug.Log("Pawn " + pawn.getName() + " collected " + foodToTransfer + " food from their stall.");
             pawn.setCurrentBehaviorType(BehaviorType.NONE);
         }
     }

@@ -341,18 +341,33 @@ namespace osg {
                 // if merchant, draw transfer items & collect profit
                 if (player.getSettlementId() != null) {
                     Settlement settlement = (Settlement) entityRepository.getEntity(player.getSettlementId());
-                    if (nation.getRole(player.getId()) == NationRole.MERCHANT) {
-                        if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Transfer Items to Stall")) {
+                    Market market = settlement.getMarket();
+                    Stall stall = market.getStall(player.getId());
+                    if (stall != null) {
+                        Inventory stallInventory = stall.getInventory();
+                        if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Transfer Items")) {
                             TransferItemsToStallCommand command = new TransferItemsToStallCommand(nationRepository, entityRepository);
                             command.execute(player);
                         }
                         buttonX += buttonWidth + buttonSpacing;
 
-                        if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Collect Profit from Stall")) {
-                            CollectProfitFromStallCommand command = new CollectProfitFromStallCommand(nationRepository, entityRepository);
-                            command.execute(player);
+                        if (stallInventory.getNumItems(ItemType.COIN) > 0) {
+                            if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Collect Coins")) {
+                                CollectProfitFromStallCommand command = new CollectProfitFromStallCommand(nationRepository, entityRepository);
+                                command.execute(player);
+                            }
+                            buttonX += buttonWidth + buttonSpacing;
+
                         }
-                        buttonX += buttonWidth + buttonSpacing;
+
+                        if (stallInventory.getNumItems(ItemType.APPLE) > 0) {
+                            if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Collect Food")) {
+                                CollectFoodFromStallCommand command = new CollectFoodFromStallCommand(nationRepository, entityRepository);
+                                command.execute(player);
+                            }
+                            buttonX += buttonWidth + buttonSpacing;
+
+                        }
                     }
                 }
             }
