@@ -137,10 +137,20 @@ namespace osg {
 
         public void increaseRenderDistance() {
             playerCamera.farClipPlane += 10;
+
+            int maxRenderDistance = 1000;
+            if (playerCamera.farClipPlane > maxRenderDistance) {
+                playerCamera.farClipPlane = maxRenderDistance;
+            }
         }
 
         public void decreaseRenderDistance() {
             playerCamera.farClipPlane -= 10;
+
+            int minRenderDistance = 50;
+            if (playerCamera.farClipPlane < minRenderDistance) {
+                playerCamera.farClipPlane = minRenderDistance;
+            }
         }
 
         private void setupCamera(int renderDistance) {
