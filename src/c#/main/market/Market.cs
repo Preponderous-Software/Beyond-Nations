@@ -95,6 +95,7 @@ namespace osg {
 
         public bool buyItem(Pawn pawn, ItemType itemType, int quantity) {
             int cost = ItemCostCalculator.calculateCostBasedOnSupply(itemType, this);
+            List<Stall> stallsToBuyFrom = new List<Stall>();
             foreach(Stall stall in stalls) {
                 if (stall.getOwnerId() == null) {
                     continue;
@@ -111,24 +112,31 @@ namespace osg {
                 if (pawn.getInventory().getNumItems(ItemType.COIN) < cost * quantity) {
                     continue;
                 }
-
-                // transfer coins
-                pawn.getInventory().removeItem(ItemType.COIN, cost * quantity);
-                stall.getInventory().addItem(ItemType.COIN, cost * quantity);
-
-                // transfer items
-                pawn.getInventory().addItem(itemType, quantity);
-                stall.getInventory().removeItem(itemType, quantity);
-
-                totalNumItemsBought += quantity;
-
-                UnityEngine.Debug.Log("Pawn " + pawn.getName() + " bought " + quantity + " " + itemType + " from " + stall.getOwnerId() + " for " + cost * quantity + " coins");
-                return true;
+                stallsToBuyFrom.Add(stall);
             }
-            return false;
+            if (stallsToBuyFrom.Count == 0) {
+                return false;
+            }
+
+            int randomStallIndex = Random.Range(0, stallsToBuyFrom.Count);
+            Stall stallToBuyFrom = stallsToBuyFrom[randomStallIndex];
+
+            // transfer coins
+            pawn.getInventory().removeItem(ItemType.COIN, cost * quantity);
+            stallToBuyFrom.getInventory().addItem(ItemType.COIN, cost * quantity);
+
+            // transfer items
+            pawn.getInventory().addItem(itemType, quantity);
+            stallToBuyFrom.getInventory().removeItem(itemType, quantity);
+
+            totalNumItemsBought += quantity;
+
+            UnityEngine.Debug.Log("Pawn " + pawn.getName() + " bought " + quantity + " " + itemType + " from " + stallToBuyFrom.getOwnerId() + " for " + cost * quantity + " coins");
+            return true;
         }
 
         public void sellResources(Pawn pawn) {
+            List<Stall> stallsToSellTo = new List<Stall>();
             foreach(Stall stall in stalls) {
                 if (stall.getOwnerId() == null) {
                     continue;
@@ -150,19 +158,43 @@ namespace osg {
                     if (stall.getInventory().getNumItems(ItemType.COIN) < cost) {
                         continue;
                     }
-                    
-                    // transfer items
-                    pawn.getInventory().removeItem(itemType, 1);
-                    stall.getInventory().addItem(itemType, 1);
 
-                    // transfer coins
-                    pawn.getInventory().addItem(ItemType.COIN, cost);
-                    stall.getInventory().removeItem(ItemType.COIN, cost);
-
-                    totalNumItemsSold++;
-
-                    Debug.Log("Pawn " + pawn.getName() + " sold 1 " + itemType + " to " + stall.getOwnerId() + " for " + cost + " coins");
+                    stallsToSellTo.Add(stall);
                 }
+            }
+            if (stallsToSellTo.Count == 0) {
+                return;
+            }
+
+            int randomStallIndex = Random.Range(0, stallsToSellTo.Count);
+            Stall stallToSellTo = stallsToSellTo[randomStallIndex];
+
+            foreach(ItemType itemType in Enum.GetValues(typeof(ItemType))) {
+                if (!pawn.getInventory().hasItem(itemType)) {
+                    continue;
+                }
+
+                if (itemType == ItemType.COIN) {
+                    continue;
+                }
+
+                int cost = ItemCostCalculator.calculateCostBasedOnSupply(itemType, this);
+
+                if (stallToSellTo.getInventory().getNumItems(ItemType.COIN) < cost) {
+                    continue;
+                }
+                
+                // transfer items
+                pawn.getInventory().removeItem(itemType, 1);
+                stallToSellTo.getInventory().addItem(itemType, 1);
+
+                // transfer coins
+                pawn.getInventory().addItem(ItemType.COIN, cost);
+                stallToSellTo.getInventory().removeItem(ItemType.COIN, cost);
+
+                totalNumItemsSold++;
+                UnityEngine.Debug.Log("Pawn " + pawn.getName() + " sold 1 " + itemType + " to " + stallToSellTo.getOwnerId() + " for " + cost + " coins");
+                return;
             }
         }
 
