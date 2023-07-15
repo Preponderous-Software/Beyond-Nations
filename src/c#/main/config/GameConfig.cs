@@ -13,6 +13,7 @@ namespace osg {
         private int minDistanceBetweenSettlements;
         private int settlementJoinRange;
         private float settlementMetabolismMultiplier;
+        private int renderDistance;
 
         public GameConfig() {
             chunkSize = 9;
@@ -27,6 +28,7 @@ namespace osg {
             minDistanceBetweenSettlements = 250;
             settlementJoinRange = 500;
             settlementMetabolismMultiplier = 0.8f;
+            renderDistance = 100;
         }
 
         public int getChunkSize() {
@@ -75,6 +77,10 @@ namespace osg {
 
         public float getSettlementMetabolismMultiplier() {
             return settlementMetabolismMultiplier;
+        }
+
+        public int getRenderDistance() {
+            return renderDistance;
         }
     }
 }

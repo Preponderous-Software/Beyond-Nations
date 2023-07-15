@@ -41,7 +41,7 @@ namespace osg {
 
             gameConfig = new GameConfig();
             tickCounter = new TickCounter();
-            player = new Player(gameConfig.getPlayerWalkSpeed(), gameConfig.getPlayerRunSpeed(), tickCounter, gameConfig.getStatusExpirationTicks());
+            player = new Player(gameConfig.getPlayerWalkSpeed(), gameConfig.getPlayerRunSpeed(), tickCounter, gameConfig.getStatusExpirationTicks(), gameConfig.getRenderDistance());
             screenOverlay = new ScreenOverlay(player, tickCounter);
             eventRepository = new EventRepository();
             eventProducer = new EventProducer(eventRepository);
