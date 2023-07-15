@@ -18,6 +18,8 @@ namespace osg {
         public static readonly KeyCode teleportToHomeSettlement = KeyCode.H;
         public static readonly KeyCode buildStall = KeyCode.B;
         public static readonly KeyCode toggleAutoWalk = KeyCode.Insert;
+        public static readonly KeyCode increaseRenderDistance = KeyCode.PageUp;
+        public static readonly KeyCode decreaseRenderDistance = KeyCode.PageDown;
         public static readonly KeyCode toggleDebugMode = KeyCode.F1;
         public static readonly KeyCode generateNearbyLand = KeyCode.F2;
         public static readonly KeyCode spawnNewPawn = KeyCode.F3;

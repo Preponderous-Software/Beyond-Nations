@@ -31,14 +31,6 @@ namespace osg {
             getInventory().addItem(ItemType.COIN, UnityEngine.Random.Range(100, 400));
         }
 
-        private void setupCamera(int renderDistance) {
-            GameObject cameraObject = GameObject.Find("/Camera");      
-            cameraObject.transform.SetParent(getGameObject().transform);
-            cameraObject.transform.position = new Vector3(0, 5, -10);
-            this.playerCamera = cameraObject.GetComponent<Camera>();
-            this.playerCamera.farClipPlane = renderDistance;
-        }
-
         public void update() {
             horizontalInput = Input.GetAxis("Horizontal");
             verticalInput = Input.GetAxis("Vertical");
@@ -137,6 +129,26 @@ namespace osg {
 
         public void setEnergy(float energy) {
             this.energy = energy;
+        }
+
+        public int getRenderDistance() {
+            return (int) playerCamera.farClipPlane;
+        }
+
+        public void increaseRenderDistance() {
+            playerCamera.farClipPlane += 10;
+        }
+
+        public void decreaseRenderDistance() {
+            playerCamera.farClipPlane -= 10;
+        }
+
+        private void setupCamera(int renderDistance) {
+            GameObject cameraObject = GameObject.Find("/Camera");      
+            cameraObject.transform.SetParent(getGameObject().transform);
+            cameraObject.transform.position = new Vector3(0, 5, -10);
+            this.playerCamera = cameraObject.GetComponent<Camera>();
+            this.playerCamera.farClipPlane = renderDistance;
         }
 
         private void jump() {

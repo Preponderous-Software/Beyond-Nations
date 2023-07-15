@@ -582,6 +582,14 @@ namespace osg {
                 SpawnWoodCommand command = new SpawnWoodCommand();
                 command.execute(player);
             }
+            else if (Input.GetKeyDown(KeyBindings.increaseRenderDistance)) {
+                IncreaseRenderDistanceCommand command = new IncreaseRenderDistanceCommand();
+                command.execute(player);
+            }
+            else if (Input.GetKeyDown(KeyBindings.decreaseRenderDistance)) {
+                DecreaseRenderDistanceCommand command = new DecreaseRenderDistanceCommand();
+                command.execute(player);
+            }
         }
 
         private void checkIfPlayerIsFallingIntoVoid() {
