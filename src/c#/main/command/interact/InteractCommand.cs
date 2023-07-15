@@ -76,7 +76,11 @@ namespace osg {
                 player.getStatus().update(statusUpdate);
             }
             else if (pawn != null && Vector3.Distance(player.getGameObject().transform.position, pawn.getGameObject().transform.position) < 5) {
-                Nation pawnsNation = nationRepository.getNation(pawn.getNationId()); // TODO: fix error if pawn is not in a nation
+                if (pawn.getNationId() == null) {
+                    player.getStatus().update(pawn.getName() + ": \"I don't belong to any nation.\"");
+                    return;
+                }
+                Nation pawnsNation = nationRepository.getNation(pawn.getNationId());
 
                 List <string> phrases = generatePhrases(pawnsNation, pawn, player);
                 string phrase = phrases[UnityEngine.Random.Range(0, phrases.Count)];
