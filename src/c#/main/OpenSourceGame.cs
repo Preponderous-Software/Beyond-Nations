@@ -154,8 +154,7 @@ namespace osg {
 
                             if (player.getNationId() != null) {
                                 Nation nation = nationRepository.getNation(player.getNationId());
-
-                                nation.removeMember(pawn.getId());
+                                
                                 if (nation.getLeaderId() == pawn.getId()) {
                                     // transfer leadership to another pawn
                                     if (nation.getNumberOfMembers() > 0) {
@@ -199,6 +198,7 @@ namespace osg {
                                         }
                                     }
                                 }
+                                nation.removeMember(pawn.getId());
                             }
                         }
                     }
