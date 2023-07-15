@@ -351,22 +351,22 @@ namespace osg {
                         }
                         buttonX += buttonWidth + buttonSpacing;
 
-                        if (stallInventory.getNumItems(ItemType.COIN) > 0) {
-                            if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Collect Coins")) {
+                        int numCoins = stallInventory.getNumItems(ItemType.COIN);
+                        if (numCoins > 0) {
+                            if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Collect Coins (" + numCoins + ")" )) {
                                 CollectProfitFromStallCommand command = new CollectProfitFromStallCommand(nationRepository, entityRepository);
                                 command.execute(player);
                             }
                             buttonX += buttonWidth + buttonSpacing;
-
                         }
 
-                        if (stallInventory.getNumItems(ItemType.APPLE) > 0) {
-                            if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Collect Food")) {
+                        int numApples = stallInventory.getNumItems(ItemType.APPLE);
+                        if (numApples > 0) {
+                            if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Collect Food (" + numApples + ")")) {
                                 CollectFoodFromStallCommand command = new CollectFoodFromStallCommand(nationRepository, entityRepository);
                                 command.execute(player);
                             }
                             buttonX += buttonWidth + buttonSpacing;
-
                         }
                     }
                 }
