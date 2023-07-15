@@ -16,7 +16,7 @@ namespace osgtests {
             ScreenOverlay screenOverlay = new ScreenOverlay(null, null);
             
             // verify
-            Debug.Assert(screenOverlay != null);
+            UnityEngine.Debug.Assert(screenOverlay != null);
 
             // cleanup
             screenOverlay.destroy();

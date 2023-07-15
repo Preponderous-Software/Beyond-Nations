@@ -16,7 +16,7 @@ namespace osgtests {
             NationId id = new NationId();
 
             // verify
-            Debug.Assert(id != null);
+            UnityEngine.Debug.Assert(id != null);
         }
 
         public static void testEquality() {
@@ -25,9 +25,9 @@ namespace osgtests {
             NationId id2 = new NationId();
 
             // verify
-            Debug.Assert(id1 != id2);
-            Debug.Assert(id1 == id1);
-            Debug.Assert(id2 == id2);
+            UnityEngine.Debug.Assert(id1 != id2);
+            UnityEngine.Debug.Assert(id1 == id1);
+            UnityEngine.Debug.Assert(id2 == id2);
         }
     }
 }

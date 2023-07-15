@@ -13,7 +13,7 @@ namespace osg {
 
         public void execute(Player player) {
             Vector3 position = player.getGameObject().transform.position;
-            position += new Vector3(Random.Range(-5f, 5f), 0, Random.Range(-5f, 5f));
+            position += new Vector3(UnityEngine.Random.Range(-5f, 5f), 0, UnityEngine.Random.Range(-5f, 5f));
             Pawn pawn = new Pawn(position, PawnNameGenerator.generate());
             eventProducer.producePawnSpawnEvent(position, pawn);
             entityRepository.addEntity(pawn);

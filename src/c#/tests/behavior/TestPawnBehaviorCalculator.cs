@@ -7,148 +7,112 @@ namespace osgtests {
     public static class TestPawnBehaviorCalculator{
 
         public static void runTests() {
-            testComputeBehaviorTypePawnMarkedForDeletionShouldDoNothing();
-            testComputeBehaviorTypePawnNeedsFoodNationLeaderHasApplesShouldPurchaseFood();
-            testComputeBehaviorTypePawnNeedsFoodNationLeaderDoesNotHaveApplesShouldGatherResources();
-            testComputeBehaviorTypeNoNationShouldWander();
-            testComputeBehaviorTypeNationLeaderNoSettlementsShouldCreateSettlement();
-            testComputeBehaviorTypeNationLeaderHasSettlementsShouldGoHome();
+            testComputeBehaviorType_Nationless_ShouldGatherResources();
+            testComputeBehaviorType_Nationless_ShouldJoinNation();
+            testComputeBehaviorType_Nationless_ShouldCreateSettlement();
+            testComputeBehaviorType_InNation_ShouldJoinRandomSettlement();
+            testComputeBehaviorType_IsLeaderAndHasEnoughWood_ShouldConstructSettlement();
+            testComputeBehaviorType_IsLeaderAndHasEnoughWood_ShouldConstructStall();
+            testComputeBehaviorType_IsLeaderAndHasEnoughWoodButMarketFull_ShouldExitOrDoNothing();
+            testComputeBehaviorType_InSettlement_ShouldPurchaseFood();
+            testComputeBehaviorType_InSettlement_ShouldSellResources();
+            testComputeBehaviorType_InSettlement_ShouldCollectProfitFromStall();
+            testComputeBehaviorType_InSettlementNoFoodAvailable_ShouldNotPurchaseFood();
+            testComputeBehaviorType_InSettlementIsMerchantStallHasFood_ShouldCollectFoodFromStall();
         }
 
         /**
-         * == Scenario 1 ==
-         * Input: pawn marked for deletion
-         * Expected output: NONE
-        */
-        public static void testComputeBehaviorTypePawnMarkedForDeletionShouldDoNothing() {
-            // prepare
-            EntityRepository entityRepository = new EntityRepository();
-            Environment environment = new Environment(5, 5, entityRepository);
-            NationRepository nationRepository = new NationRepository();
-            PawnBehaviorCalculator calculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository);
-            Pawn pawn = new Pawn(new Vector3(0, 0, 0), "test");
-            pawn.markForDeletion();
-
-            // run
-            BehaviorType behaviorType = calculator.computeBehaviorType(pawn);
-
-            // check
-            Debug.Assert(behaviorType == BehaviorType.NONE);
-
-            // cleanup
-            environment.destroyGameObject();
-            pawn.destroyGameObject();
-        }
-
-        /**
-         * == Scenario 2 ==
-            * Input: pawn needs food but is nation leader
+            * Input: pawn is nationless, no settlements nearby and does not have enough wood to create a settlement
             * Expected output: GATHER_RESOURCES
         */
-        // TODO: implement
-
-        /**
-         * == Scenario 3 ==
-            * Input: pawn needs food, nation leader has apples
-            * Expected output: PURCHASE_FOOD
-        */
-        public static void testComputeBehaviorTypePawnNeedsFoodNationLeaderHasApplesShouldPurchaseFood() {
+        public static void testComputeBehaviorType_Nationless_ShouldGatherResources() {
             // prepare
             EntityRepository entityRepository = new EntityRepository();
             Environment environment = new Environment(5, 5, entityRepository);
             NationRepository nationRepository = new NationRepository();
             Pawn pawn = new Pawn(new Vector3(0, 0, 0), "test");
-            pawn.setEnergy(50);
             entityRepository.addEntity(pawn);
+            GameConfig gameConfig = new GameConfig();
+            TickCounter tickCounter = new TickCounter();
 
-            Pawn nationLeader = new Pawn(new Vector3(0, 0, 0), "testleader");
-            nationLeader.getInventory().addItem(ItemType.APPLE, 10);
-            entityRepository.addEntity(nationLeader);
-
-            Nation nation = new Nation("testnation", nationLeader.getId());
-            nationLeader.setNationId(nation.getId());
-            nation.addMember(pawn.getId());
-            pawn.setNationId(nation.getId());
-            nationRepository.addNation(nation);
-
-            PawnBehaviorCalculator calculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository);
+            PawnBehaviorCalculator calculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository, gameConfig, tickCounter);
 
             // run
             BehaviorType behaviorType = calculator.computeBehaviorType(pawn);
 
             // check
-            Debug.Assert(behaviorType == BehaviorType.PURCHASE_FOOD);
+            UnityEngine.Debug.Assert(behaviorType == BehaviorType.GATHER_RESOURCES);
 
             // cleanup
             environment.destroyGameObject();
             pawn.destroyGameObject();
+        }
+
+        /**
+            * Input: pawn is nationless, settlement within range
+            * Expected output: JOIN_NATION
+        */
+        public static void testComputeBehaviorType_Nationless_ShouldJoinNation() {
+            // prepare world
+            EntityRepository entityRepository = new EntityRepository();
+            Environment environment = new Environment(5, 5, entityRepository);
+            NationRepository nationRepository = new NationRepository();
+
+            // prepare existing nation & settlement
+            Pawn nationLeader = new Pawn(new Vector3(0, 0, 0), "test");
+            entityRepository.addEntity(nationLeader);
+            Nation nation = new Nation("test", nationLeader.getId());
+            nationRepository.addNation(nation);
+            Settlement settlement = new Settlement(new Vector3(0, 0, 0), nation.getId(), nation.getColor(), nation.getName());
+            entityRepository.addEntity(settlement);
+
+            // prepare pawn
+            Pawn pawn = new Pawn(new Vector3(0, 0, 0), "test");
+            entityRepository.addEntity(pawn);
+
+            // prepare calculator
+            GameConfig gameConfig = new GameConfig();
+            TickCounter tickCounter = new TickCounter();
+            PawnBehaviorCalculator calculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository, gameConfig, tickCounter);
+
+            // execute
+            BehaviorType behaviorType = calculator.computeBehaviorType(pawn);
+
+            // verify
+            UnityEngine.Debug.Assert(behaviorType == BehaviorType.JOIN_NATION);
+
+            // cleanup
+            environment.destroyGameObject();
+            pawn.destroyGameObject();
+            settlement.destroyGameObject();
             nationLeader.destroyGameObject();
         }
 
         /**
-         * == Scenario 4 ==
-            * Input: pawn needs food, nation leader does not have apples
-            * Expected output: GATHER_RESOURCES
+            * Input: pawn is nationless, settlement not within range, enough wood to create settlement
+            * Expected output: CREATE_NATION
         */
-        public static void testComputeBehaviorTypePawnNeedsFoodNationLeaderDoesNotHaveApplesShouldGatherResources() {
-            // prepare
+        public static void testComputeBehaviorType_Nationless_ShouldCreateSettlement() {
+            // prepare world
             EntityRepository entityRepository = new EntityRepository();
             Environment environment = new Environment(5, 5, entityRepository);
             NationRepository nationRepository = new NationRepository();
+
+            // prepare pawn
             Pawn pawn = new Pawn(new Vector3(0, 0, 0), "test");
-            pawn.setEnergy(50);
+            pawn.getInventory().addItem(ItemType.WOOD, Settlement.WOOD_COST_TO_BUILD);
             entityRepository.addEntity(pawn);
 
-            Pawn nationLeader = new Pawn(new Vector3(0, 0, 0), "testleader");
-            entityRepository.addEntity(nationLeader);
+            // prepare calculator
+            GameConfig gameConfig = new GameConfig();
+            TickCounter tickCounter = new TickCounter();
+            PawnBehaviorCalculator calculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository, gameConfig, tickCounter);
 
-            Nation nation = new Nation("testnation", nationLeader.getId());
-            nationLeader.setNationId(nation.getId());
-            nation.addMember(pawn.getId());
-            pawn.setNationId(nation.getId());
-            nationRepository.addNation(nation);
-
-            PawnBehaviorCalculator calculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository);
-
-            // run
+            // execute
             BehaviorType behaviorType = calculator.computeBehaviorType(pawn);
 
-            // check
-            Debug.Assert(behaviorType == BehaviorType.GATHER_RESOURCES);
-
-            // cleanup
-            environment.destroyGameObject();
-            pawn.destroyGameObject();
-            nationLeader.destroyGameObject();
-        }
-
-        /**
-         * == Scenario 5 ==
-            * Input: pawn has saplings, no trees/saplings within x units
-            * Expected output: PLANT_SAPLING
-        */
-        // TODO: implement
-
-        /**
-         * == Scenario 6 ==
-            * Input: pawn has no nation
-            * Expected output: WANDER
-        */
-        public static void testComputeBehaviorTypeNoNationShouldWander() {
-            // prepare
-            EntityRepository entityRepository = new EntityRepository();
-            Environment environment = new Environment(5, 5, entityRepository);
-            NationRepository nationRepository = new NationRepository();
-            Pawn pawn = new Pawn(new Vector3(0, 0, 0), "test");
-            entityRepository.addEntity(pawn);
-
-            PawnBehaviorCalculator calculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository);
-
-            // run
-            BehaviorType behaviorType = calculator.computeBehaviorType(pawn);
-
-            // check
-            Debug.Assert(behaviorType == BehaviorType.WANDER);
+            // verify
+            UnityEngine.Debug.Assert(behaviorType == BehaviorType.CREATE_NATION);
 
             // cleanup
             environment.destroyGameObject();
@@ -156,108 +120,412 @@ namespace osgtests {
         }
 
         /**
-         * == Scenario 7 ==
-            * Input: pawn has nation, is leader, has no settlements and no settlement within x units
-            * Expected output: create settlement
+            * Input: pawn is in nation but not in settlement
+            * Expected output: JOIN_RANDOM_SETTLEMENT
         */
-        public static void testComputeBehaviorTypeNationLeaderNoSettlementsShouldCreateSettlement() {
-            // prepare
+        private static void testComputeBehaviorType_InNation_ShouldJoinRandomSettlement() {
+            // prepare world
             EntityRepository entityRepository = new EntityRepository();
             Environment environment = new Environment(5, 5, entityRepository);
             NationRepository nationRepository = new NationRepository();
-            Pawn pawn = new Pawn(new Vector3(0, 0, 0), "test");
-            entityRepository.addEntity(pawn);
 
-            Pawn nationLeader = new Pawn(new Vector3(0, 0, 0), "testleader");
+            // prepare existing nation & settlement
+            Pawn nationLeader = new Pawn(new Vector3(0, 0, 0), "test");
             entityRepository.addEntity(nationLeader);
-
-            Nation nation = new Nation("testnation", nationLeader.getId());
-            nationLeader.setNationId(nation.getId());
-            nation.addMember(pawn.getId());
-            pawn.setNationId(nation.getId());
+            Nation nation = new Nation("test", nationLeader.getId());
             nationRepository.addNation(nation);
-
-            PawnBehaviorCalculator calculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository);
-
-            // run
-            BehaviorType behaviorType = calculator.computeBehaviorType(nationLeader);
-
-            // check
-            Debug.Assert(behaviorType == BehaviorType.CREATE_SETTLEMENT);
-
-            // cleanup
-            environment.destroyGameObject();
-            pawn.destroyGameObject();
-            nationLeader.destroyGameObject();
-        }
-
-        /**
-         * == Scenario 8 ==
-            * Input: pawn has nation, is leader, has no settlements and settlement within x units
-            * Expected output: GATHER_RESOURCES
-        */
-        // TODO: implement
-
-        /**
-         * == Scenario 9 ==
-            * Input: pawn has nation, is leader, has settlements
-            * Expected output: GO_HOME
-        */
-        public static void testComputeBehaviorTypeNationLeaderHasSettlementsShouldGoHome() {
-            // prepare
-            EntityRepository entityRepository = new EntityRepository();
-            Environment environment = new Environment(5, 5, entityRepository);
-            NationRepository nationRepository = new NationRepository();
-            Pawn pawn = new Pawn(new Vector3(0, 0, 0), "test");
-            entityRepository.addEntity(pawn);
-
-            Pawn nationLeader = new Pawn(new Vector3(0, 0, 0), "testleader");
-            entityRepository.addEntity(nationLeader);
-
-            Nation nation = new Nation("testnation", nationLeader.getId());
-            nationLeader.setNationId(nation.getId());
-            nation.addMember(pawn.getId());
-            pawn.setNationId(nation.getId());
-            nationRepository.addNation(nation);
-
-            Settlement settlement = new Settlement(new Vector3(0, 0, 0), nation.getId(), nation.getColor(), "testsettlement");
+            Settlement settlement = new Settlement(new Vector3(0, 0, 0), nation.getId(), nation.getColor(), nation.getName());
             entityRepository.addEntity(settlement);
             nation.addSettlement(settlement.getId());
 
-            PawnBehaviorCalculator calculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository);
+            // prepare pawn
+            Pawn pawn = new Pawn(new Vector3(0, 0, 0), "test");
+            entityRepository.addEntity(pawn);
+            nation.addMember(pawn.getId());
+            pawn.setNationId(nation.getId());
 
-            // run
-            BehaviorType behaviorType = calculator.computeBehaviorType(nationLeader);
+            // prepare calculator
+            GameConfig gameConfig = new GameConfig();
+            TickCounter tickCounter = new TickCounter();
+            PawnBehaviorCalculator calculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository, gameConfig, tickCounter);
 
-            // check
-            Debug.Assert(behaviorType == BehaviorType.GO_HOME);
+            // execute
+            BehaviorType behaviorType = calculator.computeBehaviorType(pawn);
+
+            // verify
+            UnityEngine.Debug.Assert(behaviorType == BehaviorType.JOIN_RANDOM_SETTLEMENT);
 
             // cleanup
             environment.destroyGameObject();
             pawn.destroyGameObject();
+            settlement.destroyGameObject();
+            nationLeader.destroyGameObject();
+        }
+
+        /**
+            * Input: pawn is leader of nation and has enough wood to create a settlement
+            * Expected output: CONSTRUCT_SETTLEMENT
+        */
+        private static void testComputeBehaviorType_IsLeaderAndHasEnoughWood_ShouldConstructSettlement() {
+            // prepare world
+            EntityRepository entityRepository = new EntityRepository();
+            Environment environment = new Environment(5, 5, entityRepository);
+            NationRepository nationRepository = new NationRepository();
+
+            // prepare pawn & nation
+            Pawn nationLeader = new Pawn(new Vector3(0, 0, 0), "test");
+            nationLeader.getInventory().addItem(ItemType.WOOD, Settlement.WOOD_COST_TO_BUILD);
+            entityRepository.addEntity(nationLeader);
+            Nation nation = new Nation("test", nationLeader.getId());
+            nationLeader.setNationId(nation.getId());
+            nationRepository.addNation(nation);
+
+            // prepare calculator
+            GameConfig gameConfig = new GameConfig();
+            TickCounter tickCounter = new TickCounter();
+            PawnBehaviorCalculator calculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository, gameConfig, tickCounter);
+
+            // execute
+            BehaviorType behaviorType = calculator.computeBehaviorType(nationLeader);
+
+            // verify
+            UnityEngine.Debug.Assert(behaviorType == BehaviorType.CONSTRUCT_SETTLEMENT);
+
+            // cleanup
+            environment.destroyGameObject();
+            nationLeader.destroyGameObject();
+        }
+
+        /**
+            * Input: pawn is leader of nation, has enough wood to build a stall & market is not full
+            * Expected output: CONSTRUCT_STALL
+        */
+        private static void testComputeBehaviorType_IsLeaderAndHasEnoughWood_ShouldConstructStall() {
+            // prepare world
+            EntityRepository entityRepository = new EntityRepository();
+            Environment environment = new Environment(5, 5, entityRepository);
+            NationRepository nationRepository = new NationRepository();
+
+            // prepare pawn & nation
+            Pawn nationLeader = new Pawn(new Vector3(0, 0, 0), "test");
+            nationLeader.getInventory().addItem(ItemType.WOOD, Stall.WOOD_COST_TO_BUILD);
+            entityRepository.addEntity(nationLeader);
+            Nation nation = new Nation("test", nationLeader.getId());
+            nationLeader.setNationId(nation.getId());
+            nationRepository.addNation(nation);
+
+            // prepare settlement
+            Settlement settlement = new Settlement(new Vector3(0, 0, 0), nation.getId(), nation.getColor(), nation.getName());
+            entityRepository.addEntity(settlement);
+            nation.addSettlement(settlement.getId());
+            nationLeader.setHomeSettlementId(settlement.getId());
+            nationLeader.setCurrentlyInSettlement(true);
+
+            // prepare calculator
+            GameConfig gameConfig = new GameConfig();
+            TickCounter tickCounter = new TickCounter();
+            PawnBehaviorCalculator calculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository, gameConfig, tickCounter);
+
+            // execute
+            BehaviorType behaviorType = calculator.computeBehaviorType(nationLeader);
+
+            // verify
+            UnityEngine.Debug.Assert(behaviorType == BehaviorType.CONSTRUCT_STALL);
+
+            // cleanup
+            environment.destroyGameObject();
+            nationLeader.destroyGameObject();
+            settlement.destroyGameObject();
+        }
+        
+        /**
+            * Input: pawn is leader of nation, has enough wood to build a stall & market is full
+            * Expected output: EXIT_SETTLEMENT or NONE
+        */
+        private static void testComputeBehaviorType_IsLeaderAndHasEnoughWoodButMarketFull_ShouldExitOrDoNothing() {
+            // prepare world
+            EntityRepository entityRepository = new EntityRepository();
+            Environment environment = new Environment(5, 5, entityRepository);
+            NationRepository nationRepository = new NationRepository();
+
+            // prepare pawn & nation
+            Pawn nationLeader = new Pawn(new Vector3(0, 0, 0), "test");
+            nationLeader.getInventory().addItem(ItemType.WOOD, Stall.WOOD_COST_TO_BUILD);
+            entityRepository.addEntity(nationLeader);
+            Nation nation = new Nation("test", nationLeader.getId());
+            nationLeader.setNationId(nation.getId());
+            nationRepository.addNation(nation);
+
+            // prepare settlement
+            Settlement settlement = new Settlement(new Vector3(0, 0, 0), nation.getId(), nation.getColor(), nation.getName());
+            entityRepository.addEntity(settlement);
+            nation.addSettlement(settlement.getId());
+            nationLeader.setHomeSettlementId(settlement.getId());
+            nationLeader.setCurrentlyInSettlement(true);
+
+            // prepare market
+            for (int i = 0; i < settlement.getMarket().getMaxNumStalls(); i++) {
+                settlement.getMarket().createStall();
+            }
+
+            // prepare calculator
+            GameConfig gameConfig = new GameConfig();
+            TickCounter tickCounter = new TickCounter();
+            PawnBehaviorCalculator calculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository, gameConfig, tickCounter);
+
+            // execute
+            BehaviorType behaviorType = calculator.computeBehaviorType(nationLeader);
+
+            // verify
+            UnityEngine.Debug.Assert(behaviorType == BehaviorType.EXIT_SETTLEMENT || behaviorType == BehaviorType.NONE);
+
+            // cleanup
+            environment.destroyGameObject();
             nationLeader.destroyGameObject();
             settlement.destroyGameObject();
         }
 
-        /**
-         * == Scenario 10 ==
-            * Input: pawn is citizen, does not have an abundance of resources
-            * Expected output: GATHER_RESOURCES
-        */
-        // TODO: implement
+        private static void testComputeBehaviorType_InSettlement_ShouldPurchaseFood() {
+            // prepare world
+            EntityRepository entityRepository = new EntityRepository();
+            Environment environment = new Environment(5, 5, entityRepository);
+            NationRepository nationRepository = new NationRepository();
 
-        /**
-         * == Scenario 11 ==
-            * Input: pawn is citizen, has an abundance of resources, nation leader has enough money
-            * Expected output: SELL_RESOURCES
-        */
-        // TODO: implement
+            // prepare existing nation & settlement
+            Pawn nationLeader = new Pawn(new Vector3(0, 0, 0), "test");
+            entityRepository.addEntity(nationLeader);
+            Nation nation = new Nation("test", nationLeader.getId());
+            nationRepository.addNation(nation);
+            Settlement settlement = new Settlement(new Vector3(0, 0, 0), nation.getId(), nation.getColor(), nation.getName());
+            entityRepository.addEntity(settlement);
 
-        /**
-         * == Scenario 12 ==
-            * Input: pawn is citizen, has an abundance of resources, nation leader does not have enough money
-            * Expected output: GO_HOME
-        */
-        // TODO: implement
+            // prepare existing stall & merchant
+            Pawn merchant = new Pawn(new Vector3(0, 0, 0), "test");
+            entityRepository.addEntity(merchant);
+            settlement.getMarket().createStall();
+            Stall stall = settlement.getMarket().getStallForSale();
+            stall.setOwnerId(merchant.getId());
+            stall.getInventory().addItem(ItemType.APPLE, 10);
+
+            // prepare pawn
+            Pawn pawn = new Pawn(new Vector3(0, 0, 0), "test");
+            pawn.setEnergy(10);
+            pawn.getInventory().addItem(ItemType.COIN, 10);
+            entityRepository.addEntity(pawn);
+            pawn.setHomeSettlementId(settlement.getId());
+            pawn.setCurrentlyInSettlement(true);
+
+            // prepare calculator
+            GameConfig gameConfig = new GameConfig();
+            TickCounter tickCounter = new TickCounter();
+            PawnBehaviorCalculator calculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository, gameConfig, tickCounter);
+
+            // execute
+            BehaviorType behaviorType = calculator.computeBehaviorType(pawn);
+
+            // verify
+            UnityEngine.Debug.Assert(behaviorType == BehaviorType.PURCHASE_FOOD);
+
+            // cleanup
+            environment.destroyGameObject();
+            pawn.destroyGameObject();
+            settlement.destroyGameObject();
+            nationLeader.destroyGameObject();
+            merchant.destroyGameObject();
+        }
+
+        public static void testComputeBehaviorType_InSettlement_ShouldSellResources() {
+            // prepare world
+            EntityRepository entityRepository = new EntityRepository();
+            Environment environment = new Environment(5, 5, entityRepository);
+            NationRepository nationRepository = new NationRepository();
+
+            // prepare existing nation & settlement
+            Pawn nationLeader = new Pawn(new Vector3(0, 0, 0), "test");
+            entityRepository.addEntity(nationLeader);
+            Nation nation = new Nation("test", nationLeader.getId());
+            nationRepository.addNation(nation);
+            Settlement settlement = new Settlement(new Vector3(0, 0, 0), nation.getId(), nation.getColor(), nation.getName());
+            entityRepository.addEntity(settlement);
+
+            // prepare existing stall & merchant
+            Pawn merchant = new Pawn(new Vector3(0, 0, 0), "test");
+            entityRepository.addEntity(merchant);
+            settlement.getMarket().createStall();
+            Stall stall = settlement.getMarket().getStallForSale();
+            stall.setOwnerId(merchant.getId());
+
+            // prepare pawn
+            Pawn pawn = new Pawn(new Vector3(0, 0, 0), "test");
+            Inventory inventory = pawn.getInventory();
+            inventory.addItem(ItemType.WOOD, 100);
+            inventory.addItem(ItemType.STONE, 100);
+            inventory.addItem(ItemType.COIN, 100);
+            inventory.addItem(ItemType.APPLE, 100);
+            entityRepository.addEntity(pawn);
+            nation.addMember(pawn.getId());
+            pawn.setNationId(nation.getId());
+            pawn.setHomeSettlementId(settlement.getId());
+            pawn.setCurrentlyInSettlement(true);
+
+            // prepare calculator
+            GameConfig gameConfig = new GameConfig();
+            TickCounter tickCounter = new TickCounter();
+            PawnBehaviorCalculator calculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository, gameConfig, tickCounter);
+
+            // execute
+            BehaviorType behaviorType = calculator.computeBehaviorType(pawn);
+
+            // verify
+            UnityEngine.Debug.Assert(behaviorType == BehaviorType.SELL_RESOURCES);
+
+            // cleanup
+            environment.destroyGameObject();
+            pawn.destroyGameObject();
+            settlement.destroyGameObject();
+            nationLeader.destroyGameObject();
+            merchant.destroyGameObject();
+        }
+
+        private static void testComputeBehaviorType_InSettlement_ShouldCollectProfitFromStall() {
+            // prepare world
+            EntityRepository entityRepository = new EntityRepository();
+            Environment environment = new Environment(5, 5, entityRepository);
+            NationRepository nationRepository = new NationRepository();
+
+            // prepare existing nation & settlement
+            Pawn nationLeader = new Pawn(new Vector3(0, 0, 0), "test");
+            entityRepository.addEntity(nationLeader);
+            Nation nation = new Nation("test", nationLeader.getId());
+            nationRepository.addNation(nation);
+            Settlement settlement = new Settlement(new Vector3(0, 0, 0), nation.getId(), nation.getColor(), nation.getName());
+            entityRepository.addEntity(settlement);
+
+            // prepare existing stall & merchant
+            Pawn merchant = new Pawn(new Vector3(0, 0, 0), "test");
+            nation.addMember(merchant.getId());
+            nation.setRole(merchant.getId(), NationRole.MERCHANT);
+            merchant.setNationId(nation.getId());
+            merchant.setHomeSettlementId(settlement.getId());
+            merchant.setCurrentlyInSettlement(true);
+            entityRepository.addEntity(merchant);
+            settlement.getMarket().createStall();
+            Stall stall = settlement.getMarket().getStallForSale();
+            stall.setOwnerId(merchant.getId());
+            stall.getInventory().addItem(ItemType.COIN, 10);
+
+            // prepare calculator
+            GameConfig gameConfig = new GameConfig();
+            TickCounter tickCounter = new TickCounter();
+            PawnBehaviorCalculator calculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository, gameConfig, tickCounter);
+
+            // execute
+            BehaviorType behaviorType = calculator.computeBehaviorType(merchant);
+
+            // verify
+            UnityEngine.Debug.Assert(behaviorType == BehaviorType.COLLECT_PROFIT_FROM_STALL);
+
+            // cleanup
+            environment.destroyGameObject();
+            merchant.destroyGameObject();
+            settlement.destroyGameObject();
+            nationLeader.destroyGameObject();
+        }
+
+        private static void testComputeBehaviorType_InSettlementNoFoodAvailable_ShouldNotPurchaseFood() {
+            // prepare world
+            EntityRepository entityRepository = new EntityRepository();
+            Environment environment = new Environment(5, 5, entityRepository);
+            NationRepository nationRepository = new NationRepository();
+
+            // prepare existing nation & settlement
+            Pawn nationLeader = new Pawn(new Vector3(0, 0, 0), "test");
+            entityRepository.addEntity(nationLeader);
+            Nation nation = new Nation("test", nationLeader.getId());
+            nationRepository.addNation(nation);
+            Settlement settlement = new Settlement(new Vector3(0, 0, 0), nation.getId(), nation.getColor(), nation.getName());
+            entityRepository.addEntity(settlement);
+
+            // prepare existing stall & merchant
+            Pawn merchant = new Pawn(new Vector3(0, 0, 0), "test");
+            nation.addMember(merchant.getId());
+            nation.setRole(merchant.getId(), NationRole.MERCHANT);
+            entityRepository.addEntity(merchant);
+            settlement.getMarket().createStall();
+            Stall stall = settlement.getMarket().getStallForSale();
+            stall.setOwnerId(merchant.getId());
+
+            // prepare pawn
+            Pawn pawn = new Pawn(new Vector3(0, 0, 0), "test");
+            pawn.setEnergy(10);
+            pawn.getInventory().addItem(ItemType.COIN, 10);
+            entityRepository.addEntity(pawn);
+            pawn.setHomeSettlementId(settlement.getId());
+            pawn.setCurrentlyInSettlement(true);
+
+            // prepare calculator
+            GameConfig gameConfig = new GameConfig();
+            TickCounter tickCounter = new TickCounter();
+            PawnBehaviorCalculator calculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository, gameConfig, tickCounter);
+
+            // execute
+            BehaviorType behaviorType = calculator.computeBehaviorType(pawn);
+
+            // verify
+            UnityEngine.Debug.Assert(behaviorType != BehaviorType.PURCHASE_FOOD);
+
+            // cleanup
+            environment.destroyGameObject();
+            pawn.destroyGameObject();
+            settlement.destroyGameObject();
+            nationLeader.destroyGameObject();
+            merchant.destroyGameObject();
+        }
+
+        private static void testComputeBehaviorType_InSettlementIsMerchantStallHasFood_ShouldCollectFoodFromStall() {
+            // prepare world
+            EntityRepository entityRepository = new EntityRepository();
+            Environment environment = new Environment(5, 5, entityRepository);
+            NationRepository nationRepository = new NationRepository();
+
+            // prepare existing nation & settlement
+            Pawn nationLeader = new Pawn(new Vector3(0, 0, 0), "test");
+            entityRepository.addEntity(nationLeader);
+            Nation nation = new Nation("test", nationLeader.getId());
+            nationRepository.addNation(nation);
+            Settlement settlement = new Settlement(new Vector3(0, 0, 0), nation.getId(), nation.getColor(), nation.getName());
+            entityRepository.addEntity(settlement);
+
+            // prepare existing stall & merchant
+            Pawn merchant = new Pawn(new Vector3(0, 0, 0), "test");
+            nation.addMember(merchant.getId());
+            nation.setRole(merchant.getId(), NationRole.MERCHANT);
+            merchant.setNationId(nation.getId());
+            merchant.setEnergy(10);
+            merchant.setHomeSettlementId(settlement.getId());
+            merchant.setCurrentlyInSettlement(true);
+            entityRepository.addEntity(merchant);
+            settlement.getMarket().createStall();
+            Stall stall = settlement.getMarket().getStallForSale();
+            stall.setOwnerId(merchant.getId());
+            stall.getInventory().addItem(ItemType.APPLE, 10);
+
+            // prepare calculator
+            GameConfig gameConfig = new GameConfig();
+            TickCounter tickCounter = new TickCounter();
+            PawnBehaviorCalculator calculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository, gameConfig, tickCounter);
+
+            // execute
+            BehaviorType behaviorType = calculator.computeBehaviorType(merchant);
+
+            // verify
+            UnityEngine.Debug.Assert(behaviorType == BehaviorType.COLLECT_FOOD_FROM_STALL);
+
+            // cleanup
+            environment.destroyGameObject();
+            settlement.destroyGameObject();
+            nationLeader.destroyGameObject();
+            merchant.destroyGameObject();
+        }
     }
 }

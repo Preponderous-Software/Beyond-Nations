@@ -16,7 +16,7 @@ namespace osg {
             this.height = height;
             createGameObject(position);
             planted = DateTime.Now;
-            growTime = Random.Range(60, 600);
+            growTime = UnityEngine.Random.Range(60, 600);
         }
 
         public override void createGameObject(Vector3 position) {

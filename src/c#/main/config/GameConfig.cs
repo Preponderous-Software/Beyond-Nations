@@ -1,16 +1,19 @@
 namespace osg {
 
-    class GameConfig {
+    public class GameConfig {
         private int chunkSize;
         private int locationScale;
         private int statusExpirationTicks;
         private int playerWalkSpeed;
         private int playerRunSpeed;
         private bool respawnPawns;
-        private int numStartingNations;
         private bool keepInventoryOnDeath;
         private int ticksBetweenBehaviorCalculations;
         private int ticksBetweenBehaviorExecutions;
+        private int minDistanceBetweenSettlements;
+        private int settlementJoinRange;
+        private float settlementMetabolismMultiplier;
+        private int renderDistance;
 
         public GameConfig() {
             chunkSize = 9;
@@ -19,10 +22,13 @@ namespace osg {
             playerWalkSpeed = 20;
             playerRunSpeed = 50;
             respawnPawns = false;
-            numStartingNations = 5;
             keepInventoryOnDeath = true;
-            ticksBetweenBehaviorCalculations = 25;
+            ticksBetweenBehaviorCalculations = 1000;
             ticksBetweenBehaviorExecutions = 5;
+            minDistanceBetweenSettlements = 250;
+            settlementJoinRange = 500;
+            settlementMetabolismMultiplier = 0.8f;
+            renderDistance = 100;
         }
 
         public int getChunkSize() {
@@ -49,10 +55,6 @@ namespace osg {
             return respawnPawns;
         }
 
-        public int getNumStartingNations() {
-            return numStartingNations;
-        }
-
         public bool getKeepInventoryOnDeath() {
             return keepInventoryOnDeath;
         }
@@ -63,6 +65,22 @@ namespace osg {
 
         public int getTicksBetweenBehaviorExecutions() {
             return ticksBetweenBehaviorExecutions;
+        }
+
+        public int getMinDistanceBetweenSettlements() {
+            return minDistanceBetweenSettlements;
+        }
+
+        public int getSettlementJoinRange() {
+            return settlementJoinRange;
+        }
+
+        public float getSettlementMetabolismMultiplier() {
+            return settlementMetabolismMultiplier;
+        }
+
+        public int getRenderDistance() {
+            return renderDistance;
         }
     }
 }

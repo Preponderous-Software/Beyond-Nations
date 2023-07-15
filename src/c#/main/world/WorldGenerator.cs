@@ -98,7 +98,7 @@ namespace osg {
         }
 
         private void spawnTreeEntities(Chunk chunk) {
-            int numberOfTrees = Random.Range(chunk.getSize(), chunk.getSize() * 2);
+            int numberOfTrees = UnityEngine.Random.Range(chunk.getSize(), chunk.getSize() * 2);
             for (int i = 0; i < numberOfTrees; i++) {
                 Location randomLocation = chunk.getRandomLocation();
                 if (randomLocation.getNumberOfEntities() > 0) {
@@ -109,13 +109,13 @@ namespace osg {
 
                 // create tree
                 Vector3 position = new Vector3(locationPosition.x, locationPosition.y + 1, locationPosition.z);
-                TreeEntity tree = new TreeEntity(position, 5);
+                AppleTree tree = new AppleTree(position, 5);
                 entityRepository.addEntity(tree);
             }
         }
 
         private void spawnRockEntities(Chunk chunk) {
-            int numberOfRocks = Random.Range(chunk.getSize()/4, chunk.getSize()/2);
+            int numberOfRocks = UnityEngine.Random.Range(chunk.getSize()/4, chunk.getSize()/2);
             for (int i = 0; i < numberOfRocks; i++) {
                 Location randomLocation = chunk.getRandomLocation();
                 if (randomLocation.getNumberOfEntities() > 0) {
@@ -126,7 +126,7 @@ namespace osg {
 
                 // create rock
                 Vector3 position = new Vector3(locationPosition.x, locationPosition.y + 1, locationPosition.z);
-                RockEntity rock = new RockEntity(position);
+                Rock rock = new Rock(position);
                 entityRepository.addEntity(rock);
             }
         }
@@ -134,7 +134,7 @@ namespace osg {
         private void spawnPawns(Chunk chunk) {
             
             // 10% change to spawn a pawn
-            bool shouldSpawnPawn = Random.Range(0, 100) < 10;
+            bool shouldSpawnPawn = UnityEngine.Random.Range(0, 100) < 10;
             if (shouldSpawnPawn) {
                 Location randomLocation = chunk.getRandomLocation();
                 Vector3 locationPosition = randomLocation.getPosition();

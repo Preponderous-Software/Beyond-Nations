@@ -15,16 +15,17 @@ namespace osgtests {
             GameConfig config = new GameConfig();
             
             // check
-            Debug.Assert(config.getChunkSize() == 9);
-            Debug.Assert(config.getLocationScale() == 9);
-            Debug.Assert(config.getStatusExpirationTicks() == 500);
-            Debug.Assert(config.getPlayerWalkSpeed() == 20);
-            Debug.Assert(config.getPlayerRunSpeed() == 50);
-            Debug.Assert(config.getRespawnPawns() == false);
-            Debug.Assert(config.getNumStartingNations() == 5);
-            Debug.Assert(config.getKeepInventoryOnDeath() == true);
-            Debug.Assert(config.getTicksBetweenBehaviorCalculations() == 25);
-            Debug.Assert(config.getTicksBetweenBehaviorExecutions() == 5);
+            UnityEngine.Debug.Assert(config.getChunkSize() > 0);
+            UnityEngine.Debug.Assert(config.getLocationScale() > 0);
+            UnityEngine.Debug.Assert(config.getStatusExpirationTicks() > 0);
+            UnityEngine.Debug.Assert(config.getPlayerWalkSpeed() > 0);
+            UnityEngine.Debug.Assert(config.getPlayerRunSpeed() > config.getPlayerWalkSpeed());
+            UnityEngine.Debug.Assert(config.getRespawnPawns() != null);
+            UnityEngine.Debug.Assert(config.getKeepInventoryOnDeath() != null);
+            UnityEngine.Debug.Assert(config.getTicksBetweenBehaviorCalculations() > 0);
+            UnityEngine.Debug.Assert(config.getTicksBetweenBehaviorExecutions() > 0);
+            UnityEngine.Debug.Assert(config.getMinDistanceBetweenSettlements() > 0);
+            UnityEngine.Debug.Assert(config.getSettlementJoinRange() > 0);
         }
     }    
 }

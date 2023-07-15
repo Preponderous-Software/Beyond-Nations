@@ -141,6 +141,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   runTests: 0
+  debugMode: 1
 --- !u!1 &672275114
 GameObject:
   m_ObjectHideFlags: 0

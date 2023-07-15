@@ -16,7 +16,7 @@ namespace osgtests {
             EnvironmentId environmentId = new EnvironmentId();
 
             // verify
-            Debug.Assert(environmentId != null);
+            UnityEngine.Debug.Assert(environmentId != null);
         }
 
         public static void testEquality() {
@@ -25,9 +25,9 @@ namespace osgtests {
             EnvironmentId environmentId2 = new EnvironmentId();
 
             // verify
-            Debug.Assert(environmentId1 != environmentId2);
-            Debug.Assert(environmentId1 == environmentId1);
-            Debug.Assert(environmentId2 == environmentId2);
+            UnityEngine.Debug.Assert(environmentId1 != environmentId2);
+            UnityEngine.Debug.Assert(environmentId1 == environmentId1);
+            UnityEngine.Debug.Assert(environmentId2 == environmentId2);
         }
     }
 }

@@ -20,16 +20,6 @@ namespace osg {
             }
         }
 
-        public void addNation(Nation nation) {
-            nations.Add(nation.getId(), nation);
-            nationIds.Add(nation.getId());
-        }
-
-        public void removeNation(Nation nation) {
-            nations.Remove(nation.getId());
-            nationIds.Remove(nation.getId());
-        }
-
         public Nation getNation(EntityId entityId) {
             foreach (Nation nation in nations.Values) {
                 if (nation.getLeaderId().Equals(entityId)) {
@@ -40,14 +30,32 @@ namespace osg {
             return null;
         }
 
+        public void addNation(Nation nation) {
+            nations.Add(nation.getId(), nation);
+            nationIds.Add(nation.getId());
+        }
+
+        public void removeNation(Nation nation) {
+            nations.Remove(nation.getId());
+            nationIds.Remove(nation.getId());
+        }
+
         public int getNumberOfNations() {
             return nations.Count;
         }
 
         public Nation getRandomNation() {
-            int randomIndex = Random.Range(0, nationIds.Count);
+            int randomIndex = UnityEngine.Random.Range(0, nationIds.Count);
             NationId randomNationId = nationIds[randomIndex];
             return nations[randomNationId];
+        }
+
+        public List<Nation> getNations() {
+            List<Nation> nationList = new List<Nation>();
+            foreach (Nation nation in nations.Values) {
+                nationList.Add(nation);
+            }
+            return nationList;
         }
     }
 }

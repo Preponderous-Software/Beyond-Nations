@@ -24,11 +24,11 @@ namespace osg {
                 duplicateMessageCount = 0;
             }
             statusText.updateText(status);
-            tickLastSet = tickCounter.getTick();
+            tickLastSet = tickCounter.getTotalTicks();
         }
 
         public void clearStatusIfExpired() {
-            if (tickCounter.getTick() - tickLastSet > ticksToExpire) {
+            if (tickCounter.getTotalTicks() - tickLastSet > ticksToExpire) {
                 statusText.updateText("");
             }
         }

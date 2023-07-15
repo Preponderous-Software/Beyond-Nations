@@ -18,7 +18,7 @@ namespace osg {
             this.leaderId = leaderId;
             members.Add(leaderId);
             roles[leaderId] = NationRole.LEADER;
-            color = new Color(Random.value, Random.value, Random.value);
+            color = new Color(UnityEngine.Random.value, UnityEngine.Random.value, UnityEngine.Random.value);
         }
 
         public NationId getId() {
@@ -39,7 +39,7 @@ namespace osg {
 
         public void addMember(EntityId memberId) {
             members.Add(memberId);
-            roles[memberId] = NationRole.CITIZEN;
+            roles[memberId] = NationRole.SERF;
         }
 
         public void removeMember(EntityId memberId) {
@@ -68,7 +68,7 @@ namespace osg {
         }
 
         public EntityId getRandomMemberId() {
-            int randomIndex = Random.Range(0, members.Count);
+            int randomIndex = UnityEngine.Random.Range(0, members.Count);
             return members[randomIndex];
         }
 
@@ -97,7 +97,7 @@ namespace osg {
         }
 
         public EntityId getRandomSettlementId() {
-            int randomIndex = Random.Range(0, settlements.Count);
+            int randomIndex = UnityEngine.Random.Range(0, settlements.Count);
             return settlements[randomIndex];
         }
     }

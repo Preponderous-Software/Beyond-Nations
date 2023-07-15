@@ -22,6 +22,8 @@ namespace osg {
 
         public void executeBehavior(Pawn pawn, BehaviorType behaviorType) {
             switch (behaviorType) {
+                case BehaviorType.NONE:
+                    break;
                 case BehaviorType.GATHER_RESOURCES:
                     executeGatherResourcesBehavior(pawn);
                     break;
@@ -34,16 +36,44 @@ namespace osg {
                 case BehaviorType.PURCHASE_FOOD:
                     executePurchaseFoodBehavior(pawn);
                     break;
-                case BehaviorType.CREATE_SETTLEMENT:
-                    executeCreateSettlementBehavior(pawn);
+                case BehaviorType.CONSTRUCT_SETTLEMENT:
+                    executeConstructSettlementBehavior(pawn);
                     break;
-                case BehaviorType.GO_HOME:
-                    executeGoHomeBehavior(pawn);
+                case BehaviorType.GO_TO_HOME_SETTLEMENT:
+                    executeGoToHomeSettlementBehavior(pawn);
+                    break;
+                case BehaviorType.EXIT_SETTLEMENT:
+                    executeExitSettlementBehavior(pawn);
                     break;
                 case BehaviorType.PLANT_SAPLING:
                     executePlantSaplingBehavior(pawn);
                     break;
+                case BehaviorType.CONSTRUCT_STALL:
+                    executeConstructStallBehavior(pawn);
+                    break;
+                case BehaviorType.PURCHASE_STALL:
+                    executePurchaseStallBehavior(pawn);
+                    break;
+                case BehaviorType.TRANSFER_ITEMS_TO_STALL:
+                    executeTransferItemsToStallBehavior(pawn);
+                    break;
+                case BehaviorType.JOIN_NATION:
+                    executeJoinNationBehavior(pawn);
+                    break;
+                case BehaviorType.CREATE_NATION:
+                    executeCreateNationBehavior(pawn);
+                    break;
+                case BehaviorType.JOIN_RANDOM_SETTLEMENT:
+                    executeJoinRandomSettlementBehavior(pawn);
+                    break;
+                case BehaviorType.COLLECT_PROFIT_FROM_STALL:
+                    executeCollectProfitFromStallBehavior(pawn);
+                    break;
+                case BehaviorType.COLLECT_FOOD_FROM_STALL:
+                    executeCollectFoodFromStallBehavior(pawn);
+                    break;
                 default:
+                    Debug.LogError("Behavior type " + behaviorType + " is not implemented.");
                     break;
             }
         }
@@ -79,6 +109,13 @@ namespace osg {
                     targetEntity.markForDeletion();
                     pawn.getInventory().transferContentsOfInventory(targetEntity.getInventory());
                     pawn.setTargetEntity(null);
+
+                    if (targetEntity.getType() == EntityType.TREE && pawn.getInventory().getNumItems(ItemType.SAPLING) > 0) {
+                        pawn.setCurrentBehaviorType(BehaviorType.PLANT_SAPLING);
+                    }
+                    else {
+                        pawn.setCurrentBehaviorType(BehaviorType.NONE);
+                    }
                 }
                 else {
                     Debug.LogWarning("Pawn " + pawn + " is at target entity " + targetEntity + " but it is not a tree or rock.");
@@ -92,110 +129,76 @@ namespace osg {
         }
 
         private void executeSellResourcesBehavior(Pawn pawn) {
-            if (!pawn.hasTargetEntity()) {
-                // target nation leader
-                Nation nation = nationRepository.getNation(pawn.getNationId());
-                if (nation != null) {
-                    EntityId nationLeaderId = nation.getLeaderId();
-                    Entity nationLeader = entityRepository.getEntity(nationLeaderId);
-                    if (nationLeader != null) {
-                        pawn.setTargetEntity(nationLeader);
-                    }
-                }
-            }
-            else if (pawn.isAtTargetEntity()) {
-                Entity targetEntity = pawn.getTargetEntity();
-                if (targetEntity.getType() != EntityType.PAWN && targetEntity.getType() != EntityType.PLAYER) {
-                    Debug.LogWarning("Pawn " + pawn + " is at target entity " + targetEntity + " but it is not a pawn or player.");
-                    pawn.setTargetEntity(null);
-                    return;
-                }
-
-                // 50% chance to sell wood
-                if (Random.Range(0, 100) < 50) {
-                    sellItem(pawn, targetEntity, ItemType.WOOD, 1);
-                }
-
-                // 30% chance to sell stone
-                if (Random.Range(0, 100) < 30) {
-                    sellItem(pawn, targetEntity, ItemType.STONE, 1);
-                }
-
-                // 10% chance to sell food if pawn has an abundance
-                if (pawn.getInventory().getNumItems(ItemType.APPLE) > 10 && Random.Range(0, 100) < 10) {
-                    sellItem(pawn, targetEntity, ItemType.APPLE, 1);
-                }
-            }
-            else {
-                // move towards target entity
-                pawn.moveTowardsTargetEntity();
-            }
+            Settlement settlement = (Settlement) entityRepository.getEntity(pawn.getHomeSettlementId());
+            
+            Market market = settlement.getMarket();
+            market.sellResources(pawn);
+            pawn.setCurrentBehaviorType(BehaviorType.NONE);
         }
 
         private void executeWanderBehavior(Pawn pawn) {
-            // 95% chance to skip
-            if (Random.Range(0, 100) < 95) {
+            // 80% chance to skip
+            if (UnityEngine.Random.Range(0, 100) < 80) {
+                return;
+            }
+
+            if (pawn.isCurrentlyInSettlement()) {
+                Debug.LogError("Pawn " + pawn + " is currently in a settlement but is trying to wander.");
                 return;
             }
             Vector3 currentPosition = pawn.getPosition();
-            Vector3 targetPosition = currentPosition + new Vector3(Random.Range(-1f, 1f), 0, Random.Range(-1f, 1f));
+            Vector3 targetPosition = currentPosition + new Vector3(UnityEngine.Random.Range(-1f, 1f), 0, UnityEngine.Random.Range(-1f, 1f));
             pawn.getGameObject().GetComponent<Rigidbody>().velocity = (targetPosition - currentPosition).normalized * pawn.getSpeed();
         }
 
         private void executePurchaseFoodBehavior(Pawn pawn) {
-            // purchase food from nation leader
-
-            if (!pawn.hasTargetEntity()) {
-                // target nation leader
-                Nation nation = nationRepository.getNation(pawn.getNationId());
-                if (nation != null) {
-                    EntityId nationLeaderId = nation.getLeaderId();
-                    Entity nationLeader = entityRepository.getEntity(nationLeaderId);
-                    if (nationLeader != null) {
-                        pawn.setTargetEntity(nationLeader);
-                    }
-                }
+            // pawn is assumed to be in a settlement
+            if (!pawn.isCurrentlyInSettlement()) {
+                Debug.LogError("Pawn " + pawn + " is not currently in a settlement but is trying to purchase food.");
+                return;
             }
-            else if (pawn.isAtTargetEntity()) {
-                Entity targetEntity = pawn.getTargetEntity();
-                EntityType targetEntityType = targetEntity.getType();
-                Inventory targetInventory = null;
-                if (targetEntityType == EntityType.PAWN) {
-                    targetInventory = ((Pawn)targetEntity).getInventory();
-                }
-                else if (targetEntityType == EntityType.PLAYER) {
-                    targetInventory = ((Player)targetEntity).getInventory();
-                }
-                else {
-                    Debug.LogWarning("Pawn " + pawn + " has target entity " + targetEntity + " but it is not a pawn or player.");
-                    pawn.setTargetEntity(null);
-                    return;
-                }
 
-                // buy food
-                buyItem(pawn, targetEntity, ItemType.APPLE, 1);
+            // purchase food from settlement market
+            Settlement settlement = (Settlement) entityRepository.getEntity(pawn.getHomeSettlementId());
+            if (settlement == null) {
+                Debug.LogError("Pawn " + pawn + " is trying to purchase food from settlement market " + pawn.getHomeSettlementId() + " but it does not exist.");
+                return;
+            }
+            Market market = settlement.getMarket();
+            bool result = market.purchaseFood(pawn);
+            if (!result) {
+                Debug.LogWarning("Pawn " + pawn + " tried to purchase food from settlement market " + settlement + " but there was not enough food.");
             }
             else {
-                // move towards target entity
-                pawn.moveTowardsTargetEntity();
+                Debug.Log("[PBE DEBUG] Pawn " + pawn + " purchased food from settlement market " + settlement + ".");
             }
+            pawn.setCurrentBehaviorType(BehaviorType.NONE);
         }
 
-        private void executeCreateSettlementBehavior(Pawn pawn) {
+        private void executeConstructSettlementBehavior(Pawn pawn) {
             Vector3 targetPosition = pawn.getPosition();
 
             // get nation color
             Nation nation = nationRepository.getNation(pawn.getNationId());
             Color nationColor = nation.getColor();
 
+            // remove wood
+            Inventory inventory = pawn.getInventory();
+            if (inventory.getNumItems(ItemType.WOOD) < Settlement.WOOD_COST_TO_BUILD) {
+                Debug.LogError("Pawn " + pawn + " does not have enough wood to build a settlement but is trying to.");
+                return;
+            }
+            inventory.removeItem(ItemType.WOOD, Settlement.WOOD_COST_TO_BUILD);
+
             // create settlement
             Settlement settlement = new Settlement(targetPosition, nation.getId(), nationColor, nation.getName());
             nation.addSettlement(settlement.getId());
             entityRepository.addEntity(settlement);
             pawn.setHomeSettlementId(settlement.getId());
+            pawn.setCurrentBehaviorType(BehaviorType.WANDER);
         }
 
-        private void executeGoHomeBehavior(Pawn pawn) {
+        private void executeGoToHomeSettlementBehavior(Pawn pawn) {
             Nation nation = nationRepository.getNation(pawn.getNationId());
             Settlement settlement = null;
             if (nation != null && nation.getNumberOfSettlements() > 0) {
@@ -213,9 +216,6 @@ namespace osg {
                 }
             }
             else if (pawn.isAtTargetEntity(20)) {
-                if (nation.getLeaderId() == pawn.getId()) {
-                    return;
-                }
                 if (settlement == null) {
                     Debug.LogError("Pawn " + pawn + " has no settlement to go to.");
                     return;
@@ -224,12 +224,28 @@ namespace osg {
                 pawn.setCurrentlyInSettlement(true);
                 pawn.destroyGameObject();
                 pawn.setTargetEntity(null);
+                pawn.setCurrentBehaviorType(BehaviorType.NONE);
                 return;
             }
             else {
                 // move towards target entity
                 pawn.moveTowardsTargetEntity();
             }
+        }
+
+        private void executeExitSettlementBehavior(Pawn pawn) {
+            // if not in settlement
+            if (!pawn.isCurrentlyInSettlement()) {
+                Debug.LogError("Pawn " + pawn + " is not currently in a settlement but is trying to exit one.");
+                return;
+            }
+
+            pawn.setCurrentlyInSettlement(false);
+            Settlement settlement = entityRepository.getEntity(pawn.getHomeSettlementId()) as Settlement;
+            settlement.removeCurrentlyPresentEntity(pawn.getId());
+            pawn.createGameObject(settlement.getGameObject().transform.position + new Vector3(UnityEngine.Random.Range(-20, 20), 0, UnityEngine.Random.Range(-20, 20)));
+            pawn.setColor(settlement.getColor());
+            pawn.setCurrentBehaviorType(BehaviorType.NONE);
         }
 
         private void executePlantSaplingBehavior(Pawn pawn) {
@@ -240,113 +256,206 @@ namespace osg {
             }
 
             Vector3 position = pawn.getPosition();
-            position += new Vector3(Random.Range(-5f, 5f), 0, Random.Range(-5f, 5f));
+            position += new Vector3(UnityEngine.Random.Range(-5f, 5f), 0, UnityEngine.Random.Range(-5f, 5f));
+            position.y = 2;
             Sapling tree = new Sapling(position, 3);
             entityRepository.addEntity(tree);
             pawn.getInventory().removeItem(ItemType.SAPLING, 1);
+            pawn.setCurrentBehaviorType(BehaviorType.WANDER);
         }
 
-        // ---
-
-        private void buyItem(Pawn buyer, Entity seller, ItemType itemType, int numItems) {
-            Inventory buyerInventory = buyer.getInventory();
-            Inventory sellerInventory = seller.getInventory();
-
-            // check if seller has item
-            if (sellerInventory.getNumItems(itemType) < numItems) {
-                Debug.LogWarning("Seller " + seller + " does not have " + numItems + " of item type " + itemType + ".");
+        private void executeConstructStallBehavior(Pawn pawn) {
+            // if not enough wood
+            if (pawn.getInventory().getNumItems(ItemType.WOOD) < Stall.WOOD_COST_TO_BUILD) {
+                Debug.LogError("Pawn " + pawn + " does not have enough wood to build a stall, but is trying to.");
                 return;
             }
-            
-            // decide price
-            int price = 0;
-            switch (itemType) {
-                case ItemType.WOOD:
-                    price = 1;
-                    break;
-                case ItemType.STONE:
-                    price = 2;
-                    break;
-                case ItemType.APPLE:
-                    price = 5;
-                    break;
-                default:
-                    Debug.LogWarning("Seller " + seller + " tried to sell item type " + itemType + " but it is not a valid item type.");
-                    return;
+
+            // if not leader
+            Nation nation = nationRepository.getNation(pawn.getNationId());
+            if (nation.getRole(pawn.getId()) != NationRole.LEADER) {
+                Debug.LogError("Pawn " + pawn + " is not a leader but is trying to build a stall.");
+                return;
             }
 
-            // check if buyer has enough gold coins
-            if (buyerInventory.getNumItems(ItemType.GOLD_COIN) < price) {
-                Debug.LogWarning("Buyer " + buyer + " does not have enough gold coins to buy item type " + itemType + ". Price: " + price + ", Buyer gold coins: " + buyerInventory.getNumItems(ItemType.GOLD_COIN));
+            // if no home settlement
+            EntityId homeSettlementId = pawn.getHomeSettlementId();
+            if (homeSettlementId == null) {
+                Debug.LogError("Pawn " + pawn + " has no home settlement id.");
+                return;
+            }
+
+            // remove wood
+            pawn.getInventory().removeItem(ItemType.WOOD, Stall.WOOD_COST_TO_BUILD);
+            
+            // build stall
+            Settlement homeSettlement = (Settlement) entityRepository.getEntity(homeSettlementId);
+            Market market = homeSettlement.getMarket();
+
+            market.createStall();
+            pawn.setCurrentBehaviorType(BehaviorType.NONE);       
+        }
+
+        private void executePurchaseStallBehavior(Pawn pawn) {
+            // pawn is assumed to be in home settlement
+            EntityId homeSettlementId = pawn.getHomeSettlementId();
+            if (homeSettlementId == null) {
+                Debug.LogError("Pawn " + pawn + " has no home settlement id.");
+                return;
+            }
+            Settlement homeSettlement = (Settlement) entityRepository.getEntity(homeSettlementId);
+            Market market = homeSettlement.getMarket();
+
+            // if no stalls for sale
+            if (market.getNumStallsForSale() == 0) {
+                Debug.LogWarning("Pawn " + pawn + " is trying to purchase a stall but there are none for sale.");
+                return;
+            }
+
+            // if not enough money
+            if (pawn.getInventory().getNumItems(ItemType.COIN) < Stall.COIN_COST_TO_PURCHASE) {
+                Debug.LogWarning("Pawn " + pawn + " is trying to purchase a stall but does not have enough money.");
+                return;
+            }
+
+            // remove money
+            pawn.getInventory().removeItem(ItemType.COIN, Stall.COIN_COST_TO_PURCHASE);
+
+            // assign ownership of stall to pawn
+            Stall stall = market.getStallForSale();
+            stall.setOwnerId(pawn.getId());
+            Nation nation = nationRepository.getNation(pawn.getNationId());
+            nation.setRole(pawn.getId(), NationRole.MERCHANT);
+            pawn.setCurrentBehaviorType(BehaviorType.NONE);
+        }
+
+        private void executeTransferItemsToStallBehavior(Pawn pawn) {
+            // pawn is assumed to be in home settlement
+            EntityId homeSettlementId = pawn.getHomeSettlementId();
+            if (homeSettlementId == null) {
+                Debug.LogError("Pawn " + pawn + " has no home settlement id.");
+                return;
+            }
+            Settlement homeSettlement = (Settlement) entityRepository.getEntity(homeSettlementId);
+            Market market = homeSettlement.getMarket();
+
+            // if no stalls owned
+            if (market.getStall(pawn.getId()) == null) {
+                Debug.LogWarning("Pawn " + pawn + " is trying to transfer items to a stall but does not own any stalls.");
+                return;
+            }
+
+            // if no wood or stone
+            if (pawn.getInventory().getNumItems(ItemType.WOOD) == 0 && pawn.getInventory().getNumItems(ItemType.STONE) == 0) {
+                Debug.LogWarning("Pawn " + pawn + " is trying to transfer items to a stall but has no wood or stone.");
                 return;
             }
 
             // transfer items
-            sellerInventory.removeItem(itemType, numItems);
-            buyerInventory.addItem(itemType, numItems);
-            buyerInventory.removeItem(ItemType.GOLD_COIN, price);
-            sellerInventory.addItem(ItemType.GOLD_COIN, price);
+            Stall stall = market.getStall(pawn.getId());
+            stall.transferContentsFromEntity(pawn);
 
-            // increase relationship
-            int increase = Random.Range(1, 5);
-            buyer.increaseRelationship(seller, increase);
-            eventProducer.producePawnRelationshipIncreaseEvent(buyer, seller, increase);
+            // get half of coins from stall
+            int numCoins = stall.getInventory().getNumItems(ItemType.COIN);
+            int numCoinsToTransfer = numCoins / 2;
+            stall.getInventory().removeItem(ItemType.COIN, numCoinsToTransfer);
+            pawn.getInventory().addItem(ItemType.COIN, numCoinsToTransfer);
 
-            // update status
-            if (seller.getType() == EntityType.PLAYER) {
-                Player player = (Player)seller;
-                player.getStatus().update(buyer.getName() + " bought " + numItems + " " + itemType + " from you. Relationship: " + buyer.getRelationships()[player.getId()]);
-            }
+            Debug.Log("Pawn " + pawn.getName() + " transferred items to their stall.");
+            pawn.setCurrentBehaviorType(BehaviorType.NONE);
         }
 
-        private void sellItem(Pawn seller, Entity buyer, ItemType itemType, int numItems) {
-            Inventory sellerInventory = seller.getInventory();
-            Inventory buyerInventory = buyer.getInventory();
+        private void executeJoinNationBehavior(Pawn pawn) {
+            Settlement nearestSettlement = (Settlement) environment.getNearestEntityOfType(pawn.getGameObject().transform.position, EntityType.SETTLEMENT);
+            Nation nation = nationRepository.getNation(nearestSettlement.getNationId());
+            nation.addMember(pawn.getId());
+            pawn.setNationId(nation.getId());
+            pawn.setColor(nation.getColor());
+            eventProducer.produceNationJoinEvent(nation, pawn.getId());
+            pawn.setCurrentBehaviorType(BehaviorType.NONE);
+        }
 
-            // check if seller has item
-            if (sellerInventory.getNumItems(itemType) < numItems) {
-                Debug.LogWarning("Seller " + seller + " does not have " + numItems + " of item type " + itemType + ".");
-                return;
-            }
-            
-            // decide price
-            int price = 0;
-            switch (itemType) {
-                case ItemType.WOOD:
-                    price = 1;
-                    break;
-                case ItemType.STONE:
-                    price = 2;
-                    break;
-                case ItemType.APPLE:
-                    price = 5;
-                    break;
-                default:
-                    Debug.LogWarning("Seller " + seller + " tried to sell item type " + itemType + " but it is not a valid item type.");
-                    return;
-            }
+        private void executeCreateNationBehavior(Pawn pawn) {
+            Nation nation = new Nation(NationNameGenerator.generate(), pawn.getId());
+            nationRepository.addNation(nation);
+            pawn.setNationId(nation.getId());
+            pawn.setColor(nation.getColor());
+            eventProducer.produceNationCreationEvent(nation);
+            pawn.setCurrentBehaviorType(BehaviorType.NONE);
+        }
 
-            // check if buyer has enough gold coins
-            if (buyerInventory.getNumItems(ItemType.GOLD_COIN) < price * numItems) {
-                Debug.LogWarning("Buyer " + buyer + " does not have enough gold coins to purchase " + numItems + " of item type " + itemType + ".");
+        private void executeJoinRandomSettlementBehavior(Pawn pawn) {
+            // get nation
+            Nation nation = nationRepository.getNation(pawn.getNationId());
+
+            // if no settlements
+            if (nation.getNumberOfSettlements() == 0) {
+                Debug.LogWarning("Pawn " + pawn + " is trying to join a random settlement but their nation has no settlements.");
                 return;
             }
 
-            // transfer items
-            sellerInventory.removeItem(itemType, numItems);
-            buyerInventory.addItem(itemType, numItems);
-            buyerInventory.removeItem(ItemType.GOLD_COIN, price * numItems);
-            sellerInventory.addItem(ItemType.GOLD_COIN, price * numItems);
+            // get random settlement
+            EntityId settlementId = nation.getRandomSettlementId();
+            Settlement settlement = (Settlement) entityRepository.getEntity(settlementId);
 
-            // increase relationship
-            int increase = Random.Range(1, 5);
-            seller.increaseRelationship(buyer, increase);
-            eventProducer.producePawnRelationshipIncreaseEvent(seller, buyer, increase);
+            // join settlement
+            pawn.setHomeSettlementId(settlementId);
+            pawn.setCurrentBehaviorType(BehaviorType.NONE);
+        }
 
-            if (buyer.getType() == EntityType.PLAYER) {
-                Player player = (Player)buyer;
-                player.getStatus().update(seller.getName() + " sold " + numItems + " " + itemType + " to you. Relationship: " + seller.getRelationships()[player.getId()]);
+        private void executeCollectProfitFromStallBehavior(Pawn pawn) {
+            // pawn is assumed to be in home settlement
+            EntityId homeSettlementId = pawn.getHomeSettlementId();
+            if (homeSettlementId == null) {
+                Debug.LogError("Pawn " + pawn + " has no home settlement id.");
+                return;
             }
+            Settlement homeSettlement = (Settlement) entityRepository.getEntity(homeSettlementId);
+            Market market = homeSettlement.getMarket();
+
+            // if no stalls owned
+            if (market.getStall(pawn.getId()) == null) {
+                Debug.LogWarning("Pawn " + pawn + " is trying to collect profit from a stall but does not own any stalls.");
+                return;
+            }
+
+            // collect profit
+            Stall stall = market.getStall(pawn.getId());
+            int profit = stall.getInventory().getNumItems(ItemType.COIN);
+            pawn.getInventory().addItem(ItemType.COIN, profit);
+            stall.getInventory().removeItem(ItemType.COIN, profit);
+            Debug.Log("Pawn " + pawn.getName() + " collected " + profit + " coins from their stall.");
+            pawn.setCurrentBehaviorType(BehaviorType.NONE);
+        }
+
+        // collect half of food from stall
+        private void executeCollectFoodFromStallBehavior(Pawn pawn) {
+            // pawn is assumed to be in home settlement
+            EntityId homeSettlementId = pawn.getHomeSettlementId();
+            if (homeSettlementId == null) {
+                Debug.LogError("Pawn " + pawn + " has no home settlement id.");
+                return;
+            }
+            Settlement homeSettlement = (Settlement) entityRepository.getEntity(homeSettlementId);
+            Market market = homeSettlement.getMarket();
+
+            // if no stalls owned
+            if (market.getStall(pawn.getId()) == null) {
+                Debug.LogWarning("Pawn " + pawn + " is trying to collect food from a stall but does not own any stalls.");
+                return;
+            }
+
+            // collect food
+            Stall stall = market.getStall(pawn.getId());
+            int food = stall.getInventory().getNumItems(ItemType.APPLE);
+            int foodToTransfer = food / 2;
+            if (foodToTransfer == 0) {
+                foodToTransfer = 1;
+            }
+            pawn.getInventory().addItem(ItemType.APPLE, foodToTransfer);
+            stall.getInventory().removeItem(ItemType.APPLE, foodToTransfer);
+            Debug.Log("Pawn " + pawn.getName() + " collected " + foodToTransfer + " food from their stall.");
+            pawn.setCurrentBehaviorType(BehaviorType.NONE);
         }
     }
 }

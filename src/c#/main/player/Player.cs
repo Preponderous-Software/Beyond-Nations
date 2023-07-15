@@ -18,24 +18,17 @@ namespace osg {
         private Status status = null;
         private bool autoWalk = false;
         private float energy = 100;
-        private float metabolism = Random.Range(0.001f, 0.010f);
+        private float metabolism = UnityEngine.Random.Range(0.001f, 0.010f);
 
-        public Player(int walkSpeed, int runSpeed, TickCounter tickCounter, int statusExpirationTicks) : base(EntityType.PLAYER){
+        public Player(int walkSpeed, int runSpeed, TickCounter tickCounter, int statusExpirationTicks, int renderDistance) : base(EntityType.PLAYER){
             createGameObject(new Vector3(0, 2, 0));
-            setupCamera();
+            setupCamera(renderDistance);
             this.rigidBody = getGameObject().GetComponent<Rigidbody>();
             this.walkSpeed = walkSpeed;
             this.runSpeed = runSpeed;
             status = new Status(tickCounter, statusExpirationTicks);
             this.currentSpeed = walkSpeed;
-            getInventory().addItem(ItemType.GOLD_COIN, Random.Range(100, 400));
-        }
-
-        private void setupCamera() {
-            GameObject cameraObject = GameObject.Find("/Camera");      
-            cameraObject.transform.SetParent(getGameObject().transform);
-            cameraObject.transform.position = new Vector3(0, 5, -10);
-            this.playerCamera = cameraObject.GetComponent<Camera>();
+            getInventory().addItem(ItemType.COIN, UnityEngine.Random.Range(100, 400));
         }
 
         public void update() {
@@ -136,6 +129,36 @@ namespace osg {
 
         public void setEnergy(float energy) {
             this.energy = energy;
+        }
+
+        public int getRenderDistance() {
+            return (int) playerCamera.farClipPlane;
+        }
+
+        public void increaseRenderDistance() {
+            playerCamera.farClipPlane += 10;
+
+            int maxRenderDistance = 1000;
+            if (playerCamera.farClipPlane > maxRenderDistance) {
+                playerCamera.farClipPlane = maxRenderDistance;
+            }
+        }
+
+        public void decreaseRenderDistance() {
+            playerCamera.farClipPlane -= 10;
+
+            int minRenderDistance = 50;
+            if (playerCamera.farClipPlane < minRenderDistance) {
+                playerCamera.farClipPlane = minRenderDistance;
+            }
+        }
+
+        private void setupCamera(int renderDistance) {
+            GameObject cameraObject = GameObject.Find("/Camera");      
+            cameraObject.transform.SetParent(getGameObject().transform);
+            cameraObject.transform.position = new Vector3(0, 5, -10);
+            this.playerCamera = cameraObject.GetComponent<Camera>();
+            this.playerCamera.farClipPlane = renderDistance;
         }
 
         private void jump() {

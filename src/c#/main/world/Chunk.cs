@@ -67,8 +67,8 @@ namespace osg {
         }
 
         public Location getRandomLocation() {
-            int x = Random.Range(0, size);
-            int z = Random.Range(0, size);
+            int x = UnityEngine.Random.Range(0, size);
+            int z = UnityEngine.Random.Range(0, size);
             return locations[x, z];
         }
 

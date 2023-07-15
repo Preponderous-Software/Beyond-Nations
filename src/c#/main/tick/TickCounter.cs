@@ -7,6 +7,7 @@ namespace osg {
         
         // measured ticks per second
         private int mtps = 0;
+        private int totalTicks = 0;
         
         // last time tick was updated
         private DateTime lastTickUpdate = DateTime.Now;
@@ -17,6 +18,7 @@ namespace osg {
 
         public void increment() {
             tick++;
+            totalTicks++;
 
             if (DateTime.Now - lastTickUpdate >= TimeSpan.FromSeconds(1)) {
                 mtps = tick;
@@ -27,6 +29,10 @@ namespace osg {
 
         public int getMtps() {
             return mtps;
+        }
+
+        public int getTotalTicks() {
+            return totalTicks;
         }
     }
 }

@@ -13,9 +13,9 @@ namespace osg {
 
         public void execute(Player player) {
             Vector3 playerPosition = player.getGameObject().transform.position;
-            Chunk playerChunk = environment.getChunkAtPosition(playerPosition);
-            if (playerChunk != null) {
-                Vector3 chunkPosition = playerChunk.getGameObject().transform.position;
+            Chunk chunk = environment.getChunkAtPosition(playerPosition);
+            if (chunk != null) {
+                Vector3 chunkPosition = chunk.getGameObject().transform.position;
                 int numChunksGenerated = 0;
                 for (int x = -50; x < 51; x++) {
                     for (int z = -50; z < 51; z++) {

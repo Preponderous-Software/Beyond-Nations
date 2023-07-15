@@ -6,11 +6,13 @@ namespace osg {
         private NationRepository nationRepository;
         private EventProducer eventProducer;
         private EntityRepository entityRepository;
+        private GameConfig gameConfig;
 
-        public FoundSettlementCommand(NationRepository nationRepository, EventProducer eventProducer, EntityRepository entityRepository) {
+        public FoundSettlementCommand(NationRepository nationRepository, EventProducer eventProducer, EntityRepository entityRepository, GameConfig gameConfig) {
             this.nationRepository = nationRepository;
             this.eventProducer = eventProducer;
             this.entityRepository = entityRepository;
+            this.gameConfig = gameConfig;
         }
 
         public void execute(Player player) {
@@ -25,9 +27,9 @@ namespace osg {
                 player.getStatus().update("You are not the leader of a nation.");
                 return;
             }
-            // if not enough money
-            if (player.getInventory().getNumItems(ItemType.GOLD_COIN) < 100) {
-                player.getStatus().update("You don't have enough money.");
+            // if not enough wood
+            if (player.getInventory().getNumItems(ItemType.WOOD) < Settlement.WOOD_COST_TO_BUILD) {
+                player.getStatus().update("Not enough wood. Need " + (Settlement.WOOD_COST_TO_BUILD - player.getInventory().getNumItems(ItemType.WOOD)) + " more.");
                 return;
             }
 
@@ -36,14 +38,17 @@ namespace osg {
                 if (entity.getType() == EntityType.SETTLEMENT) {
                     Settlement settlementToCheck = (Settlement)entity;
                     int distance = (int)Vector3.Distance(player.getGameObject().transform.position, settlementToCheck.getPosition());
-                    if (distance < 200) {
+                    if (distance < gameConfig.getMinDistanceBetweenSettlements()) {
                         player.getStatus().update("Too close to another settlement.");
                         return;
                     }
                 }
             }
 
-            player.getInventory().removeItem(ItemType.GOLD_COIN, 100);
+            // remove wood
+            player.getInventory().removeItem(ItemType.WOOD, Settlement.WOOD_COST_TO_BUILD);
+
+            // create settlement
             Settlement settlement = new Settlement(player.getGameObject().transform.position, player.getNationId(), nation.getColor(), nation.getName());
             entityRepository.addEntity(settlement);
             nationRepository.getNation(player.getNationId()).addSettlement(settlement.getId());

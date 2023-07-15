@@ -3,12 +3,12 @@ using UnityEngine;
 
 namespace osg {
 
-    public class TreeEntity : Entity {
+    public class AppleTree : Entity {
         private GameObject trunk;
         private GameObject leaves;
         private int height;
         
-        public TreeEntity(Vector3 position, int height) : base(EntityType.TREE) {
+        public AppleTree(Vector3 position, int height) : base(EntityType.TREE) {
             this.height = height;
             createGameObject(position);
         }
@@ -16,7 +16,7 @@ namespace osg {
         public override void createGameObject(Vector3 position) {
             GameObject gameObject = new GameObject();
             gameObject.transform.position = position;
-            gameObject.name = "Tree";
+            gameObject.name = "AppleTree";
 
             trunk = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
             trunk.transform.localScale = new Vector3(1, height, 1);
@@ -37,8 +37,8 @@ namespace osg {
             setGameObject(gameObject);
 
             getInventory().addItem(ItemType.WOOD, UnityEngine.Random.Range(3, 6));
-            getInventory().addItem(ItemType.APPLE, UnityEngine.Random.Range(2, 4));
-            getInventory().addItem(ItemType.SAPLING, UnityEngine.Random.Range(1, 3));
+            getInventory().addItem(ItemType.APPLE, UnityEngine.Random.Range(0, 3));
+            getInventory().addItem(ItemType.SAPLING, UnityEngine.Random.Range(0, 3));
         }
 
         public override void destroyGameObject() {

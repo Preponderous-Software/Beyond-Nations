@@ -9,13 +9,17 @@ namespace osg {
         private NationId nationId;
         private string nationName;
         private List<EntityId> currentlyPresentEntities = new List<EntityId>();
-            
+        private Market market;
+
+        public static readonly int WOOD_COST_TO_BUILD = 100;
+
         public Settlement(Vector3 position, NationId nationId, Color color, string nationName) : base(EntityType.SETTLEMENT) {
             this.color = color;
             this.nationId = nationId;
             createGameObject(position);
             this.nationName = nationName;
             initializeNameTag();
+            market = new Market(4);
         }
 
         public override void createGameObject(Vector3 position) {
@@ -54,8 +58,16 @@ namespace osg {
             return this.color;
         }
 
+        public NationId getNationId() {
+            return this.nationId;
+        }
+
         public string getNameTagText() {
             return nameTag.GetComponent<TextMesh>().text;
+        }
+
+        public Market getMarket() {
+            return this.market;
         }
 
         private void initializeNameTag() {

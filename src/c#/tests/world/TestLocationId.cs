@@ -16,7 +16,7 @@ namespace osgtests {
             LocationId locationId = new LocationId();
 
             // verify
-            Debug.Assert(locationId != null);
+            UnityEngine.Debug.Assert(locationId != null);
         }
 
         public static void testEquality() {
@@ -25,9 +25,9 @@ namespace osgtests {
             LocationId locationId2 = new LocationId();
 
             // verify
-            Debug.Assert(locationId1 != locationId2);
-            Debug.Assert(locationId1 == locationId1);
-            Debug.Assert(locationId2 == locationId2);
+            UnityEngine.Debug.Assert(locationId1 != locationId2);
+            UnityEngine.Debug.Assert(locationId1 == locationId1);
+            UnityEngine.Debug.Assert(locationId2 == locationId2);
         }
     }
 }

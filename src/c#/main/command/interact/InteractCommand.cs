@@ -18,42 +18,72 @@ namespace osg {
         }
 
         public void execute(Player player) {
-            TreeEntity tree = environment.getNearestTree(player.getGameObject().transform.position);
-            RockEntity rock = environment.getNearestRock(player.getGameObject().transform.position);
+            AppleTree tree = environment.getNearestTree(player.getGameObject().transform.position);
+            Rock rock = environment.getNearestRock(player.getGameObject().transform.position);
             Pawn pawn = (Pawn) environment.getNearestEntityOfType(player.getGameObject().transform.position, EntityType.PAWN);
             Settlement settlement = (Settlement) environment.getNearestEntityOfType(player.getGameObject().transform.position, EntityType.SETTLEMENT);
 
             if (settlement != null && Vector3.Distance(player.getGameObject().transform.position, settlement.getGameObject().transform.position) < 5) {
-                if (settlement.getCurrentlyPresentEntitiesCount() == 0) {
-                    player.getStatus().update("No one is home.");
-                    return;
+                List<string> possibleStrings = new List<string>();
+                
+                int numCurrentlyPresentEntities = settlement.getCurrentlyPresentEntitiesCount();
+                if (numCurrentlyPresentEntities == 0) {
+                    possibleStrings.Add("This settlement is empty.");
                 }
-                string listOfPresentPawns = "";
-                foreach (EntityId entityId in settlement.getCurrentlyPresentEntities()) {
-                    Pawn pawnInSettlement = (Pawn) entityRepository.getEntity(entityId);
-                    string pawnName = pawnInSettlement.getName();
-                    listOfPresentPawns += pawnName + ", ";
-                    if (listOfPresentPawns.Length > 50) {
-                        listOfPresentPawns += "...";
-                        break;
+                else {
+                    possibleStrings.Add("This settlement is occupied by " + numCurrentlyPresentEntities + " pawns at the moment.");
+                }
+
+                int numStalls = settlement.getMarket().getNumStalls();
+                if (numStalls == 0) {
+                    possibleStrings.Add("The market is barren. No stalls have been built.");
+                }
+                else {
+                    int numStallsForSale = settlement.getMarket().getNumStallsForSale();
+                    if (numStallsForSale == 0) {
+                        possibleStrings.Add("The market is full. All " + numStalls + " stalls have been built and are owned by someone.");
+                    }
+                    else {
+                        possibleStrings.Add("The market has " + numStallsForSale + "/" + numStalls + " stalls for sale.");
                     }
                 }
-                player.getStatus().update("Settlement contains: " + listOfPresentPawns);
+
+                int numCoins = settlement.getInventory().getNumItems(ItemType.COIN);
+                if (numCoins == 0) {
+                    possibleStrings.Add("This settlement is destitute. It has no coins.");
+                }
+                else {
+                    possibleStrings.Add("The wealth of this settlement amounts to " + numCoins + " coins.");
+                }
+
+                int numItemsBought = settlement.getMarket().getTotalNumItemsBought();
+                if (numItemsBought == 0) {
+                    possibleStrings.Add("No items have been bought at this settlement's market.");
+                }
+                else {
+                    possibleStrings.Add(numItemsBought + " items have been bought at this settlement's market.");
+                }
+
+                int numItemsSold = settlement.getMarket().getTotalNumItemsSold();
+                if (numItemsSold == 0) {
+                    possibleStrings.Add("No items have been sold at this settlement's market.");
+                }
+                else {
+                    possibleStrings.Add(numItemsSold + " items have been sold at this settlement's market.");
+                }
+
+                string statusUpdate = possibleStrings[UnityEngine.Random.Range(0, possibleStrings.Count)];
+                player.getStatus().update(statusUpdate);
             }
             else if (pawn != null && Vector3.Distance(player.getGameObject().transform.position, pawn.getGameObject().transform.position) < 5) {
-                Nation pawnsNation = nationRepository.getNation(pawn.getNationId());
-                EntityId randomMemberId = pawnsNation.getRandomMemberId();
-
-                if (player.getNationId() != null) {
-                    Nation playersNation = nationRepository.getNation(player.getNationId());
-                    if (playersNation.getLeaderId() == pawn.getId()) {
-                        attemptToSellItemsToPawn(player, pawn);
-                        return;
-                    }
+                if (pawn.getNationId() == null) {
+                    player.getStatus().update(pawn.getName() + ": \"I don't belong to any nation.\"");
+                    return;
                 }
+                Nation pawnsNation = nationRepository.getNation(pawn.getNationId());
 
                 List <string> phrases = generatePhrases(pawnsNation, pawn, player);
-                string phrase = phrases[Random.Range(0, phrases.Count)];
+                string phrase = phrases[UnityEngine.Random.Range(0, phrases.Count)];
                 player.getStatus().update(pawn.getName() + ": \"" + phrase + "\"");
             }
             else if (tree != null && Vector3.Distance(player.getGameObject().transform.position, tree.getGameObject().transform.position) < 5) {
@@ -97,35 +127,6 @@ namespace osg {
             }
 
             return phrases;
-        }
-
-        private void attemptToSellItemsToPawn(Player player, Pawn pawn) {
-            int numWood = player.getInventory().getNumItems(ItemType.WOOD);
-            int numStone = player.getInventory().getNumItems(ItemType.STONE);
-            int numApples = player.getInventory().getNumItems(ItemType.APPLE);
-
-            int cost = (numWood * 5) + (numStone * 10) + (numApples * 1);
-
-            if (cost == 0) {
-                player.getStatus().update("You don't have anything to sell.");
-                return;
-            }
-
-            if (pawn.getInventory().getNumItems(ItemType.GOLD_COIN) < cost) {
-                player.getStatus().update(pawn.getName() + " doesn't have enough gold coins to buy your items.");
-                return;
-            }
-
-            player.getInventory().removeItem(ItemType.WOOD, numWood);
-            player.getInventory().removeItem(ItemType.STONE, numStone);
-            player.getInventory().removeItem(ItemType.APPLE, numApples);
-            pawn.getInventory().addItem(ItemType.WOOD, numWood);
-            pawn.getInventory().addItem(ItemType.STONE, numStone);
-            pawn.getInventory().addItem(ItemType.APPLE, numApples);
-            player.getInventory().addItem(ItemType.GOLD_COIN, cost);
-            pawn.getInventory().removeItem(ItemType.GOLD_COIN, cost);
-            player.getStatus().update("Sold " + numWood + " wood, " + numStone + " stone, and " + numApples + " apples to " + pawn.getName() + " for " + cost + " gold coins.");
-            return;
         }
     }
 }

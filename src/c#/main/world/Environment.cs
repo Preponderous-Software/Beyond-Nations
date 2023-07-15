@@ -40,6 +40,10 @@ namespace osg {
             return null;
         }
 
+        public int getNumberOfChunks() {
+            return chunks.Count;
+        }
+
         public int getChunkSize() {
             return chunks[0].getSize();
         }
@@ -48,12 +52,12 @@ namespace osg {
             return chunks[0].getLocationScale();
         }
 
-        public TreeEntity getNearestTree(Vector3 position) {
-            return (TreeEntity)getNearestEntityOfType(position, EntityType.TREE);
+        public AppleTree getNearestTree(Vector3 position) {
+            return (AppleTree)getNearestEntityOfType(position, EntityType.TREE);
         }
 
-        public RockEntity getNearestRock(Vector3 position) {
-            return (RockEntity)getNearestEntityOfType(position, EntityType.ROCK);
+        public Rock getNearestRock(Vector3 position) {
+            return (Rock)getNearestEntityOfType(position, EntityType.ROCK);
         }
 
         public Entity getNearestEntityOfType(Vector3 position, EntityType type) {
