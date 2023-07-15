@@ -25,17 +25,17 @@ The following controls are available in the game:
 | `N` | Create a new nation |
 | `J` | Join a random nation |
 | `L` | Leave your current nation |
-| `T` | Teleport all living entities to you |
 | `F` | Found a settlement |
 | `P` | Plant a sapling |
 | `H` | Teleport to home settlement |
 | `B` | Build stall |
 | `Insert` | Toggle auto-walk |
-| `F3` | Toggle show debug menu |
-| `F1` | Spawn a new pawn |
+| `F1` | Toggle show debug menu |
 | `F2` | Generate nearby land |
+| `F3` | Spawn a new pawn |
 | `F4` | Spawn money |
 | `F5` | Spawn wood |
+| `F6` | Teleport all pawns to you |
 
 ## Game Systems
 There are a number of systems that will be implemented in the game. These systems will be used to create a rich and engaging gameplay experience. Details can be found in the [Systems Document](./docs/SYSTEMS.md).

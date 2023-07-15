@@ -512,6 +512,10 @@ namespace osg {
                 command.execute(player);
             }
             else if (Input.GetKeyDown(KeyBindings.teleportAllToPlayer)) {
+                if (!debugMode) {
+                    player.getStatus().update("Debug mode must be enabled to teleport all pawns to player. Press " + KeyBindings.toggleDebugMode + " to enable debug mode.");
+                    return;
+                }
                 TeleportAllPawnsCommand command = new TeleportAllPawnsCommand(entityRepository);
                 command.execute(player);
             }
