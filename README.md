@@ -30,6 +30,8 @@ The following controls are available in the game:
 | `H` | Teleport to home settlement |
 | `B` | Build stall |
 | `Insert` | Toggle auto-walk |
+| `Page Up` | Increase render distance |
+| `Page Down` | Decrease render distance |
 | `F1` | Toggle show debug menu |
 | `F2` | Generate nearby land |
 | `F3` | Spawn a new pawn |
