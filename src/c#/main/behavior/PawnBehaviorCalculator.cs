@@ -92,7 +92,7 @@ namespace osg {
                 else {
 
                     // if pawn has an abundance of resources, sell them
-                    if (pawn.getInventory().containsAbundanceOfResources()) {
+                    if (pawn.getInventory().containsAbundanceOfResources() && homeMarket.getTotalCoins() > 10) {
                         return BehaviorType.SELL_RESOURCES;
                     }
 
@@ -113,7 +113,7 @@ namespace osg {
 
                 Market market = homeSettlement.getMarket();
                 Stall stall = market.getStall(pawn.getId());
-                if (stall.getInventory().hasItem(ItemType.COIN)) {
+                if (stall.getInventory().hasItem(ItemType.COIN) && stall.getInventory().getNumItems(ItemType.COIN) >= Stall.COIN_COST_TO_PURCHASE * 2) {
                     return BehaviorType.COLLECT_PROFIT_FROM_STALL;
                 }
                 

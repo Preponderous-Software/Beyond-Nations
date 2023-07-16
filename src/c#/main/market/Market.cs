@@ -89,11 +89,14 @@ namespace osg {
             return totalNumItemsSold;
         }
 
-        public bool purchaseFood(Pawn pawn) {
+        public EntityId purchaseFood(Pawn pawn) {
             return buyItem(pawn, ItemType.APPLE, 1);
         }
 
-        public bool buyItem(Pawn pawn, ItemType itemType, int quantity) {
+        /**
+        * @return the id of the stall owner, or null if purchase failed
+        */
+        public EntityId buyItem(Pawn pawn, ItemType itemType, int quantity) {
             int cost = ItemCostCalculator.calculateCostBasedOnSupply(itemType, this);
             List<Stall> stallsToBuyFrom = new List<Stall>();
             foreach(Stall stall in stalls) {
@@ -115,7 +118,7 @@ namespace osg {
                 stallsToBuyFrom.Add(stall);
             }
             if (stallsToBuyFrom.Count == 0) {
-                return false;
+                return null;
             }
 
             int randomStallIndex = Random.Range(0, stallsToBuyFrom.Count);
@@ -132,10 +135,13 @@ namespace osg {
             totalNumItemsBought += quantity;
 
             UnityEngine.Debug.Log("Pawn " + pawn.getName() + " bought " + quantity + " " + itemType + " from " + stallToBuyFrom.getOwnerId() + " for " + cost * quantity + " coins");
-            return true;
+            return stallToBuyFrom.getOwnerId();
         }
 
-        public void sellResources(Pawn pawn) {
+        /**
+        * @return the id of the stall owner, or null if purchase failed
+        */
+        public EntityId sellResources(Pawn pawn) {
             List<Stall> stallsToSellTo = new List<Stall>();
             foreach(Stall stall in stalls) {
                 if (stall.getOwnerId() == null) {
@@ -163,7 +169,7 @@ namespace osg {
                 }
             }
             if (stallsToSellTo.Count == 0) {
-                return;
+                return null;
             }
 
             int randomStallIndex = Random.Range(0, stallsToSellTo.Count);
@@ -194,8 +200,8 @@ namespace osg {
 
                 totalNumItemsSold++;
                 UnityEngine.Debug.Log("Pawn " + pawn.getName() + " sold 1 " + itemType + " to " + stallToSellTo.getOwnerId() + " for " + cost + " coins");
-                return;
             }
+            return stallToSellTo.getOwnerId();
         }
 
         public int getQuantityAvailable(ItemType itemType) {
@@ -210,6 +216,10 @@ namespace osg {
                 quantityAvailable += stall.getInventory().getNumItems(itemType);
             }
             return quantityAvailable;
+        }
+
+        public int getTotalCoins() {
+            return getQuantityAvailable(ItemType.COIN);
         }
     }
 }
