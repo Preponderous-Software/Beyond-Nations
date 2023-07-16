@@ -146,7 +146,8 @@ namespace osg {
                     increaseRelationship(pawn, stallOwnerPawn, 1);
                 }
                 else if (stallOwner is Player) {
-                    Debug.LogWarning("Unimplemented: increase relationship with player stall owner.");
+                    Player stallOwnerPlayer = (Player) stallOwner;
+                    increaseRelationship(pawn, stallOwnerPlayer, 1);
                 }
                 else {
                     Debug.LogError("Stall owner " + stallOwner + " is not a pawn or player.");
@@ -198,7 +199,8 @@ namespace osg {
                     increaseRelationship(pawn, stallOwnerPawn, 1);
                 }
                 else if (stallOwner is Player) {
-                    Debug.LogWarning("Unimplemented: increase relationship with player stall owner.");
+                    Player stallOwnerPlayer = (Player) stallOwner;
+                    increaseRelationship(pawn, stallOwnerPlayer, 1);
                 }
                 else {
                     Debug.LogError("Stall owner " + stallOwner + " is not a pawn or player.");
@@ -496,6 +498,13 @@ namespace osg {
             pawn.increaseRelationship(otherPawn, amount);
             otherPawn.increaseRelationship(pawn, amount);
             Debug.Log("[PBE DEBUG] Pawn " + pawn.getName() + " now has a relationship of " + pawn.getRelationships()[otherPawn.getId()] + " with stall owner " + otherPawn.getName() + ".");
+        }
+
+        private void increaseRelationship(Pawn pawn, Player player, int amount) {
+            pawn.increaseRelationship(player, amount);
+            player.increaseRelationship(pawn, amount);
+            Debug.Log("[PBE DEBUG] Pawn " + pawn.getName() + " now has a relationship of " + pawn.getRelationships()[player.getId()] + " with player " + player.getId() + ".");
+            player.getStatus().update("Relationship with " + pawn.getName() + " is now " + player.getRelationships()[pawn.getId()] + ".");
         }
     }
 }
