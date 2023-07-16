@@ -154,8 +154,8 @@ namespace osg {
 
                             if (player.getNationId() != null) {
                                 Nation nation = nationRepository.getNation(player.getNationId());
-                                
-                                if (nation.getLeaderId() == pawn.getId()) {
+                                NationRole role = nation.getRole(pawn.getId());
+                                if (role == NationRole.LEADER) {
                                     // transfer leadership to another pawn
                                     if (nation.getNumberOfMembers() > 0) {
                                         nation.setLeaderId(nation.getOldestMemberId());
@@ -187,7 +187,7 @@ namespace osg {
                                         player.getStatus().update(nation.getName() + " has been disbanded.");
                                     }
                                 }
-                                else if (nation.getRole(pawn.getId()) == NationRole.MERCHANT) {
+                                else if (role == NationRole.MERCHANT) {
                                     // remove stall ownership
                                     foreach (EntityId settlementId in nation.getSettlements()) {
                                         Settlement settlement = (Settlement)entityRepository.getEntity(settlementId);

@@ -132,7 +132,26 @@ namespace osg {
             Settlement settlement = (Settlement) entityRepository.getEntity(pawn.getHomeSettlementId());
             
             Market market = settlement.getMarket();
-            market.sellResources(pawn);
+            EntityId stallOwnerId = market.sellResources(pawn);
+            if (stallOwnerId == null) {
+                Debug.LogWarning("Pawn " + pawn + " tried to sell resources but was unable to.");
+                pawn.setCurrentBehaviorType(BehaviorType.NONE);
+                return;
+            }
+            else {
+                // increase relationship with stall owner
+                Entity stallOwner = entityRepository.getEntity(stallOwnerId);
+                if (stallOwner is Pawn) {
+                    Pawn stallOwnerPawn = (Pawn) stallOwner;
+                    increaseRelationship(pawn, stallOwnerPawn, 1);
+                }
+                else if (stallOwner is Player) {
+                    Debug.LogWarning("Unimplemented: increase relationship with player stall owner.");
+                }
+                else {
+                    Debug.LogError("Stall owner " + stallOwner + " is not a pawn or player.");
+                }
+            }
             pawn.setCurrentBehaviorType(BehaviorType.NONE);
         }
 
@@ -161,16 +180,29 @@ namespace osg {
             // purchase food from settlement market
             Settlement settlement = (Settlement) entityRepository.getEntity(pawn.getHomeSettlementId());
             if (settlement == null) {
-                Debug.LogError("Pawn " + pawn + " is trying to purchase food from settlement market " + pawn.getHomeSettlementId() + " but it does not exist.");
+                Debug.LogError("Pawn " + pawn.getName() + " is trying to purchase food from settlement market " + pawn.getHomeSettlementId() + " but it does not exist.");
                 return;
             }
             Market market = settlement.getMarket();
-            bool result = market.purchaseFood(pawn);
-            if (!result) {
-                Debug.LogWarning("Pawn " + pawn + " tried to purchase food from settlement market " + settlement + " but there was not enough food.");
+            EntityId stallOwnerId = market.purchaseFood(pawn);
+            if (stallOwnerId == null) {
+                Debug.LogWarning("Pawn " + pawn.getName() + " tried to purchase food from settlement market " + settlement + " but there was not enough food.");
             }
             else {
-                Debug.Log("[PBE DEBUG] Pawn " + pawn + " purchased food from settlement market " + settlement + ".");
+                Debug.Log("[PBE DEBUG] Pawn " + pawn.getName() + " purchased food from settlement market " + settlement + ".");
+
+                // increase relationship with stall owner
+                Entity stallOwner = entityRepository.getEntity(stallOwnerId);
+                if (stallOwner is Pawn) {
+                    Pawn stallOwnerPawn = (Pawn) stallOwner;
+                    increaseRelationship(pawn, stallOwnerPawn, 1);
+                }
+                else if (stallOwner is Player) {
+                    Debug.LogWarning("Unimplemented: increase relationship with player stall owner.");
+                }
+                else {
+                    Debug.LogError("Stall owner " + stallOwner + " is not a pawn or player.");
+                }
             }
             pawn.setCurrentBehaviorType(BehaviorType.NONE);
         }
@@ -456,6 +488,14 @@ namespace osg {
             stall.getInventory().removeItem(ItemType.APPLE, foodToTransfer);
             Debug.Log("Pawn " + pawn.getName() + " collected " + foodToTransfer + " food from their stall.");
             pawn.setCurrentBehaviorType(BehaviorType.NONE);
+        }
+
+        // helpers -----------------------------------------------------------------------------------------------
+
+        private void increaseRelationship(Pawn pawn, Pawn otherPawn, int amount) {
+            pawn.increaseRelationship(otherPawn, amount);
+            otherPawn.increaseRelationship(pawn, amount);
+            Debug.Log("[PBE DEBUG] Pawn " + pawn.getName() + " now has a relationship of " + pawn.getRelationships()[otherPawn.getId()] + " with stall owner " + otherPawn.getName() + ".");
         }
     }
 }
