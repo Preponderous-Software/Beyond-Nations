@@ -20,6 +20,9 @@ namespace osg {
         private float energy = 100;
         private float metabolism = UnityEngine.Random.Range(0.001f, 0.010f);
 
+        // map of entity id to integer representing relationship strength
+        private Dictionary<EntityId, int> relationships = new Dictionary<EntityId, int>();
+
         public Player(int walkSpeed, int runSpeed, TickCounter tickCounter, int statusExpirationTicks, int renderDistance) : base(EntityType.PLAYER){
             createGameObject(new Vector3(0, 2, 0));
             setupCamera(renderDistance);
@@ -150,6 +153,44 @@ namespace osg {
             int minRenderDistance = 50;
             if (playerCamera.farClipPlane < minRenderDistance) {
                 playerCamera.farClipPlane = minRenderDistance;
+            }
+        }
+
+        public Dictionary<EntityId, int> getRelationships() {
+            return relationships;
+        }
+
+        public void increaseRelationship(Entity entity, int amount) {
+            if (entity == null) {
+                Debug.LogError("entity is null in increaseRelationship()");
+                return;
+            }
+            if (entity.getId() == getId()) {
+                Debug.LogError("entity is self in increaseRelationship()");
+                return;
+            }
+            if (getRelationships().ContainsKey(entity.getId())) {
+                getRelationships()[entity.getId()] += amount;
+            }
+            else {
+                getRelationships().Add(entity.getId(), amount);
+            }
+        }
+
+        public void decreaseRelationship(Entity entity, int amount) {
+            if (entity == null) {
+                Debug.LogError("entity is null in decreaseRelationship()");
+                return;
+            }
+            if (entity.getId() == getId()) {
+                Debug.LogError("entity is self in decreaseRelationship()");
+                return;
+            }
+            if (getRelationships().ContainsKey(entity.getId())) {
+                getRelationships()[entity.getId()] -= amount;
+            }
+            else {
+                getRelationships().Add(entity.getId(), -amount);
             }
         }
 
