@@ -354,6 +354,7 @@ namespace osgtests {
             settlement.getMarket().createStall();
             Stall stall = settlement.getMarket().getStallForSale();
             stall.setOwnerId(merchant.getId());
+            stall.getInventory().addItem(ItemType.COIN, 100);
 
             // prepare pawn
             Pawn pawn = new Pawn(new Vector3(0, 0, 0), "test");
@@ -412,7 +413,7 @@ namespace osgtests {
             settlement.getMarket().createStall();
             Stall stall = settlement.getMarket().getStallForSale();
             stall.setOwnerId(merchant.getId());
-            stall.getInventory().addItem(ItemType.COIN, 10);
+            stall.getInventory().addItem(ItemType.COIN, 200);
 
             // prepare calculator
             GameConfig gameConfig = new GameConfig();
