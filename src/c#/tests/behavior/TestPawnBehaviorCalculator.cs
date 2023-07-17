@@ -219,7 +219,7 @@ namespace osgtests {
             entityRepository.addEntity(settlement);
             nation.addSettlement(settlement.getId());
             nationLeader.setHomeSettlementId(settlement.getId());
-            nationLeader.setCurrentlyInSettlement(true);
+            nationLeader.setCurrentSettlementId(settlement.getId());
 
             // prepare calculator
             GameConfig gameConfig = new GameConfig();
@@ -261,7 +261,7 @@ namespace osgtests {
             entityRepository.addEntity(settlement);
             nation.addSettlement(settlement.getId());
             nationLeader.setHomeSettlementId(settlement.getId());
-            nationLeader.setCurrentlyInSettlement(true);
+            nationLeader.setCurrentSettlementId(settlement.getId());
 
             // prepare market
             for (int i = 0; i < settlement.getMarket().getMaxNumStalls(); i++) {
@@ -313,7 +313,7 @@ namespace osgtests {
             pawn.getInventory().addItem(ItemType.COIN, 10);
             entityRepository.addEntity(pawn);
             pawn.setHomeSettlementId(settlement.getId());
-            pawn.setCurrentlyInSettlement(true);
+            pawn.setCurrentSettlementId(settlement.getId());
 
             // prepare calculator
             GameConfig gameConfig = new GameConfig();
@@ -367,7 +367,7 @@ namespace osgtests {
             nation.addMember(pawn.getId());
             pawn.setNationId(nation.getId());
             pawn.setHomeSettlementId(settlement.getId());
-            pawn.setCurrentlyInSettlement(true);
+            pawn.setCurrentSettlementId(settlement.getId());
 
             // prepare calculator
             GameConfig gameConfig = new GameConfig();
@@ -408,7 +408,7 @@ namespace osgtests {
             nation.setRole(merchant.getId(), NationRole.MERCHANT);
             merchant.setNationId(nation.getId());
             merchant.setHomeSettlementId(settlement.getId());
-            merchant.setCurrentlyInSettlement(true);
+            merchant.setCurrentSettlementId(settlement.getId());
             entityRepository.addEntity(merchant);
             settlement.getMarket().createStall();
             Stall stall = settlement.getMarket().getStallForSale();
@@ -462,7 +462,7 @@ namespace osgtests {
             pawn.getInventory().addItem(ItemType.COIN, 10);
             entityRepository.addEntity(pawn);
             pawn.setHomeSettlementId(settlement.getId());
-            pawn.setCurrentlyInSettlement(true);
+            pawn.setCurrentSettlementId(settlement.getId());
 
             // prepare calculator
             GameConfig gameConfig = new GameConfig();
@@ -504,7 +504,7 @@ namespace osgtests {
             merchant.setNationId(nation.getId());
             merchant.setEnergy(10);
             merchant.setHomeSettlementId(settlement.getId());
-            merchant.setCurrentlyInSettlement(true);
+            merchant.setCurrentSettlementId(settlement.getId());
             entityRepository.addEntity(merchant);
             settlement.getMarket().createStall();
             Stall stall = settlement.getMarket().getStallForSale();

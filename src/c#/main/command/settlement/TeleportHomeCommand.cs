@@ -10,7 +10,7 @@ namespace osg {
         }
 
         public void execute(Player player) {
-            EntityId homeSettlementId = player.getSettlementId();
+            EntityId homeSettlementId = player.getHomeSettlementId();
             if (homeSettlementId == null) {
                 player.getStatus().update("No home found.");
                 return;

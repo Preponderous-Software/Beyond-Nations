@@ -22,16 +22,17 @@ namespace osg {
                 return;
             }
 
-            if (player.getSettlementId() == null) {
-                player.getStatus().update("You are not in a settlement.");
+            EntityId currentSettlementId = player.getCurrentSettlementId();
+            if (currentSettlementId == null) {
+                player.getStatus().update("You are not inside a settlement.");
                 return;
             }
 
-            Settlement settlement = (Settlement) entityRepository.getEntity(player.getSettlementId());
+            Settlement settlement = (Settlement) entityRepository.getEntity(currentSettlementId);
 
             Stall stall = settlement.getMarket().getStall(player.getId());
             if (stall == null) {
-                player.getStatus().update("You do not own a stall.");
+                player.getStatus().update("You do not own a stall in this settlement.");
                 return;
             }
 

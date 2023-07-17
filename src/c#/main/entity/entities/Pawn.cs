@@ -23,7 +23,7 @@ namespace osg {
 
         // map of entity id to integer representing relationship strength
         private Dictionary<EntityId, int> relationships = new Dictionary<EntityId, int>();
-        private bool currentlyInSettlement = false;
+        private EntityId currentSettlementId;
 
         public Pawn(Vector3 position, string name) : base(EntityType.PAWN) {
             this.name = name;
@@ -213,11 +213,19 @@ namespace osg {
         }
 
         public bool isCurrentlyInSettlement() {
-            return currentlyInSettlement;
+            return currentSettlementId != null;
         }
 
-        public void setCurrentlyInSettlement(bool currentlyInSettlement) {
-            this.currentlyInSettlement = currentlyInSettlement;
+        public EntityId getCurrentSettlementId() {
+            return currentSettlementId;
+        }
+
+        public void setCurrentSettlementId(EntityId currentSettlementId) {
+            this.currentSettlementId = currentSettlementId;
+        }
+
+        public void clearCurrentSettlementId() {
+            currentSettlementId = null;
         }
 
         public string getCurrentBehaviorDescription() {

@@ -109,9 +109,10 @@ namespace osg {
                         float ypos = pawn.getGameObject().transform.position.y;
                         if (ypos < -10) {
                             Debug.Log("Entity " + pawn.getId() + " fell into void. Teleporting.");
-                            if (pawn.getHomeSettlementId() != null) {
-                                // pawn is in a settlement, so respawn at settlement
-                                Settlement settlement = (Settlement)entityRepository.getEntity(pawn.getHomeSettlementId());
+                            EntityId homeSettlementId = pawn.getHomeSettlementId();
+                            if (homeSettlementId != null) {
+                                // pawn has home settlement, so respawn at settlement
+                                Settlement settlement = (Settlement)entityRepository.getEntity(homeSettlementId);
                                 Vector3 newPosition = settlement.getGameObject().transform.position;
                                 newPosition = new Vector3(newPosition.x, newPosition.y + 1, newPosition.z);
                                 pawn.getGameObject().transform.position = newPosition;
@@ -137,9 +138,10 @@ namespace osg {
                             if (gameConfig.getKeepInventoryOnDeath() == false) {
                                 pawn.getInventory().clear();
                             }
-                            if (pawn.getHomeSettlementId() != null) {
+                            EntityId homeSettlementId = pawn.getHomeSettlementId();
+                            if (homeSettlementId != null) {
                                 // pawn is in a settlement, so respawn at settlement
-                                Settlement settlement = (Settlement)entityRepository.getEntity(pawn.getHomeSettlementId());
+                                Settlement settlement = (Settlement)entityRepository.getEntity(homeSettlementId);
                                 Vector3 newPosition = settlement.getGameObject().transform.position;
                                 newPosition = new Vector3(newPosition.x + UnityEngine.Random.Range(-20, 20), newPosition.y, newPosition.z + UnityEngine.Random.Range(-20, 20));
                                 pawn.getGameObject().transform.position = newPosition;
@@ -239,10 +241,10 @@ namespace osg {
                 }
                 player.getStatus().update("You died.");
                 
-                if (player.getSettlementId() != null) {
-                    // player is in a settlement, so respawn at settlement
-                    Settlement settlement = (Settlement)entityRepository.getEntity(player.getSettlementId());
-                    Vector3 newPosition = settlement.getGameObject().transform.position;
+                if (player.getHomeSettlementId() != null) {
+                    // player has home settlement, so respawn at settlement
+                    Settlement homeSettlement = (Settlement)entityRepository.getEntity(player.getHomeSettlementId());
+                    Vector3 newPosition = homeSettlement.getGameObject().transform.position;
                     newPosition = new Vector3(newPosition.x + UnityEngine.Random.Range(-20, 20), newPosition.y, newPosition.z + UnityEngine.Random.Range(-20, 20));
                     player.getGameObject().transform.position = newPosition;
                 }
@@ -305,8 +307,8 @@ namespace osg {
                 }
 
                 // teleport home
-                if (player.getSettlementId() != null) {
-                    Settlement settlement = (Settlement) entityRepository.getEntity(player.getSettlementId());
+                if (!player.isCurrentlyInSettlement() && player.getHomeSettlementId() != null) {
+                    Settlement homeSettlement = (Settlement) entityRepository.getEntity(player.getHomeSettlementId());
                     if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Teleport Home")) {
                         TeleportHomeCommand command = new TeleportHomeCommand(entityRepository);
                         command.execute(player);
@@ -315,71 +317,106 @@ namespace osg {
                 }
 
                 // if leader and no stalls and enough resources, draw build stall
-                if (player.getSettlementId() != null) {
-                    Settlement settlement = (Settlement) entityRepository.getEntity(player.getSettlementId());
-                    if (player.getId() == nation.getLeaderId() && settlement.getMarket().getNumStalls() < settlement.getMarket().getMaxNumStalls() && player.getInventory().getNumItems(ItemType.WOOD) >= Stall.WOOD_COST_TO_BUILD) {
-                        if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Build Stall")) {
-                            BuildStallCommand command = new BuildStallCommand(nationRepository, entityRepository);
-                            command.execute(player);
+                if (player.isCurrentlyInSettlement()) {
+                    Settlement settlement = (Settlement) entityRepository.getEntity(player.getCurrentSettlementId());
+                    if (settlement.getNationId() == player.getNationId()) {
+                        if (player.getId() == nation.getLeaderId() && settlement.getMarket().getNumStalls() < settlement.getMarket().getMaxNumStalls() && player.getInventory().getNumItems(ItemType.WOOD) >= Stall.WOOD_COST_TO_BUILD) {
+                            if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Build Stall")) {
+                                BuildStallCommand command = new BuildStallCommand(nationRepository, entityRepository);
+                                command.execute(player);
+                            }
+                            buttonX += buttonWidth + buttonSpacing;
                         }
-                        buttonX += buttonWidth + buttonSpacing;
                     }
+                    
                 }
 
                 // if serf, enough gold and stall for sale, draw purchase stall
-                if (player.getSettlementId() != null) {
-                    Settlement settlement = (Settlement) entityRepository.getEntity(player.getSettlementId());
-                    if (nation.getRole(player.getId()) == NationRole.SERF && player.getInventory().getNumItems(ItemType.COIN) >= Stall.COIN_COST_TO_PURCHASE && settlement.getMarket().getNumStallsForSale() > 0) {
-                        if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Purchase Stall")) {
-                            PurchaseStallCommand command = new PurchaseStallCommand(nationRepository, entityRepository);
-                            command.execute(player);
+                if (player.isCurrentlyInSettlement()) {
+                    Settlement settlement = (Settlement) entityRepository.getEntity(player.getCurrentSettlementId());
+                    if (settlement.getNationId() == player.getNationId()) {
+                        if (nation.getRole(player.getId()) == NationRole.SERF && player.getInventory().getNumItems(ItemType.COIN) >= Stall.COIN_COST_TO_PURCHASE && settlement.getMarket().getNumStallsForSale() > 0) {
+                            if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Purchase Stall")) {
+                                PurchaseStallCommand command = new PurchaseStallCommand(nationRepository, entityRepository);
+                                command.execute(player);
+                            }
+                            buttonX += buttonWidth + buttonSpacing;
                         }
-                        buttonX += buttonWidth + buttonSpacing;
                     }
+                    
                 }
 
                 // if merchant, draw transfer items & collect profit
-                if (player.getSettlementId() != null) {
-                    Settlement settlement = (Settlement) entityRepository.getEntity(player.getSettlementId());
-                    Market market = settlement.getMarket();
-                    Stall stall = market.getStall(player.getId());
-                    if (stall != null) {
-                        Inventory stallInventory = stall.getInventory();
-                        if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Transfer Items")) {
-                            TransferItemsToStallCommand command = new TransferItemsToStallCommand(nationRepository, entityRepository);
-                            command.execute(player);
-                        }
-                        buttonX += buttonWidth + buttonSpacing;
-
-                        int numCoins = stallInventory.getNumItems(ItemType.COIN);
-                        if (numCoins > 0) {
-                            if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Collect Coins (" + numCoins + ")" )) {
-                                CollectProfitFromStallCommand command = new CollectProfitFromStallCommand(nationRepository, entityRepository);
+                if (player.isCurrentlyInSettlement()) {
+                    Settlement settlement = (Settlement) entityRepository.getEntity(player.getCurrentSettlementId());
+                    if (settlement.getNationId() == player.getNationId()) {
+                        Market market = settlement.getMarket();
+                        Stall stall = market.getStall(player.getId());
+                        if (stall != null) {
+                            Inventory stallInventory = stall.getInventory();
+                            if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Transfer Items")) {
+                                TransferItemsToStallCommand command = new TransferItemsToStallCommand(nationRepository, entityRepository);
                                 command.execute(player);
                             }
                             buttonX += buttonWidth + buttonSpacing;
-                        }
 
-                        int numApples = stallInventory.getNumItems(ItemType.APPLE);
-                        if (numApples > 0) {
-                            if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Collect Food (" + numApples + ")")) {
-                                CollectFoodFromStallCommand command = new CollectFoodFromStallCommand(nationRepository, entityRepository);
-                                command.execute(player);
+                            int numCoins = stallInventory.getNumItems(ItemType.COIN);
+                            if (numCoins > 0) {
+                                if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Collect Coins (" + numCoins + ")" )) {
+                                    CollectProfitFromStallCommand command = new CollectProfitFromStallCommand(nationRepository, entityRepository);
+                                    command.execute(player);
+                                }
+                                buttonX += buttonWidth + buttonSpacing;
                             }
-                            buttonX += buttonWidth + buttonSpacing;
+
+                            int numApples = stallInventory.getNumItems(ItemType.APPLE);
+                            if (numApples > 0) {
+                                if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Collect Food (" + numApples + ")")) {
+                                    CollectFoodFromStallCommand command = new CollectFoodFromStallCommand(nationRepository, entityRepository);
+                                    command.execute(player);
+                                }
+                                buttonX += buttonWidth + buttonSpacing;
+                            }
                         }
                     }
+                    
                 }
+
+                // if currently inside settlement, draw exit settlement
+                if (player.isCurrentlyInSettlement()) {
+                    if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Exit Settlement")) {
+                        ExitSettlementCommand command = new ExitSettlementCommand(entityRepository);
+                        command.execute(player);
+                    }
+                    buttonX += buttonWidth + buttonSpacing;
+                }
+
             }
 
             // if saplings, plant sapling
-            if (player.getInventory().getNumItems(ItemType.SAPLING) > 0) {
+            if (player.getInventory().getNumItems(ItemType.SAPLING) > 0 && !player.isCurrentlyInSettlement()) {
                 if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Plant Sapling")) {
                     PlantSaplingCommand command = new PlantSaplingCommand(entityRepository);
                     command.execute(player);
                 }
                 buttonX += buttonWidth + buttonSpacing;
             }
+
+            if (!player.isCurrentlyInSettlement()) {
+                Settlement nearestSettlement = (Settlement) environment.getNearestEntityOfType(player.getGameObject().transform.position, EntityType.SETTLEMENT);
+                if (nearestSettlement != null) {
+                    int distanceToNearestSettlement = (int) Vector3.Distance(player.getGameObject().transform.position, nearestSettlement.getGameObject().transform.position);
+                    int distanceThreshold = 50;
+                    if (distanceToNearestSettlement < distanceThreshold) {
+                        if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Enter Settlement")) {
+                            EnterSettlementCommand command = new EnterSettlementCommand(entityRepository);
+                            command.execute(player, nearestSettlement);
+                        }
+                        buttonX += buttonWidth + buttonSpacing;
+                    }
+                }
+            }
+
         }
 
         private void drawDebugInfo() {
@@ -596,10 +633,10 @@ namespace osg {
             float ypos = player.getGameObject().transform.position.y;
             if (ypos < -10) {
                 eventProducer.producePlayerFallingIntoVoidEvent(player.getGameObject().transform.position);
-                if (player.getSettlementId() != null) {
-                    // player is in a settlement, so respawn at settlement
-                    Settlement settlement = (Settlement)entityRepository.getEntity(player.getSettlementId());
-                    Vector3 newPosition = settlement.getGameObject().transform.position;
+                if (player.getHomeSettlementId() != null) {
+                    // player has home settlement, so respawn at settlement
+                    Settlement homeSettlement = (Settlement)entityRepository.getEntity(player.getHomeSettlementId());
+                    Vector3 newPosition = homeSettlement.getGameObject().transform.position;
                     newPosition = new Vector3(newPosition.x + UnityEngine.Random.Range(-20, 20), newPosition.y, newPosition.z + UnityEngine.Random.Range(-20, 20));
                     player.getGameObject().transform.position = newPosition;
                 }

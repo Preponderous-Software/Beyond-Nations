@@ -22,14 +22,20 @@ namespace osg {
                 return;
             }
 
-            if (player.getSettlementId() == null) {
-                player.getStatus().update("You are not in a settlement.");
+            EntityId currentSettlementId = player.getCurrentSettlementId();
+            if (currentSettlementId == null) {
+                player.getStatus().update("You are not inside a settlement.");
                 return;
             }
 
-            Settlement settlement = (Settlement) entityRepository.getEntity(player.getSettlementId());
+            Settlement currentSettlement = (Settlement) entityRepository.getEntity(player.getCurrentSettlementId());
+            NationId settlementNationId = currentSettlement.getNationId();
+            if (settlementNationId != player.getNationId()) {
+                player.getStatus().update("You are not inside a settlement owned by your nation.");
+                return;
+            }
 
-            if (settlement.getMarket().getNumStalls() >= settlement.getMarket().getMaxNumStalls()) {
+            if (currentSettlement.getMarket().getNumStalls() >= currentSettlement.getMarket().getMaxNumStalls()) {
                 player.getStatus().update("Market is full. Cannot build stall.");
                 return;
             }
@@ -39,7 +45,7 @@ namespace osg {
                 return;
             }
 
-            settlement.getMarket().createStall();
+            currentSettlement.getMarket().createStall();
             player.getInventory().removeItem(ItemType.WOOD, Stall.WOOD_COST_TO_BUILD);
             player.getStatus().update("Stall built.");
         }
