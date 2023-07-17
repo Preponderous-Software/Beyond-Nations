@@ -18,16 +18,21 @@ namespace osg {
             }
             Nation nation = nationRepository.getNation(player.getNationId());
 
-            if (player.getSettlementId() == null) {
-                player.getStatus().update("You are not in a settlement.");
+            EntityId currentSettlementId = player.getCurrentSettlementId();
+            if (currentSettlementId == null) {
+                player.getStatus().update("You are not inside a settlement.");
                 return;
             }
 
-            Settlement settlement = (Settlement) entityRepository.getEntity(player.getSettlementId());
+            Settlement settlement = (Settlement) entityRepository.getEntity(currentSettlementId);
+            if (settlement.getNationId() != player.getNationId()) {
+                player.getStatus().update("You can only purchase a stall in one of your own nation's settlements.");
+                return;
+            }
             Market market = settlement.getMarket();
             Stall stall = market.getStall(player.getId());
             if (stall != null) {
-                player.getStatus().update("You already own a stall.");
+                player.getStatus().update("You can only own one stall per settlement.");
                 return;
             }
             

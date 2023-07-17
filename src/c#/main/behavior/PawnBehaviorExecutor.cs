@@ -129,7 +129,7 @@ namespace osg {
         }
 
         private void executeSellResourcesBehavior(Pawn pawn) {
-            Settlement settlement = (Settlement) entityRepository.getEntity(pawn.getHomeSettlementId());
+            Settlement settlement = (Settlement) entityRepository.getEntity(pawn.getCurrentSettlementId());
             
             Market market = settlement.getMarket();
             EntityId stallOwnerId = market.sellResources(pawn);
@@ -179,9 +179,9 @@ namespace osg {
             }
 
             // purchase food from settlement market
-            Settlement settlement = (Settlement) entityRepository.getEntity(pawn.getHomeSettlementId());
+            Settlement settlement = (Settlement) entityRepository.getEntity(pawn.getCurrentSettlementId());
             if (settlement == null) {
-                Debug.LogError("Pawn " + pawn.getName() + " is trying to purchase food from settlement market " + pawn.getHomeSettlementId() + " but it does not exist.");
+                Debug.LogError("Pawn " + pawn.getName() + " is trying to purchase food from settlement market " + pawn.getCurrentSettlementId() + " but it does not exist.");
                 return;
             }
             Market market = settlement.getMarket();
@@ -234,28 +234,28 @@ namespace osg {
 
         private void executeGoToHomeSettlementBehavior(Pawn pawn) {
             Nation nation = nationRepository.getNation(pawn.getNationId());
-            Settlement settlement = null;
+            Settlement homeSettlement = null;
             if (nation != null && nation.getNumberOfSettlements() > 0) {
-                EntityId settlementId = pawn.getHomeSettlementId();
-                if (settlementId == null) {
+                EntityId homeSettlementId = pawn.getHomeSettlementId();
+                if (homeSettlementId == null) {
                     Debug.LogError("Pawn " + pawn + " has no settlement id.");
                     return;
                 }
-                settlement = (Settlement) entityRepository.getEntity(settlementId);
+                homeSettlement = (Settlement) entityRepository.getEntity(homeSettlementId);
             }
 
             if (!pawn.hasTargetEntity()) {
-                if (settlement != null) {
-                    pawn.setTargetEntity(settlement);
+                if (homeSettlement != null) {
+                    pawn.setTargetEntity(homeSettlement);
                 }
             }
             else if (pawn.isAtTargetEntity(20)) {
-                if (settlement == null) {
+                if (homeSettlement == null) {
                     Debug.LogError("Pawn " + pawn + " has no settlement to go to.");
                     return;
                 }
-                settlement.addCurrentlyPresentEntity(pawn.getId());
-                pawn.setCurrentlyInSettlement(true);
+                homeSettlement.addCurrentlyPresentEntity(pawn.getId());
+                pawn.setCurrentSettlementId(homeSettlement.getId());
                 pawn.destroyGameObject();
                 pawn.setTargetEntity(null);
                 pawn.setCurrentBehaviorType(BehaviorType.NONE);
@@ -274,9 +274,9 @@ namespace osg {
                 return;
             }
 
-            pawn.setCurrentlyInSettlement(false);
-            Settlement settlement = entityRepository.getEntity(pawn.getHomeSettlementId()) as Settlement;
+            Settlement settlement = entityRepository.getEntity(pawn.getCurrentSettlementId()) as Settlement;
             settlement.removeCurrentlyPresentEntity(pawn.getId());
+            pawn.clearCurrentSettlementId();
             pawn.createGameObject(settlement.getGameObject().transform.position + new Vector3(UnityEngine.Random.Range(-20, 20), 0, UnityEngine.Random.Range(-20, 20)));
             pawn.setColor(settlement.getColor());
             pawn.setCurrentBehaviorType(BehaviorType.NONE);
@@ -312,10 +312,10 @@ namespace osg {
                 return;
             }
 
-            // if no home settlement
-            EntityId homeSettlementId = pawn.getHomeSettlementId();
-            if (homeSettlementId == null) {
-                Debug.LogError("Pawn " + pawn + " has no home settlement id.");
+            // if not currently in a settlement
+            EntityId currentSettlementId = pawn.getCurrentSettlementId();
+            if (currentSettlementId == null) {
+                Debug.LogError("Pawn " + pawn + " is not in a settlement but is trying to build a stall.");
                 return;
             }
 
@@ -323,22 +323,21 @@ namespace osg {
             pawn.getInventory().removeItem(ItemType.WOOD, Stall.WOOD_COST_TO_BUILD);
             
             // build stall
-            Settlement homeSettlement = (Settlement) entityRepository.getEntity(homeSettlementId);
-            Market market = homeSettlement.getMarket();
+            Settlement currentSettlement = (Settlement) entityRepository.getEntity(currentSettlementId);
+            Market market = currentSettlement.getMarket();
 
             market.createStall();
             pawn.setCurrentBehaviorType(BehaviorType.NONE);       
         }
 
         private void executePurchaseStallBehavior(Pawn pawn) {
-            // pawn is assumed to be in home settlement
-            EntityId homeSettlementId = pawn.getHomeSettlementId();
-            if (homeSettlementId == null) {
-                Debug.LogError("Pawn " + pawn + " has no home settlement id.");
+            EntityId currentSettlementId = pawn.getCurrentSettlementId();
+            if (currentSettlementId == null) {
+                Debug.LogError("Pawn " + pawn + " is not in a settlement but is trying to purchase a stall.");
                 return;
             }
-            Settlement homeSettlement = (Settlement) entityRepository.getEntity(homeSettlementId);
-            Market market = homeSettlement.getMarket();
+            Settlement currentSettlement = (Settlement) entityRepository.getEntity(currentSettlementId);
+            Market market = currentSettlement.getMarket();
 
             // if no stalls for sale
             if (market.getNumStallsForSale() == 0) {
@@ -364,14 +363,13 @@ namespace osg {
         }
 
         private void executeTransferItemsToStallBehavior(Pawn pawn) {
-            // pawn is assumed to be in home settlement
-            EntityId homeSettlementId = pawn.getHomeSettlementId();
-            if (homeSettlementId == null) {
+            EntityId currentSettlementId = pawn.getCurrentSettlementId();
+            if (currentSettlementId == null) {
                 Debug.LogError("Pawn " + pawn + " has no home settlement id.");
                 return;
             }
-            Settlement homeSettlement = (Settlement) entityRepository.getEntity(homeSettlementId);
-            Market market = homeSettlement.getMarket();
+            Settlement currentSettlement = (Settlement) entityRepository.getEntity(currentSettlementId);
+            Market market = currentSettlement.getMarket();
 
             // if no stalls owned
             if (market.getStall(pawn.getId()) == null) {
@@ -438,14 +436,13 @@ namespace osg {
         }
 
         private void executeCollectProfitFromStallBehavior(Pawn pawn) {
-            // pawn is assumed to be in home settlement
-            EntityId homeSettlementId = pawn.getHomeSettlementId();
-            if (homeSettlementId == null) {
-                Debug.LogError("Pawn " + pawn + " has no home settlement id.");
+            EntityId currentSettlementId = pawn.getCurrentSettlementId();
+            if (currentSettlementId == null) {
+                Debug.LogError("Pawn " + pawn + " is not in a settlement but is trying to collect profit from a stall.");
                 return;
             }
-            Settlement homeSettlement = (Settlement) entityRepository.getEntity(homeSettlementId);
-            Market market = homeSettlement.getMarket();
+            Settlement currentSettlement = (Settlement) entityRepository.getEntity(currentSettlementId);
+            Market market = currentSettlement.getMarket();
 
             // if no stalls owned
             if (market.getStall(pawn.getId()) == null) {
@@ -462,16 +459,14 @@ namespace osg {
             pawn.setCurrentBehaviorType(BehaviorType.NONE);
         }
 
-        // collect half of food from stall
         private void executeCollectFoodFromStallBehavior(Pawn pawn) {
-            // pawn is assumed to be in home settlement
-            EntityId homeSettlementId = pawn.getHomeSettlementId();
-            if (homeSettlementId == null) {
+            EntityId currentSettlementId = pawn.getCurrentSettlementId();
+            if (currentSettlementId == null) {
                 Debug.LogError("Pawn " + pawn + " has no home settlement id.");
                 return;
             }
-            Settlement homeSettlement = (Settlement) entityRepository.getEntity(homeSettlementId);
-            Market market = homeSettlement.getMarket();
+            Settlement currentSettlement = (Settlement) entityRepository.getEntity(currentSettlementId);
+            Market market = currentSettlement.getMarket();
 
             // if no stalls owned
             if (market.getStall(pawn.getId()) == null) {

@@ -36,11 +36,14 @@ namespace osg {
         }
 
         private BehaviorType computeBehaviorTypeInSettlement(Pawn pawn) {
+            EntityId currentSettlementId = pawn.getCurrentSettlementId();
+            if (currentSettlementId == null) {
+                return BehaviorType.NONE;
+            }
+            Settlement currentSettlement = (Settlement) entityRepository.getEntity(currentSettlementId);
+            Market market = currentSettlement.getMarket();
             if (pawnNeedsFood(pawn)) {
                 int expectedFoodCost = 1;
-                Settlement settlement = (Settlement)entityRepository.getEntity(pawn.getHomeSettlementId());
-                Market market = settlement.getMarket();
-
                 Stall stall = market.getStall(pawn.getId());
                 if (stall != null && stall.getInventory().getNumItems(ItemType.APPLE) > 0) {
                     return BehaviorType.COLLECT_FOOD_FROM_STALL;
@@ -57,15 +60,8 @@ namespace osg {
             Nation nation = nationRepository.getNation(pawn.getNationId());
             NationRole role = nation.getRole(pawn.getId());
 
-            Settlement homeSettlement = (Settlement)entityRepository.getEntity(pawn.getHomeSettlementId());
-            if (homeSettlement == null) {
-                return BehaviorType.NONE;
-            }
-
-            Market homeMarket = homeSettlement.getMarket();
-
             if (role == NationRole.LEADER) {
-                if (homeMarket.getNumStalls() < homeMarket.getMaxNumStalls()) {
+                if (market.getNumStalls() < market.getMaxNumStalls()) {
                     // if not enough wood
                     if (pawn.getInventory().getNumItems(ItemType.WOOD) < Stall.WOOD_COST_TO_BUILD) {
                         return BehaviorType.EXIT_SETTLEMENT;
@@ -86,13 +82,13 @@ namespace osg {
             }
             else if (role == NationRole.SERF) {
                 // if enough coins and stall for sale
-                if (pawn.getInventory().getNumItems(ItemType.COIN) >= Stall.COIN_COST_TO_PURCHASE && homeMarket.getNumStallsForSale() > 0) {
+                if (pawn.getInventory().getNumItems(ItemType.COIN) >= Stall.COIN_COST_TO_PURCHASE && market.getNumStallsForSale() > 0) {
                     return BehaviorType.PURCHASE_STALL;
                 }
                 else {
 
                     // if pawn has an abundance of resources, sell them
-                    if (pawn.getInventory().containsAbundanceOfResources() && homeMarket.getTotalCoins() > 10) {
+                    if (pawn.getInventory().containsAbundanceOfResources() && market.getTotalCoins() > 10) {
                         return BehaviorType.SELL_RESOURCES;
                     }
 
@@ -110,8 +106,6 @@ namespace osg {
                 if (pawn.getInventory().getNumItems(ItemType.WOOD) > 0 && pawn.getInventory().getNumItems(ItemType.STONE) > 0) {
                     return BehaviorType.TRANSFER_ITEMS_TO_STALL;
                 }
-
-                Market market = homeSettlement.getMarket();
                 Stall stall = market.getStall(pawn.getId());
                 if (stall.getInventory().hasItem(ItemType.COIN) && stall.getInventory().getNumItems(ItemType.COIN) >= Stall.COIN_COST_TO_PURCHASE * 2) {
                     return BehaviorType.COLLECT_PROFIT_FROM_STALL;
@@ -196,6 +190,7 @@ namespace osg {
                 return BehaviorType.GO_TO_HOME_SETTLEMENT;
             }
             else {
+    
                 return BehaviorType.GATHER_RESOURCES;
             }
         }

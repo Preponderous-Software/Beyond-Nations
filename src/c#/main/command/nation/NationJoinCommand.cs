@@ -38,7 +38,7 @@ namespace osg {
             if (numSettlements != 0) {
                 int randomSettlementIndex = UnityEngine.Random.Range(0, numSettlements);
                 EntityId randomSettlementId = nation.getSettlements()[randomSettlementIndex];
-                player.setSettlementId(randomSettlementId);
+                player.setHomeSettlementId(randomSettlementId);
             }
         }
     }

@@ -35,18 +35,21 @@ namespace osg {
             eventProducer.produceNationLeaveEvent(nation, player.getId());
             player.getStatus().update("You left nation " + nation.getName() + ". Members: " + nation.getNumberOfMembers() + ".");
 
-            // get settlement
-            Settlement settlement = (Settlement) entityRepository.getEntity(player.getSettlementId());
-            Market market = settlement.getMarket();
 
             // remove stall ownership
-            Stall stall = market.getStall(player.getId());
-            if (stall != null) {
-                player.getInventory().transferContentsOfInventory(stall.getInventory());
-                stall.setOwnerId(null);
-            }
+            foreach(Settlement settlement in entityRepository.getEntitiesOfType(EntityType.SETTLEMENT)) {
+                if (settlement.getNationId() != nation.getId()) {
+                    continue;
+                }
+                Market market = settlement.getMarket();
+                Stall stall = market.getStall(player.getId());
+                if (stall != null) {
+                    player.getInventory().transferContentsOfInventory(stall.getInventory());
+                    stall.setOwnerId(null);
+                }
+            }         
 
-            player.setSettlementId(null);
+            player.setHomeSettlementId(null);
         }
 
         private void deleteNation(Nation nation, Player player) {
@@ -65,7 +68,7 @@ namespace osg {
             // clear settlements
             nation.getSettlements().Clear();
 
-            player.setSettlementId(null);
+            player.setHomeSettlementId(null);
         }
 
         private void transferLeadership(Nation nation, Player player) {

@@ -14,7 +14,7 @@ namespace osg {
         private int currentSpeed;
         private Camera playerCamera = null;
         private NationId nationId = null;
-        private EntityId settlementId = null;
+        private EntityId homeSettlementId = null;
         private Status status = null;
         private bool autoWalk = false;
         private float energy = 100;
@@ -22,6 +22,7 @@ namespace osg {
 
         // map of entity id to integer representing relationship strength
         private Dictionary<EntityId, int> relationships = new Dictionary<EntityId, int>();
+        private EntityId currentSettlementId = null;
 
         public Player(int walkSpeed, int runSpeed, TickCounter tickCounter, int statusExpirationTicks, int renderDistance) : base(EntityType.PLAYER){
             createGameObject(new Vector3(0, 2, 0));
@@ -50,6 +51,10 @@ namespace osg {
         }
 
         public void fixedUpdate() {
+            if (isCurrentlyInSettlement()) {
+                return;
+            }
+            
             if (horizontalInput != 0) {
                 rigidBody.transform.Rotate(Vector3.up * horizontalInput * 2);
             }
@@ -110,12 +115,12 @@ namespace osg {
             this.nationId = nationId;
         }
 
-        public EntityId getSettlementId() {
-            return settlementId;
+        public EntityId getHomeSettlementId() {
+            return homeSettlementId;
         }
 
-        public void setSettlementId(EntityId settlementId) {
-            this.settlementId = settlementId;
+        public void setHomeSettlementId(EntityId settlementId) {
+            this.homeSettlementId = settlementId;
         }
 
         public Status getStatus() {
@@ -194,10 +199,27 @@ namespace osg {
             }
         }
 
+        public bool isCurrentlyInSettlement() {
+            return getCurrentSettlementId() != null;
+        }
+
+        public EntityId getCurrentSettlementId() {
+            return currentSettlementId;
+        }
+
+        public void setCurrentSettlementId(EntityId currentSettlementId) {
+            this.currentSettlementId = currentSettlementId;
+        }
+
+        public void clearCurrentSettlementId() {
+            setCurrentSettlementId(null);
+        }
+        
         private void setupCamera(int renderDistance) {
             GameObject cameraObject = GameObject.Find("/Camera");      
             cameraObject.transform.SetParent(getGameObject().transform);
             cameraObject.transform.position = new Vector3(0, 5, -10);
+            cameraObject.transform.LookAt(getGameObject().transform);
             this.playerCamera = cameraObject.GetComponent<Camera>();
             this.playerCamera.farClipPlane = renderDistance;
         }

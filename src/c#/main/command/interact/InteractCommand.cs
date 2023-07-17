@@ -18,62 +18,20 @@ namespace osg {
         }
 
         public void execute(Player player) {
+            if (player.isCurrentlyInSettlement()) {
+                ExitSettlementCommand exitSettlementCommand = new ExitSettlementCommand(entityRepository);
+                exitSettlementCommand.execute(player);
+                return;
+            }
+
             AppleTree tree = environment.getNearestTree(player.getGameObject().transform.position);
             Rock rock = environment.getNearestRock(player.getGameObject().transform.position);
             Pawn pawn = (Pawn) environment.getNearestEntityOfType(player.getGameObject().transform.position, EntityType.PAWN);
             Settlement settlement = (Settlement) environment.getNearestEntityOfType(player.getGameObject().transform.position, EntityType.SETTLEMENT);
 
             if (settlement != null && Vector3.Distance(player.getGameObject().transform.position, settlement.getGameObject().transform.position) < 5) {
-                List<string> possibleStrings = new List<string>();
-                
-                int numCurrentlyPresentEntities = settlement.getCurrentlyPresentEntitiesCount();
-                if (numCurrentlyPresentEntities == 0) {
-                    possibleStrings.Add("This settlement is empty.");
-                }
-                else {
-                    possibleStrings.Add("This settlement is occupied by " + numCurrentlyPresentEntities + " pawns at the moment.");
-                }
-
-                int numStalls = settlement.getMarket().getNumStalls();
-                if (numStalls == 0) {
-                    possibleStrings.Add("The market is barren. No stalls have been built.");
-                }
-                else {
-                    int numStallsForSale = settlement.getMarket().getNumStallsForSale();
-                    if (numStallsForSale == 0) {
-                        possibleStrings.Add("The market is full. All " + numStalls + " stalls have been built and are owned by someone.");
-                    }
-                    else {
-                        possibleStrings.Add("The market has " + numStallsForSale + "/" + numStalls + " stalls for sale.");
-                    }
-                }
-
-                int numCoins = settlement.getInventory().getNumItems(ItemType.COIN);
-                if (numCoins == 0) {
-                    possibleStrings.Add("This settlement is destitute. It has no coins.");
-                }
-                else {
-                    possibleStrings.Add("The wealth of this settlement amounts to " + numCoins + " coins.");
-                }
-
-                int numItemsBought = settlement.getMarket().getTotalNumItemsBought();
-                if (numItemsBought == 0) {
-                    possibleStrings.Add("No items have been bought at this settlement's market.");
-                }
-                else {
-                    possibleStrings.Add(numItemsBought + " items have been bought at this settlement's market.");
-                }
-
-                int numItemsSold = settlement.getMarket().getTotalNumItemsSold();
-                if (numItemsSold == 0) {
-                    possibleStrings.Add("No items have been sold at this settlement's market.");
-                }
-                else {
-                    possibleStrings.Add(numItemsSold + " items have been sold at this settlement's market.");
-                }
-
-                string statusUpdate = possibleStrings[UnityEngine.Random.Range(0, possibleStrings.Count)];
-                player.getStatus().update(statusUpdate);
+                EnterSettlementCommand enterSettlementCommand = new EnterSettlementCommand(entityRepository);
+                enterSettlementCommand.execute(player, settlement);
             }
             else if (pawn != null && Vector3.Distance(player.getGameObject().transform.position, pawn.getGameObject().transform.position) < 5) {
                 if (pawn.getNationId() == null) {
