@@ -233,7 +233,12 @@ namespace osg {
         }
 
         private void executeGoToHomeSettlementBehavior(Pawn pawn) {
-            Nation nation = nationRepository.getNation(pawn.getNationId());
+            NationId nationId = pawn.getNationId();
+            if (nationId == null) {
+                Debug.LogError("Pawn " + pawn + " has no nation id.");
+                return;
+            }
+            Nation nation = nationRepository.getNation(nationId);
             Settlement homeSettlement = null;
             if (nation != null && nation.getNumberOfSettlements() > 0) {
                 EntityId homeSettlementId = pawn.getHomeSettlementId();

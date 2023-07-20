@@ -16,14 +16,16 @@ namespace osg {
         private int currentChunkX = 0;
         private int currentChunkZ = 0;
         private EntityRepository entityRepository;
+        private GameConfig gameConfig;
 
-        public WorldGenerator(Environment environment, Player player, EventProducer eventProducer, EntityRepository entityRepository) {
+        public WorldGenerator(Environment environment, Player player, EventProducer eventProducer, EntityRepository entityRepository, GameConfig gameConfig) {
             this.environment = environment;
             this.player = player;
             this.eventProducer = eventProducer;
             this.chunkSize = environment.getChunkSize();
             this.locationScale = environment.getLocationScale();
             this.entityRepository = entityRepository;
+            this.gameConfig = gameConfig;
         }
 
         public void update() {
@@ -132,6 +134,13 @@ namespace osg {
         }
 
         private void spawnPawns(Chunk chunk) {
+            if (gameConfig.getLagPreventionEnabled()) {
+                int maxNumberOfPawns = 100;
+                int numPawns = entityRepository.getNumEntitiesOfType(EntityType.PAWN);
+                if (numPawns >= maxNumberOfPawns) {
+                    return;
+                }
+            }
             
             // 10% change to spawn a pawn
             bool shouldSpawnPawn = UnityEngine.Random.Range(0, 100) < 10;

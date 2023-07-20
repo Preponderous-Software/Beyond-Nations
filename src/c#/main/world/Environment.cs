@@ -31,6 +31,11 @@ namespace osg {
             chunks.Add(chunk);
         }
 
+        public void removeChunk(Chunk chunk) {
+            chunks.Remove(chunk);
+            GameObject.Destroy(chunk.getGameObject());
+        }
+
         public Chunk getChunk(int xpos, int zpos) {
             foreach (Chunk chunk in chunks) {
                 if (chunk.getX() == xpos && chunk.getZ() == zpos) {
@@ -40,7 +45,7 @@ namespace osg {
             return null;
         }
 
-        public int getNumberOfChunks() {
+        public int getNumChunks() {
             return chunks.Count;
         }
 
@@ -97,6 +102,14 @@ namespace osg {
 
         public void destroyGameObject() {
             UnityEngine.Object.Destroy(gameObject);
+        }
+
+        public Chunk getRandomChunk() {
+            if (chunks.Count == 0) {
+                return null;
+            }
+            int randomIndex = Random.Range(0, chunks.Count);
+            return chunks[randomIndex];
         }
     }
 }

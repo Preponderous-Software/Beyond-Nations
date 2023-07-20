@@ -14,10 +14,13 @@ namespace osg {
         private int settlementJoinRange;
         private float settlementMetabolismMultiplier;
         private int renderDistance;
+        private bool lagPreventionEnabled;
+        private int maxNumEntities;
+        private int maxNumChunks;
 
         public GameConfig() {
-            chunkSize = 9;
-            locationScale = 9;
+            chunkSize = 5;
+            locationScale = 15;
             statusExpirationTicks = 500;
             playerWalkSpeed = 20;
             playerRunSpeed = 50;
@@ -29,6 +32,9 @@ namespace osg {
             settlementJoinRange = 500;
             settlementMetabolismMultiplier = 0.8f;
             renderDistance = 100;
+            lagPreventionEnabled = true;
+            maxNumEntities = 10000;
+            maxNumChunks = 1000;
         }
 
         public int getChunkSize() {
@@ -81,6 +87,18 @@ namespace osg {
 
         public int getRenderDistance() {
             return renderDistance;
+        }
+
+        public bool getLagPreventionEnabled() {
+            return lagPreventionEnabled;
+        }
+
+        public int getMaxNumEntities() {
+            return maxNumEntities;
+        }
+
+        public int getMaxNumChunks() {
+            return maxNumChunks;
         }
     }
 }
