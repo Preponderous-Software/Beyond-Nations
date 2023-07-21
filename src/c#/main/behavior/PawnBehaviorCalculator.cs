@@ -126,7 +126,7 @@ namespace osg {
         private BehaviorType computeBehaviorTypeOutsideSettlement(Pawn pawn) {
             if (pawnNeedsFood(pawn)) {
                 int expectedFoodCost = 1;
-                if (pawn.getInventory().getNumItems(ItemType.COIN) >= expectedFoodCost) {
+                if (pawn.getInventory().getNumItems(ItemType.COIN) >= expectedFoodCost && pawn.getHomeSettlementId() != null) {
                     return BehaviorType.GO_TO_HOME_SETTLEMENT;
                 }
             }

@@ -45,8 +45,26 @@ namespace osg {
             entityIds.Remove(entity.getId());
         }
 
-        public int getNumberOfEntities() {
+        public int getNumEntities() {
             return entities.Count;
+        }
+
+        public int getNumEntitiesOfType(EntityType type) {
+            int numEntitiesOfType = 0;
+            foreach (Entity entity in entities.Values) {
+                if (entity.getType() == type) {
+                    numEntitiesOfType++;
+                }
+            }
+            return numEntitiesOfType;
+        }
+        
+        public Entity getRandomEntity() {
+            if (entities.Count == 0) {
+                return null;
+            }
+            int randomIndex = Random.Range(0, entities.Count);
+            return entities[entityIds[randomIndex]];
         }
     }
 }
