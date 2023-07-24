@@ -597,7 +597,7 @@ namespace osg {
 
         private void drawInventoryInfo(Inventory inventory) {
             int padding = 10;
-            int width = 100;
+            int width = 150;
             int height = 20;
             int x = 10;
             int y = 500;
@@ -652,7 +652,7 @@ namespace osg {
 
         private void drawMarketInfo(Market market) {
             int padding = 10;
-            int width = 100;
+            int width = 150;
             int height = 20;
             int x = Screen.width - width - padding;
             int y = 200;
