@@ -24,6 +24,10 @@ namespace osg {
         private PawnBehaviorExecutor pawnBehaviorExecutor;
         private Player player; // TODO: move to player repository
         private LagPreventer lagPreventer;
+
+        private int numPawnDeaths = 0;
+        private int numPlayerDeaths = 0;
+
         public bool runTests = false;
         public bool debugMode = false;
 
@@ -131,6 +135,7 @@ namespace osg {
                     // check if pawn is dead
                     if (pawn.getEnergy() <= 0) {
                         eventProducer.producePawnDeathEvent(pawn);
+                        numPawnDeaths++;
                         player.getStatus().update(pawn.getName() + " has died.");
                         if (gameConfig.getRespawnPawns()) {
                             pawn.setEnergy(100);
@@ -244,6 +249,7 @@ namespace osg {
             player.fixedUpdate();
             if (player.getEnergy() <= 0) {
                 eventProducer.producePlayerDeathEvent(player);
+                numPlayerDeaths++;
                 player.setEnergy(100);
                 if (gameConfig.getKeepInventoryOnDeath() == false) {
                     player.getInventory().clear();
@@ -272,8 +278,6 @@ namespace osg {
         // on gui
         public void OnGUI() {
             drawCommandButtons();
-
-            GUI.color = Color.black;
             
             if (debugMode) {
                 drawDebugInfo();
@@ -293,10 +297,12 @@ namespace osg {
         }
 
         private void drawPlayerEnergy() {
+            int padding = 10;
             int width = 100;
             int height = 20;
             int x = Screen.width - width - 10;
             int y = Screen.height - height - 10;
+            GUI.Box(new Rect(x - padding, y - padding, width + padding*2, height + padding*2), "");
             GUI.Label(new Rect(x, y, width, height), "Energy: " + (int) player.getEnergy());
         }
 
@@ -456,71 +462,73 @@ namespace osg {
         }
 
         private void drawDebugInfo() {
-            int yPos = 10;
-            int width = 500;
+            int padding = 10;
+            int width = 150;
             int height = 20;
+            int xPos = 10;
+            int yPos = 10;
 
-            // debug info title
-            GUI.Label(new Rect(10, yPos, width, height), "=== Debug Info ===");
-            yPos += 20;
+            // draw box with padding
+            GUI.Box(new Rect(xPos - padding, yPos - padding, width + padding*2, height * 22 + padding*2), "= Debug Info =");
+            yPos += 10;
                 
             // fps                
-            GUI.Label(new Rect(10, yPos, width, height), "FPS: " + (int)(1.0f / Time.smoothDeltaTime));
+            GUI.Label(new Rect(xPos, yPos, width, height), "FPS: " + (int)(1.0f / Time.smoothDeltaTime));
             yPos += 20;
             
             // mtps
-            GUI.Label(new Rect(10, yPos, width, height), "MTPS: " + tickCounter.getMtps());
+            GUI.Label(new Rect(xPos, yPos, width, height), "MTPS: " + tickCounter.getMtps());
             yPos += 20;
 
             // tick
-            GUI.Label(new Rect(10, yPos, width, height), "Total ticks: " + tickCounter.getTotalTicks());
+            GUI.Label(new Rect(xPos, yPos, width, height), "Total ticks: " + tickCounter.getTotalTicks());
             yPos += 20;
 
             // current chunk
             Chunk currentChunk = environment.getChunkAtPosition(player.getGameObject().transform.position);
             if (currentChunk != null) {
-                GUI.Label(new Rect(10, yPos, width, height), "Chunk: " + currentChunk.getX() + ", " + currentChunk.getZ());
+                GUI.Label(new Rect(xPos, yPos, width, height), "Chunk: " + currentChunk.getX() + ", " + currentChunk.getZ());
             }
             else {
-                GUI.Label(new Rect(10, yPos, width, height), "Chunk: null");
+                GUI.Label(new Rect(xPos, yPos, width, height), "Chunk: null");
             }
             yPos += 20;
 
             // number of entities
-            GUI.Label(new Rect(10, yPos, width, height), "Entities: " + entityRepository.getNumEntities());
+            GUI.Label(new Rect(xPos, yPos, width, height), "Entities: " + entityRepository.getNumEntities());
             yPos += 20;
 
             // number of chunks
-            GUI.Label(new Rect(10, yPos, width, height), "Chunks: " + environment.getNumChunks());
+            GUI.Label(new Rect(xPos, yPos, width, height), "Chunks: " + environment.getNumChunks());
             yPos += 20;
 
             // number of pawns
             int numPawns = entityRepository.getEntitiesOfType(EntityType.PAWN).Count;
-            GUI.Label(new Rect(10, yPos, width, height), "Pawns: " + numPawns);
+            GUI.Label(new Rect(xPos, yPos, width, height), "Pawns: " + numPawns);
             yPos += 20;
 
             // number of nations
-            GUI.Label(new Rect(10, yPos, width, height), "Nations: " + nationRepository.getNumberOfNations());
+            GUI.Label(new Rect(xPos, yPos, width, height), "Nations: " + nationRepository.getNumberOfNations());
             yPos += 20;
 
             // number of settlements
-            GUI.Label(new Rect(10, yPos, width, height), "Settlements: " + entityRepository.getEntitiesOfType(EntityType.SETTLEMENT).Count);
+            GUI.Label(new Rect(xPos, yPos, width, height), "Settlements: " + entityRepository.getEntitiesOfType(EntityType.SETTLEMENT).Count);
             yPos += 20;
 
             // number of trees
-            GUI.Label(new Rect(10, yPos, width, height), "Trees: " + entityRepository.getEntitiesOfType(EntityType.TREE).Count);
+            GUI.Label(new Rect(xPos, yPos, width, height), "Trees: " + entityRepository.getEntitiesOfType(EntityType.TREE).Count);
             yPos += 20;
 
             // number of saplings
-            GUI.Label(new Rect(10, yPos, width, height), "Saplings: " + entityRepository.getEntitiesOfType(EntityType.SAPLING).Count);
+            GUI.Label(new Rect(xPos, yPos, width, height), "Saplings: " + entityRepository.getEntitiesOfType(EntityType.SAPLING).Count);
             yPos += 20;
 
             // number of rocks
-            GUI.Label(new Rect(10, yPos, width, height), "Rocks: " + entityRepository.getEntitiesOfType(EntityType.ROCK).Count);
+            GUI.Label(new Rect(xPos, yPos, width, height), "Rocks: " + entityRepository.getEntitiesOfType(EntityType.ROCK).Count);
             yPos += 20;
 
             // events stored
-            GUI.Label(new Rect(10, yPos, width, height), "Events: " + eventRepository.getTotalNumberOfEvents());
+            GUI.Label(new Rect(xPos, yPos, width, height), "Events: " + eventRepository.getTotalNumberOfEvents());
             yPos += 20;
 
             // total num stalls
@@ -528,7 +536,7 @@ namespace osg {
             foreach (Settlement settlement in entityRepository.getEntitiesOfType(EntityType.SETTLEMENT)) {
                 totalNumStalls += settlement.getMarket().getNumStalls();
             }
-            GUI.Label(new Rect(10, yPos, width, height), "Stalls: " + totalNumStalls);
+            GUI.Label(new Rect(xPos, yPos, width, height), "Stalls: " + totalNumStalls);
             yPos += 20;
 
             // pawns currently in settlement
@@ -538,7 +546,7 @@ namespace osg {
                     numPawnsCurrentlyInSettlement++;
                 }
             }
-            GUI.Label(new Rect(10, yPos, width, height), "PCIS: " + numPawnsCurrentlyInSettlement + " / " + numPawns);
+            GUI.Label(new Rect(xPos, yPos, width, height), "PCIS: " + numPawnsCurrentlyInSettlement + " / " + numPawns);
             yPos += 20;
 
             // nationless pawns
@@ -548,7 +556,7 @@ namespace osg {
                     numNationlessPawns++;
                 }
             }
-            GUI.Label(new Rect(10, yPos, width, height), "Nationless: " + numNationlessPawns + " / " + numPawns);
+            GUI.Label(new Rect(xPos, yPos, width, height), "Nationless: " + numNationlessPawns + " / " + numPawns);
             yPos += 20;
 
             // num leaders/merchants/serfs
@@ -571,23 +579,32 @@ namespace osg {
                     numSerfs++;
                 }
             }
-            GUI.Label(new Rect(10, yPos, width, height), "Leaders: " + numLeaders);
+            GUI.Label(new Rect(xPos, yPos, width, height), "Leaders: " + numLeaders);
             yPos += 20;
-            GUI.Label(new Rect(10, yPos, width, height), "Merchants: " + numMerchants);
+            GUI.Label(new Rect(xPos, yPos, width, height), "Merchants: " + numMerchants);
             yPos += 20;
-            GUI.Label(new Rect(10, yPos, width, height), "Serfs: " + numSerfs);
+            GUI.Label(new Rect(xPos, yPos, width, height), "Serfs: " + numSerfs);
+            yPos += 20;
+
+            // pawn deaths
+            GUI.Label(new Rect(xPos, yPos, width, height), "Pawn Deaths: " + numPawnDeaths);
+            yPos += 20;
+
+            // player deaths
+            GUI.Label(new Rect(xPos, yPos, width, height), "Player Deaths: " + numPlayerDeaths);
             yPos += 20;
         }
 
         private void drawInventoryInfo(Inventory inventory) {
-            int x = 10;
-            int y = 430;
-            int width = 200;
+            int padding = 10;
+            int width = 100;
             int height = 20;
+            int x = 10;
+            int y = 500;
 
-            // draw inventory info title
-            GUI.Label(new Rect(x, y, width, height), "=== Inventory Info ===");
-            y += height;
+            // draw box with padding
+            GUI.Box(new Rect(x - padding, y - padding, width + padding*2, height * 6 + padding*2), "= Inventory Info =");
+            y += 10;
 
             // draw num coins
             GUI.Label(new Rect(x, y, width, height), "Coins: " + inventory.getNumItems(ItemType.COIN));
@@ -611,14 +628,15 @@ namespace osg {
         }
 
         private void drawSettlementInfo(Settlement settlement) {
-            int x = Screen.width - 200;
-            int y = 30;
-            int width = 200;
+            int padding = 10;
+            int width = 150;
             int height = 20;
+            int x = Screen.width - width - padding;
+            int y = 30;
 
-            // draw settlement info title
-            GUI.Label(new Rect(x, y, width, height), "=== Settlement Info ===");
-            y += height;
+            // draw box with padding
+            GUI.Box(new Rect(x - padding, y - padding, width + padding*2, height * 4 + padding*2), "= Settlement Info =");
+            y += 10;
 
             // draw nation name
             GUI.Label(new Rect(x, y, width, height), "Nation: " + nationRepository.getNation(settlement.getNationId()).getName());
@@ -633,14 +651,15 @@ namespace osg {
         }
 
         private void drawMarketInfo(Market market) {
-            int x = Screen.width - 200;
-            int y = 230;
-            int width = 200;
+            int padding = 10;
+            int width = 100;
             int height = 20;
+            int x = Screen.width - width - padding;
+            int y = 200;
 
-            // draw Market Info title
-            GUI.Label(new Rect(x, y, width, height), "=== Market Info ===");
-            y += height;
+            // draw box with padding
+            GUI.Box(new Rect(x - 10, y - 10, width + 20, height * 6 + 20), "= Market Info =");
+            y += 10;
 
             // draw num stalls
             GUI.Label(new Rect(x, y, width, height), "Stalls: " + market.getNumStalls() + "/" + market.getMaxNumStalls());
