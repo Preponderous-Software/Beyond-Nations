@@ -5,13 +5,22 @@ namespace osg {
     public class GenerateLandCommand {
         private Environment environment;
         private WorldGenerator worldGenerator;
+        private GameConfig gameConfig;
 
-        public GenerateLandCommand(Environment environment, WorldGenerator worldGenerator) {
+        public GenerateLandCommand(Environment environment, WorldGenerator worldGenerator, GameConfig gameConfig) {
             this.environment = environment;
             this.worldGenerator = worldGenerator;
+            this.gameConfig = gameConfig;
         }
 
         public void execute(Player player) {
+            int maxNumChunks = gameConfig.getMaxNumChunks();
+            int numChunks = environment.getNumChunks();
+            if (numChunks >= maxNumChunks) {
+                player.getStatus().update("Max number of chunks reached.");
+                return;
+            }
+
             int numChunksGenerated = 0;
             Vector3 playerPosition = player.getGameObject().transform.position;
             Chunk chunk = environment.getChunkAtPosition(playerPosition);

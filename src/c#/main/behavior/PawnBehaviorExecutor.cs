@@ -190,8 +190,6 @@ namespace osg {
                 Debug.LogWarning("Pawn " + pawn.getName() + " tried to purchase food from settlement market " + settlement + " but there was not enough food.");
             }
             else {
-                Debug.Log("[PBE DEBUG] Pawn " + pawn.getName() + " purchased food from settlement market " + settlement + ".");
-
                 // increase relationship with stall owner
                 Entity stallOwner = entityRepository.getEntity(stallOwnerId);
                 if (stallOwner is Pawn) {
@@ -497,13 +495,11 @@ namespace osg {
         private void increaseRelationship(Pawn pawn, Pawn otherPawn, int amount) {
             pawn.increaseRelationship(otherPawn, amount);
             otherPawn.increaseRelationship(pawn, amount);
-            Debug.Log("[PBE DEBUG] Pawn " + pawn.getName() + " now has a relationship of " + pawn.getRelationships()[otherPawn.getId()] + " with stall owner " + otherPawn.getName() + ".");
         }
 
         private void increaseRelationship(Pawn pawn, Player player, int amount) {
             pawn.increaseRelationship(player, amount);
             player.increaseRelationship(pawn, amount);
-            Debug.Log("[PBE DEBUG] Pawn " + pawn.getName() + " now has a relationship of " + pawn.getRelationships()[player.getId()] + " with player " + player.getId() + ".");
             player.getStatus().update("Relationship with " + pawn.getName() + " is now " + player.getRelationships()[pawn.getId()] + ".");
         }
     }

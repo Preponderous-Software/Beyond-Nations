@@ -128,37 +128,37 @@ namespace osg {
                         }
                     }
 
-                    // check if pawn is dead // TODO: account for pawns inside settlements
+                    // check if pawn is dead
                     if (pawn.getEnergy() <= 0) {
-                        if (pawn.getGameObject() == null) {
-                            Debug.LogWarning("Pawn " + pawn.getId() + " is dead but has no game object. Skipping death handling.");
-                            return;
-                        }
-                        eventProducer.producePawnDeathEvent(pawn.getGameObject().transform.position, pawn);
+                        eventProducer.producePawnDeathEvent(pawn);
                         player.getStatus().update(pawn.getName() + " has died.");
                         if (gameConfig.getRespawnPawns()) {
                             pawn.setEnergy(100);
                             if (gameConfig.getKeepInventoryOnDeath() == false) {
                                 pawn.getInventory().clear();
                             }
-                            EntityId homeSettlementId = pawn.getHomeSettlementId();
-                            if (homeSettlementId != null) {
-                                // pawn is in a settlement, so respawn at settlement
-                                Settlement settlement = (Settlement)entityRepository.getEntity(homeSettlementId);
-                                Vector3 newPosition = settlement.getGameObject().transform.position;
-                                newPosition = new Vector3(newPosition.x + UnityEngine.Random.Range(-20, 20), newPosition.y, newPosition.z + UnityEngine.Random.Range(-20, 20));
-                                pawn.getGameObject().transform.position = newPosition;
-                            }
-                            else {
-                                // pawn is not in a settlement, so respawn at spawn
-                                pawn.getGameObject().transform.position = new Vector3(0, 10, 0);
-                            }
+
+                            if (!pawn.isCurrentlyInSettlement()) {
+                                // teleport pawn's game object
+                                EntityId homeSettlementId = pawn.getHomeSettlementId();
+                                if (homeSettlementId != null) {
+                                    // pawn has home settlement, so respawn at settlement
+                                    Settlement settlement = (Settlement)entityRepository.getEntity(homeSettlementId);
+                                    Vector3 newPosition = settlement.getGameObject().transform.position;
+                                    newPosition = new Vector3(newPosition.x + UnityEngine.Random.Range(-20, 20), newPosition.y, newPosition.z + UnityEngine.Random.Range(-20, 20));
+                                    pawn.getGameObject().transform.position = newPosition;
+                                }
+                                else {
+                                    // pawn is not in a settlement, so respawn at spawn
+                                    pawn.getGameObject().transform.position = new Vector3(0, 10, 0);
+                                }
+                            }                            
                         }
                         else {
                             pawn.markForDeletion();
 
-                            if (player.getNationId() != null) {
-                                Nation nation = nationRepository.getNation(player.getNationId());
+                            if (pawn.getNationId() != null) {
+                                Nation nation = nationRepository.getNation(pawn.getNationId());
                                 NationRole role = nation.getRole(pawn.getId());
                                 if (role == NationRole.LEADER) {
                                     // transfer leadership to another pawn
@@ -203,6 +203,7 @@ namespace osg {
                                         }
                                     }
                                 }
+
                                 nation.removeMember(pawn.getId());
                             }
                         }
@@ -230,14 +231,19 @@ namespace osg {
                 }
             }
 
-            foreach (Vector3 position in positionsToGenerateChunksAt) {
-                worldGenerator.generateChunkAtPosition(position);
-                worldGenerator.generateSurroundingChunksAtPosition(position);
+            int maxChunks = gameConfig.getMaxNumChunks();
+            int numChunks = environment.getNumChunks();
+
+            if (numChunks < maxChunks) {
+                foreach (Vector3 position in positionsToGenerateChunksAt) {
+                    worldGenerator.generateChunkAtPosition(position);
+                    worldGenerator.generateSurroundingChunksAtPosition(position);
+                }
             }
             
             player.fixedUpdate();
             if (player.getEnergy() <= 0) {
-                eventProducer.producePlayerDeathEvent(player.getGameObject().transform.position, player);
+                eventProducer.producePlayerDeathEvent(player);
                 player.setEnergy(100);
                 if (gameConfig.getKeepInventoryOnDeath() == false) {
                     player.getInventory().clear();
@@ -266,9 +272,10 @@ namespace osg {
         // on gui
         public void OnGUI() {
             drawCommandButtons();
+
+            GUI.color = Color.black;
             
             if (debugMode) {
-                GUI.color = Color.black;
                 drawDebugInfo();
             }
 
@@ -282,9 +289,15 @@ namespace osg {
 
             drawInventoryInfo(player.getInventory());
 
-            // draw player energy
-            GUI.color = Color.black;
-            GUI.Label(new Rect(10, 800 - 10, 100, 20), "Energy: " + (int) player.getEnergy());
+            drawPlayerEnergy();
+        }
+
+        private void drawPlayerEnergy() {
+            int width = 100;
+            int height = 20;
+            int x = Screen.width - width - 10;
+            int y = Screen.height - height - 10;
+            GUI.Label(new Rect(x, y, width, height), "Energy: " + (int) player.getEnergy());
         }
 
         private void drawCommandButtons() {
@@ -310,6 +323,8 @@ namespace osg {
                 buttonX += buttonWidth + buttonSpacing;
             }
             else {
+                Nation nation = nationRepository.getNation(player.getNationId());
+
                 // draw leave nation
                 if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Leave Nation")) {
                     NationLeaveCommand command = new NationLeaveCommand(nationRepository, eventProducer, entityRepository);
@@ -318,7 +333,6 @@ namespace osg {
                 buttonX += buttonWidth + buttonSpacing;
 
                 // if leader and no settlements and enough resources, draw found settlement
-                Nation nation = nationRepository.getNation(player.getNationId());
                 if (player.getId() == nation.getLeaderId() && nation.getNumberOfSettlements() == 0 && player.getInventory().getNumItems(ItemType.WOOD) >= Settlement.WOOD_COST_TO_BUILD) {
                     // draw found settlement
                     if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Found Settlement")) {
@@ -710,7 +724,7 @@ namespace osg {
                     player.getStatus().update("Debug mode must be enabled to generate nearby land. Press " + KeyBindings.toggleDebugMode + " to enable debug mode.");
                     return;
                 }
-                GenerateLandCommand command = new GenerateLandCommand(environment, worldGenerator);
+                GenerateLandCommand command = new GenerateLandCommand(environment, worldGenerator, gameConfig);
                 command.execute(player);
             }
             else if (Input.GetKeyDown(KeyBindings.spawnMoney)) {

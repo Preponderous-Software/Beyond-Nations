@@ -36,6 +36,8 @@ namespace osg {
         }
 
         private BehaviorType computeBehaviorTypeInSettlement(Pawn pawn) {
+            int chanceToExitSettlement = 1;
+
             EntityId currentSettlementId = pawn.getCurrentSettlementId();
             if (currentSettlementId == null) {
                 return BehaviorType.NONE;
@@ -72,7 +74,7 @@ namespace osg {
                 }
                 else {
                     // 10% chance to exit settlement
-                    if (Random.Range(0, 100) < 10) {
+                    if (Random.Range(0, 100) < chanceToExitSettlement) {
                         return BehaviorType.EXIT_SETTLEMENT;
                     }
                     else {
@@ -93,7 +95,7 @@ namespace osg {
                     }
 
                     // 10% chance to exit settlement
-                    if (Random.Range(0, 100) < 10) {
+                    if (Random.Range(0, 100) < chanceToExitSettlement) {
                         return BehaviorType.EXIT_SETTLEMENT;
                     }
                     else {
@@ -111,7 +113,7 @@ namespace osg {
                     return BehaviorType.COLLECT_PROFIT_FROM_STALL;
                 }
                 
-                if (Random.Range(0, 100) < 10) {
+                if (Random.Range(0, 100) < chanceToExitSettlement) {
                     return BehaviorType.EXIT_SETTLEMENT;
                 }
                 else {
