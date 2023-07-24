@@ -52,14 +52,14 @@ namespace osg {
             Debug.Log("Produced event: " + nationDisbandEvent);
         }
 
-        public void producePlayerDeathEvent(Vector3 position, Player player) {
-            PlayerDeathEvent playerDeathEvent = new PlayerDeathEvent(position, player);
+        public void producePlayerDeathEvent(Player player) {
+            PlayerDeathEvent playerDeathEvent = new PlayerDeathEvent(player);
             eventRepository.addEvent(playerDeathEvent);
             Debug.Log("Produced event: " + playerDeathEvent);
         }
 
-        public void producePawnDeathEvent(Vector3 position, Pawn pawn) {
-            PawnDeathEvent pawnDeathEvent = new PawnDeathEvent(position, pawn);
+        public void producePawnDeathEvent(Pawn pawn) {
+            PawnDeathEvent pawnDeathEvent = new PawnDeathEvent(pawn);
             eventRepository.addEvent(pawnDeathEvent);
             Debug.Log("Produced event: " + pawnDeathEvent);
         }
