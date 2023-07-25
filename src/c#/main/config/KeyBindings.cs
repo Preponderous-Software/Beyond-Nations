@@ -17,6 +17,7 @@ namespace osg {
         public static readonly KeyCode plantSapling = KeyCode.P;
         public static readonly KeyCode teleportToHomeSettlement = KeyCode.H;
         public static readonly KeyCode buildStall = KeyCode.B;
+        public static readonly KeyCode toggleInventory = KeyCode.I;
         public static readonly KeyCode toggleAutoWalk = KeyCode.Insert;
         public static readonly KeyCode increaseRenderDistance = KeyCode.PageUp;
         public static readonly KeyCode decreaseRenderDistance = KeyCode.PageDown;

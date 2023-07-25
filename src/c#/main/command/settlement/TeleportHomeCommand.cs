@@ -10,6 +10,11 @@ namespace osg {
         }
 
         public void execute(Player player) {
+            if (player.isCurrentlyInSettlement()) {
+                player.getStatus().update("Cannot teleport while in settlement.");
+                return;
+            }
+            
             EntityId homeSettlementId = player.getHomeSettlementId();
             if (homeSettlementId == null) {
                 player.getStatus().update("No home found.");

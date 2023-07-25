@@ -12,5 +12,11 @@ namespace osg {
         public Pawn getPawn() {
             return pawn;
         }
+
+        public override string ToString() {
+            return "PawnDeathEvent{" +
+                    "pawn=" + pawn.getName() +
+                    '}';
+        }
     }
 }
