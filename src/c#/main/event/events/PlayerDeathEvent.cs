@@ -14,5 +14,12 @@ namespace osg {
         public Player getPlayer() {
             return player;
         }
+
+        public override string ToString() {
+            return "PlayerDeathEvent{" +
+                    "position=" + position +
+                    ", player=" + player +
+                    '}';          
+        }
     }
 }
