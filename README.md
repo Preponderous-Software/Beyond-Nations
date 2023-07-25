@@ -29,6 +29,7 @@ The following controls are available in the game:
 | `P` | Plant a sapling |
 | `H` | Teleport to home settlement |
 | `B` | Build stall |
+| `I` | Open inventory |
 | `Insert` | Toggle auto-walk |
 | `Page Up` | Increase render distance |
 | `Page Down` | Decrease render distance |
