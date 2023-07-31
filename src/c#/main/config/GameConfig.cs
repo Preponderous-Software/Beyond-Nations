@@ -19,10 +19,10 @@ namespace osg {
         private int maxNumChunks;
 
         public GameConfig() {
-            chunkSize = 5;
+            chunkSize = 7;
             locationScale = 15;
             statusExpirationTicks = 500;
-            playerWalkSpeed = 20;
+            playerWalkSpeed = 25;
             playerRunSpeed = 50;
             respawnPawns = false;
             keepInventoryOnDeath = true;
@@ -31,10 +31,10 @@ namespace osg {
             minDistanceBetweenSettlements = 250;
             settlementJoinRange = 500;
             settlementMetabolismMultiplier = 0.8f;
-            renderDistance = 100;
+            renderDistance = 200;
             lagPreventionEnabled = true;
-            maxNumEntities = 10000;
-            maxNumChunks = 1000;
+            maxNumEntities = 100000;
+            maxNumChunks = 10000;
         }
 
         public int getChunkSize() {
