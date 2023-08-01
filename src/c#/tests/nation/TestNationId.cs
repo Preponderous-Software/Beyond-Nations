@@ -26,8 +26,6 @@ namespace osgtests {
 
             // verify
             UnityEngine.Debug.Assert(id1 != id2);
-            UnityEngine.Debug.Assert(id1 == id1);
-            UnityEngine.Debug.Assert(id2 == id2);
         }
     }
 }

@@ -481,7 +481,7 @@ namespace osg {
             int height = 20;
             int x = Screen.width - width - padding;
             int y = 30;
-            InfoBox settlementInfoBox = new SettlementInfoBox(x, y, width, height, padding, "Settlement Info ", settlement, nationRepository);
+            InfoBox settlementInfoBox = new SettlementInfoBox(x, y, width, height, padding, "Settlement Info ", settlement, nationRepository, entityRepository);
             settlementInfoBox.draw();
         }
 
@@ -491,7 +491,7 @@ namespace osg {
             int height = 20;
             int x = Screen.width - width - padding;
             int y = 200;
-            InfoBox marketInfoBox = new MarketInfoBox(x, y, width, height, padding, "Market Info", market);
+            InfoBox marketInfoBox = new MarketInfoBox(x, y, width, height, padding, "Market Info", market, entityRepository);
             marketInfoBox.draw();
         }
 
