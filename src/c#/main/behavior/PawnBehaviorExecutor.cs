@@ -94,6 +94,9 @@ namespace osg {
                 } else if (nearestRock != null) {
                     pawn.setTargetEntity(nearestRock);
                 }
+                else {
+                    // TODO: no trees or rocks, pawn should do something else
+                }
             }
 
             Entity targetEntity = pawn.getTargetEntity();

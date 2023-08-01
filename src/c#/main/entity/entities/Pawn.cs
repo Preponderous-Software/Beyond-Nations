@@ -10,10 +10,6 @@ namespace osg {
         private EntityId homeSettlementId;
         private Entity targetEntity;
         private BehaviorType currentBehaviorType = BehaviorType.NONE;
-
-        private int targetNumWood = 3;
-        private int targetNumStone = 3;
-        private int targetNumApples = 3;
         
         private int distanceThreshold = 10;
 

@@ -58,5 +58,13 @@ namespace osg {
         public bool containsAbundanceOfResources() {
             return getNumItems(ItemType.WOOD) > 10 && getNumItems(ItemType.STONE) > 10 && getNumItems(ItemType.APPLE) > 10;
         }
+
+        public int getTotalNumItems() {
+            int total = 0;
+            foreach (KeyValuePair<ItemType, int> entry in items) {
+                total += entry.Value;
+            }
+            return total;
+        }
     }
 }

@@ -20,8 +20,6 @@ namespace osgtests {
             UnityEngine.Debug.Assert(config.getStatusExpirationTicks() > 0);
             UnityEngine.Debug.Assert(config.getPlayerWalkSpeed() > 0);
             UnityEngine.Debug.Assert(config.getPlayerRunSpeed() > config.getPlayerWalkSpeed());
-            UnityEngine.Debug.Assert(config.getRespawnPawns() != null);
-            UnityEngine.Debug.Assert(config.getKeepInventoryOnDeath() != null);
             UnityEngine.Debug.Assert(config.getTicksBetweenBehaviorCalculations() > 0);
             UnityEngine.Debug.Assert(config.getTicksBetweenBehaviorExecutions() > 0);
             UnityEngine.Debug.Assert(config.getMinDistanceBetweenSettlements() > 0);
