@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace osg {
+namespace beyondnations {
 
     /*
     * An environment is a collection of chunks.
@@ -18,7 +18,7 @@ namespace osg {
             this.entityRepository = entityRepository;
             this.id = new EnvironmentId();
             gameObject = new GameObject("Environment");
-            gameObject.transform.parent = GameObject.Find("Open Source Game").transform;
+            gameObject.transform.parent = GameObject.Find("Beyond Nations").transform;
             gameObject.transform.position = new Vector3(0, 0, 0);
 
             // create initial chunk

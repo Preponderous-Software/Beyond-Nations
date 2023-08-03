@@ -4,13 +4,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace osg {
+namespace beyondnations {
 
     /**
-    * The OpenSourceGame class is the main class of the game.
-    * It is the entry point of the game.
+    * The main class and entry point of the game.
     */
-    public class OpenSourceGame : MonoBehaviour {
+    public class BeyondNations : MonoBehaviour {
         private GameConfig gameConfig;
 
         private Environment environment;
@@ -36,7 +35,7 @@ namespace osg {
         public void Start() {
             if (runTests) {
                 Debug.Log("Running tests...");
-                osgtests.Tests.runTests();
+                beyondnationstests.Tests.runTests();
                 Debug.Log("Tests complete. Pausing.");
                 Debug.Break();
             }

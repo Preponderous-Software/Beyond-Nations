@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace osg {
+namespace beyondnations {
 
     public class NationRepository {
         private Dictionary<NationId, Nation> nations;

@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace osg {
+namespace beyondnations {
     
     public class TextGameObject {
         private string text;

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace osgtests {
+namespace beyondnationstests {
 
     public static class Tests {
         

@@ -137,11 +137,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 406706858}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fbc832387cfdc514d8fcd883770e7556, type: 3}
+  m_Script: {fileID: 11500000, guid: 0d8a0b87bafd4ab43b44d655b9ff1644, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   runTests: 0
-  debugMode: 1
+  debugMode: 0
 --- !u!1 &672275114
 GameObject:
   m_ObjectHideFlags: 0
@@ -391,7 +391,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4020870821928930782, guid: aff1b62650802494a80c4cdf1afcfa7a, type: 3}
       propertyPath: m_Name
-      value: Open Source Game
+      value: Beyond Nations
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 3245935288003537136, guid: aff1b62650802494a80c4cdf1afcfa7a, type: 3}

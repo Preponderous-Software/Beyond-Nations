@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace osg {
+namespace beyondnations {
 
     public class KeyBindings {
         public static readonly KeyCode moveForward = KeyCode.W;

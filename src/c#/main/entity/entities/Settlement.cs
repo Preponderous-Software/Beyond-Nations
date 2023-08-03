@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace osg {
+namespace beyondnations {
 
     public class Settlement : Entity {
         private Color color;

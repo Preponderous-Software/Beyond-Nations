@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace osg {
+namespace beyondnations {
     public class InventoryInfoBox : InfoBox {
         private Inventory inventory;
         private int numDataPoints = 5;

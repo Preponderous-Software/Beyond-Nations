@@ -1,4 +1,4 @@
-namespace osg {
+namespace beyondnations {
 
     public class GameConfig {
         private int chunkSize;

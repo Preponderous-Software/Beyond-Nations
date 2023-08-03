@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Enum = System.Enum;
 
-namespace osg {
+namespace beyondnations {
 
     public class Market {
         private List<Stall> stalls = new List<Stall>();

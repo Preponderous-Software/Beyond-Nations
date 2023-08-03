@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace osg {
+namespace beyondnations {
 
     public class EventProducer {
         private EventRepository eventRepository;

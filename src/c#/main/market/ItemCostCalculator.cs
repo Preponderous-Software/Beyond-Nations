@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace osg {
+namespace beyondnations {
 
     public static class ItemCostCalculator {
         private static readonly Dictionary<ItemType, int> baseItemCosts = new Dictionary<ItemType, int>() {

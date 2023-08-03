@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using UnityEngine;
 
-namespace osg {
+namespace beyondnations {
 
     /**
      * A class that computes the behavior type of a pawn.

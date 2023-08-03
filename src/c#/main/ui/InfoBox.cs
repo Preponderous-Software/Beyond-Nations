@@ -1,4 +1,4 @@
-namespace osg {
+namespace beyondnations {
     public abstract class InfoBox {
         protected int x;
         protected int y;

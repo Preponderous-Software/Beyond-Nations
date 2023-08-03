@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace osg {
+namespace beyondnations {
 
     public class Inventory {
         private Dictionary<ItemType, int> items = new Dictionary<ItemType, int>();

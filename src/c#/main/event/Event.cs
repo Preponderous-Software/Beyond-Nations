@@ -1,6 +1,6 @@
 using System;
 
-namespace osg {
+namespace beyondnations {
     
     public abstract class Event {
         private EventType type;

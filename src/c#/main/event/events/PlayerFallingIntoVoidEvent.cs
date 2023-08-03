@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace osg {
+namespace beyondnations {
 
     public class PlayerFallingIntoVoidEvent : Event {
         private Vector3 position;

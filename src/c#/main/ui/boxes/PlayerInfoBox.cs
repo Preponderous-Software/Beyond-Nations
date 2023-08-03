@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace osg {
+namespace beyondnations {
     public class PlayerInfoBox : InfoBox {
         private Player player;
         private NationRepository nationRepository;

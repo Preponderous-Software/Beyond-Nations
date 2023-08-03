@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace osg {
+namespace beyondnations {
 
     public class LagPreventer {
         private GameConfig gameConfig;
