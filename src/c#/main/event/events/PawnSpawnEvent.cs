@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace osg {
+namespace beyondnations {
 
     public class PawnSpawnEvent : Event {
         private Vector3 position;

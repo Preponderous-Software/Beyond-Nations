@@ -1,6 +1,6 @@
 {
-    "name": "osg-project",
-    "description": "The Open Source Game project is a joint effort between Preponderous Software and the Fairfield Programming Association to create an open source game which will serve as reference material for new developers.",
+    "name": "beyond-nations",
+    "description": "The Beyond Nations project is a joint effort between Preponderous Software and the Fairfield Programming Association to create an Beyond Nations which will serve as reference material for new developers.",
     "template": "https://github.com/fairfield-programming/donovan-spacey",
     "owner": {
         "name": "William-McGonagle",

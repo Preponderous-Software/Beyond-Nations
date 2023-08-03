@@ -1,4 +1,4 @@
-namespace osg {
+namespace beyondnations {
 
     public class ChunkGenerateEvent : Event {
         private int chunkX;

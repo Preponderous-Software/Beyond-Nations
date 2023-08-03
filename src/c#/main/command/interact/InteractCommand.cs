@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace osg {
+namespace beyondnations {
 
     public class InteractCommand {
         private Environment environment;

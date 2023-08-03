@@ -1,4 +1,4 @@
-namespace osg {
+namespace beyondnations {
 
     public class NationCreationEvent : Event {
         private Nation nation;

@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace osg {
+namespace beyondnations {
 
     public class EntityRepository {
         // TODO: transition to using a dictionary of dictionaries with entity type as the key for the outer dictionary

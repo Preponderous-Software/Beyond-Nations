@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace osg {
+namespace beyondnations {
 
     public class BuildStallCommand {
         private NationRepository nationRepository;

@@ -1,9 +1,9 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-using osg;
+using beyondnations;
 
-namespace osgtests {
+namespace beyondnationstests {
 
     public static class TestCanvasFactory {
 

@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace osg {
+namespace beyondnations {
 
     public class AppleTree : Entity {
         private GameObject trunk;

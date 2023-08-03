@@ -1,4 +1,4 @@
-namespace osg {
+namespace beyondnations {
 
     /**
      * An event that is fired when a relationship between two pawns increases.

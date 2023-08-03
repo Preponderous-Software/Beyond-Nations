@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace osg {
+namespace beyondnations {
 
     abstract public class Entity {
         private EntityId id;

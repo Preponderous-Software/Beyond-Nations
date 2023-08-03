@@ -1,8 +1,8 @@
 using UnityEngine;
 
-using osg;
+using beyondnations;
 
-namespace osgtests {
+namespace beyondnationstests {
 
     public static class TestNation {
 

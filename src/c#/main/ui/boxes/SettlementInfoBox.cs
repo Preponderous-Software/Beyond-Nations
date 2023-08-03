@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace osg {
+namespace beyondnations {
     public class SettlementInfoBox : InfoBox {
         private Settlement settlement;
         private NationRepository nationRepository;

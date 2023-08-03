@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace osg {
+namespace beyondnations {
 
     public class Nation {
         private NationId id;

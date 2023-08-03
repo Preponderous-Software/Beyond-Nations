@@ -1,4 +1,4 @@
-namespace osg {
+namespace beyondnations {
 
     public class NationCreateCommand {
         private NationRepository nationRepository;

@@ -2,7 +2,7 @@ using System.Net;
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace osg {
+namespace beyondnations {
 
     /**
      * A class that executes the behavior of a pawn.

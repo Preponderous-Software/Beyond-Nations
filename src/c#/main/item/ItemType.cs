@@ -1,4 +1,4 @@
-namespace osg {
+namespace beyondnations {
     public enum ItemType {
         COIN,
         WOOD,

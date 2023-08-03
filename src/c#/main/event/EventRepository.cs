@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace osg {
+namespace beyondnations {
 
     public class EventRepository {
         private Dictionary<EventType, List<Event>> events;

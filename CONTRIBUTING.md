@@ -11,8 +11,8 @@ To get started with the project, follow these steps:
 1. Click the Create Project button.
 1. Open a terminal and navigate to the Assets directory of the project.
 1. Clone this repository using the following command:
-    > git clone https://github.com/Preponderous-Software/osg-project
-1. In Unity, navigate to the osg-project/src directory, which should now be in the Assets folder.
+    > git clone https://github.com/Preponderous-Software/beyond-nations
+1. In Unity, navigate to the beyond-nations/src directory, which should now be in the Assets folder.
 1. Double click on the main scene to open it.
 
 ### Troubleshooting

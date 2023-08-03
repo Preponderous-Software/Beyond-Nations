@@ -1,5 +1,5 @@
-# ![Open Source Game](https://raw.githubusercontent.com/Preponderous-Software/osg-project/master/.github/media/banner.svg)
-The Open Source Game Project is a collaborative effort between Preponderous Software and the Fairfield Programming Association. It aims to create an open-source game that can serve as a reference for aspiring developers.
+# ![Beyond Nations](https://raw.githubusercontent.com/Preponderous-Software/beyond-nations/master/.github/media/banner.svg)
+The Beyond Nations Project is a collaborative effort between Preponderous Software and the Fairfield Programming Association. It aims to create an open-source game that can serve as a reference for aspiring developers.
 
 ## Game Concept
 In this game, you'll be able to embark on an exciting adventure in a vast procedurally generated world filled with biomes, terrain, and other features.

@@ -1,6 +1,6 @@
 using System;
 
-namespace osg {
+namespace beyondnations {
 
     public class NationId {
         private Guid guid;

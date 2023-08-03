@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace osg {
+namespace beyondnations {
 
     public class Sapling : Entity {
         private GameObject trunk;

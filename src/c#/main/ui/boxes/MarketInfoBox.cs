@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace osg {
+namespace beyondnations {
     public class MarketInfoBox : InfoBox {
         private Market market;
         private EntityRepository entityRepository;

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace osg {
+namespace beyondnations {
 
     /**
     * A chunk is a 2D array of locations.
