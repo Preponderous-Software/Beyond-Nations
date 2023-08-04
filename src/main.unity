@@ -310,7 +310,7 @@ GameObject:
   - component: {fileID: 1202639306}
   - component: {fileID: 1202639305}
   m_Layer: 0
-  m_Name: BeyondNations
+  m_Name: Beyond Nations
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
