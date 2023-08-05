@@ -4,7 +4,7 @@ namespace beyondnations {
 
     public class Rock : Entity {
             
-        public Rock(Vector3 position) : base(EntityType.ROCK) {
+        public Rock(Vector3 position) : base(EntityType.ROCK, "Rock") {
             createGameObject(position);
         }
 
