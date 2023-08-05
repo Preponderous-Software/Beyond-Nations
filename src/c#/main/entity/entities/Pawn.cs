@@ -4,7 +4,6 @@ using System.Collections.Generic;
 namespace beyondnations {
 
     public class Pawn : Entity {
-        private string name;
         private int speed = UnityEngine.Random.Range(10, 20);
         private NationId nationId;
         private EntityId homeSettlementId;
@@ -21,15 +20,10 @@ namespace beyondnations {
         private Dictionary<EntityId, int> relationships = new Dictionary<EntityId, int>();
         private EntityId currentSettlementId;
 
-        public Pawn(Vector3 position, string name) : base(EntityType.PAWN) {
-            this.name = name;
+        public Pawn(Vector3 position, string name) : base(EntityType.PAWN, name) {
             createGameObject(position);
             int startingGoldCoins = UnityEngine.Random.Range(50, 200);
             getInventory().addItem(ItemType.COIN, startingGoldCoins);
-        }
-
-        public string getName() {
-            return name;
         }
 
         public int getSpeed() {

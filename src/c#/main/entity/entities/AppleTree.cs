@@ -8,7 +8,7 @@ namespace beyondnations {
         private GameObject leaves;
         private int height;
         
-        public AppleTree(Vector3 position, int height) : base(EntityType.TREE) {
+        public AppleTree(Vector3 position, int height) : base(EntityType.TREE, "Tree") {
             this.height = height;
             createGameObject(position);
         }

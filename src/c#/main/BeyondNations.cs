@@ -413,16 +413,6 @@ namespace beyondnations {
                             }
                         }
                     }
-                    
-                }
-
-                // if currently inside settlement, draw exit settlement
-                if (player.isCurrentlyInSettlement()) {
-                    if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Exit Settlement")) {
-                        ExitSettlementCommand command = new ExitSettlementCommand(entityRepository);
-                        command.execute(player);
-                    }
-                    buttonX += buttonWidth + buttonSpacing;
                 }
 
             }
@@ -450,7 +440,32 @@ namespace beyondnations {
                     }
                 }
             }
+            else {
+                // draw exit settlement
+                if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Exit Settlement")) {
+                    ExitSettlementCommand command = new ExitSettlementCommand(entityRepository);
+                    command.execute(player);
+                }
+                buttonX += buttonWidth + buttonSpacing;
 
+                // draw purchase food
+                if (player.getInventory().getNumItems(ItemType.COIN) > 0) {
+                    if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Purchase Food")) {
+                        PurchaseFoodFromMarketCommand command = new PurchaseFoodFromMarketCommand(nationRepository, entityRepository);
+                        command.execute(player);
+                    }
+                    buttonX += buttonWidth + buttonSpacing;
+                }
+
+                // draw sell resources
+                if (player.getInventory().getNumItems(ItemType.WOOD) > 0 || player.getInventory().getNumItems(ItemType.STONE) > 0) {
+                    if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Sell Resources")) {
+                        SellResourcesAtMarketCommand command = new SellResourcesAtMarketCommand(nationRepository, entityRepository);
+                        command.execute(player);
+                    }
+                    buttonX += buttonWidth + buttonSpacing;
+                }
+            }
         }
 
         private void drawDebugInfo() {

@@ -12,7 +12,7 @@ namespace beyondnations {
         private DateTime planted;
         private int growTime;
         
-        public Sapling(Vector3 position, int height) : base(EntityType.SAPLING) {
+        public Sapling(Vector3 position, int height) : base(EntityType.SAPLING, "Sapling") {
             this.height = height;
             createGameObject(position);
             planted = DateTime.Now;

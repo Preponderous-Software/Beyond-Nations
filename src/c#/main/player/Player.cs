@@ -24,7 +24,7 @@ namespace beyondnations {
         private Dictionary<EntityId, int> relationships = new Dictionary<EntityId, int>();
         private EntityId currentSettlementId = null;
 
-        public Player(int walkSpeed, int runSpeed, TickCounter tickCounter, int statusExpirationTicks, int renderDistance) : base(EntityType.PLAYER){
+        public Player(int walkSpeed, int runSpeed, TickCounter tickCounter, int statusExpirationTicks, int renderDistance) : base(EntityType.PLAYER, "Player"){
             createGameObject(new Vector3(0, 2, 0));
             setupCamera(renderDistance);
             this.rigidBody = getGameObject().GetComponent<Rigidbody>();

@@ -13,7 +13,7 @@ namespace beyondnations {
 
         public static readonly int WOOD_COST_TO_BUILD = 100;
 
-        public Settlement(Vector3 position, NationId nationId, Color color, string nationName) : base(EntityType.SETTLEMENT) {
+        public Settlement(Vector3 position, NationId nationId, Color color, string nationName) : base(EntityType.SETTLEMENT, "Settlement") {
             this.color = color;
             this.nationId = nationId;
             createGameObject(position);
