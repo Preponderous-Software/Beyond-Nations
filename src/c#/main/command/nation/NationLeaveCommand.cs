@@ -21,6 +21,10 @@ namespace beyondnations {
             Nation nation = nationRepository.getNation(player.getNationId());
             if (nation.getLeaderId() == player.getId()) {
                 if (nation.getNumberOfMembers() == 1) {
+                    if (player.isCurrentlyInSettlement()) {
+                        player.getStatus().update("You cannot disband your nation while in a settlement.");
+                        return;
+                    }
                     deleteNation(nation, player);
                     return;
                 }
