@@ -1,4 +1,4 @@
-Copyright 2022-2023 Preponderous Software & The Fairfield Programming Association Inc.
+Copyright 2022-2023 Daniel McCoy Stephenson & The Fairfield Programming Association Inc.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without limitation in the rights to use, copy, modify, merge, publish, and/ or distribute copies of the Software in an educational or personal context, subject to the following conditions: 
 
