@@ -70,6 +70,18 @@ namespace beyondnations {
             return this.market;
         }
 
+        public int getFunds() {
+            return getInventory().getNumItems(ItemType.COIN);
+        }
+
+        public void addFunds(int amount) {
+            getInventory().addItem(ItemType.COIN, amount);
+        }
+
+        public void removeFunds(int amount) {
+            getInventory().removeItem(ItemType.COIN, amount);
+        }
+
         private void initializeNameTag() {
             nameTag = new GameObject();
             nameTag.transform.parent = getGameObject().transform;

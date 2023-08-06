@@ -172,10 +172,12 @@ namespace beyondnations {
                                         if (pawn.getType() == EntityType.PAWN) {
                                             Pawn newLeader = (Pawn) entityRepository.getEntity(nation.getLeaderId());
                                             player.getStatus().update(newLeader.getName() + " is now the leader of " + nation.getName() + ".");
+                                            nation.setRole(newLeader.getId(), NationRole.LEADER);
                                         }
                                         else if (pawn.getType() == EntityType.PLAYER) {
                                             Player newLeader = (Player) entityRepository.getEntity(nation.getLeaderId());
                                             player.getStatus().update("You are now the leader of " + nation.getName() + ".");
+                                            nation.setRole(newLeader.getId(), NationRole.LEADER);
                                         }
                                         else {
                                             Debug.Log("ERROR: Oldest member of nation " + nation.getName() + " is not a pawn or player.");
@@ -411,6 +413,20 @@ namespace beyondnations {
                                 }
                                 buttonX += buttonWidth + buttonSpacing;
                             }
+                        }
+                    }
+                }
+
+                // if leader, draw withdraw settlement funds
+                if (player.isCurrentlyInSettlement()) {
+                    Settlement settlement = (Settlement) entityRepository.getEntity(player.getCurrentSettlementId());
+                    if (settlement.getNationId() == player.getNationId()) {
+                        if (player.getId() == nation.getLeaderId()) {
+                            if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Withdraw Funds")) {
+                                WithdrawSettlementFundsCommand command = new WithdrawSettlementFundsCommand(nationRepository, entityRepository);
+                                command.execute(player);
+                            }
+                            buttonX += buttonWidth + buttonSpacing;
                         }
                     }
                 }

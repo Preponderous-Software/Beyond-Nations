@@ -14,6 +14,7 @@ namespace beyondnationstests {
             testComputeBehaviorType_IsLeaderAndHasEnoughWood_ShouldConstructSettlement();
             testComputeBehaviorType_IsLeaderAndHasEnoughWood_ShouldConstructStall();
             testComputeBehaviorType_IsLeaderAndHasEnoughWoodButMarketFull_ShouldExitOrDoNothing();
+            testComputeBehaviorType_IsLeaderAndLowOnFunds_ShouldWithdrawFunds();
             testComputeBehaviorType_InSettlement_ShouldPurchaseFood();
             testComputeBehaviorType_InSettlement_ShouldSellResources();
             testComputeBehaviorType_InSettlement_ShouldCollectProfitFromStall();
@@ -278,6 +279,48 @@ namespace beyondnationstests {
 
             // verify
             UnityEngine.Debug.Assert(behaviorType == BehaviorType.EXIT_SETTLEMENT || behaviorType == BehaviorType.NONE);
+
+            // cleanup
+            environment.destroyGameObject();
+            nationLeader.destroyGameObject();
+            settlement.destroyGameObject();
+        }
+
+        private static void testComputeBehaviorType_IsLeaderAndLowOnFunds_ShouldWithdrawFunds() {
+            // prepare world
+            EntityRepository entityRepository = new EntityRepository();
+            Environment environment = new Environment(5, 5, entityRepository);
+            NationRepository nationRepository = new NationRepository();
+
+            // prepare pawn & nation
+            Pawn nationLeader = new Pawn(new Vector3(0, 0, 0), "test");
+            nationLeader.setEnergy(100);
+            nationLeader.getInventory().addItem(ItemType.APPLE, 100);
+            entityRepository.addEntity(nationLeader);
+            Nation nation = new Nation("test", nationLeader.getId());
+            nationLeader.setNationId(nation.getId());
+            nationRepository.addNation(nation);
+            nation.setRole(nationLeader.getId(), NationRole.LEADER);
+
+            // prepare settlement
+            Settlement settlement = new Settlement(new Vector3(0, 0, 0), nation.getId(), nation.getColor(), nation.getName());
+            settlement.addFunds(200);
+            entityRepository.addEntity(settlement);
+            nation.addSettlement(settlement.getId());
+            nationLeader.setHomeSettlementId(settlement.getId());
+            nationLeader.setCurrentSettlementId(settlement.getId());
+
+            // prepare calculator
+            GameConfig gameConfig = new GameConfig();
+            TickCounter tickCounter = new TickCounter();
+            PawnBehaviorCalculator calculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository, gameConfig, tickCounter);
+
+            // execute
+            BehaviorType behaviorType = calculator.computeBehaviorType(nationLeader);
+
+            // verify
+            UnityEngine.Debug.Log(behaviorType);
+            UnityEngine.Debug.Assert(behaviorType == BehaviorType.WITHDRAW_SETTLEMENT_FUNDS);
 
             // cleanup
             environment.destroyGameObject();
