@@ -63,12 +63,19 @@ namespace beyondnations {
             NationRole role = nation.getRole(pawn.getId());
 
             if (role == NationRole.LEADER) {
+                if (pawn.getInventory().getNumItems(ItemType.COIN) < 100 && currentSettlement.getFunds() > 100) {
+                    UnityEngine.Debug.Log("[PBC] Pawn is low on coins. Withdrawing from settlement.");
+                    return BehaviorType.WITHDRAW_SETTLEMENT_FUNDS;
+                }
+
                 if (market.getNumStalls() < market.getMaxNumStalls()) {
                     // if not enough wood
                     if (pawn.getInventory().getNumItems(ItemType.WOOD) < Stall.WOOD_COST_TO_BUILD) {
                         return BehaviorType.EXIT_SETTLEMENT;
                     }
                     else {
+                        // TODO: only construct stall if the settlement belongs to the pawn's nation
+                        
                         return BehaviorType.CONSTRUCT_STALL;
                     }
                 }

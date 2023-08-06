@@ -153,6 +153,12 @@ namespace beyondnations {
             // player deaths
             GUI.Label(new Rect(x, y, width, height), "Player Deaths: " + numPlayerDeaths);
             y += 20;
+
+            
+            // perform discrepency checks
+            if (numPawns != numLeaders + numMerchants + numSerfs + numNationlessPawns) {
+                Debug.LogError("Discrepency in pawn count!");
+            }
         }
     } 
 }

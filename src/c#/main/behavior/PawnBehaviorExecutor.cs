@@ -72,6 +72,9 @@ namespace beyondnations {
                 case BehaviorType.COLLECT_FOOD_FROM_STALL:
                     executeCollectFoodFromStallBehavior(pawn);
                     break;
+                case BehaviorType.WITHDRAW_SETTLEMENT_FUNDS:
+                    executeWithdrawSettlementFundsBehavior(pawn);
+                    break;
                 default:
                     Debug.LogError("Behavior type " + behaviorType + " is not implemented.");
                     break;
@@ -490,6 +493,23 @@ namespace beyondnations {
             pawn.getInventory().addItem(ItemType.APPLE, foodToTransfer);
             stall.getInventory().removeItem(ItemType.APPLE, foodToTransfer);
             Debug.Log("Pawn " + pawn.getName() + " collected " + foodToTransfer + " food from their stall.");
+            pawn.setCurrentBehaviorType(BehaviorType.NONE);
+        }
+
+        private void executeWithdrawSettlementFundsBehavior(Pawn pawn) {
+            if (!pawn.isCurrentlyInSettlement()) {
+                Debug.LogWarning("Pawn " + pawn + " is trying to withdraw funds from a settlement but is not in a settlement.");
+                return;
+            }
+            Settlement settlement = (Settlement) entityRepository.getEntity(pawn.getCurrentSettlementId());
+            int funds = settlement.getFunds();
+            int fundsToWithdraw = funds / 2;
+            if (fundsToWithdraw == 0) {
+                fundsToWithdraw = 1;
+            }
+            settlement.removeFunds(fundsToWithdraw);
+            pawn.getInventory().addItem(ItemType.COIN, fundsToWithdraw);
+            Debug.Log("Pawn " + pawn.getName() + " withdrew " + fundsToWithdraw + " funds from " + settlement.getName() + ".");
             pawn.setCurrentBehaviorType(BehaviorType.NONE);
         }
 

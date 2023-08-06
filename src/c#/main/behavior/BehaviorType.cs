@@ -27,6 +27,7 @@ namespace beyondnations {
         // nation
         CREATE_NATION,
         JOIN_NATION,
-        JOIN_RANDOM_SETTLEMENT
+        JOIN_RANDOM_SETTLEMENT,
+        WITHDRAW_SETTLEMENT_FUNDS
     }
 }
