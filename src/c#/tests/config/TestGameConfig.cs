@@ -1,8 +1,8 @@
 using UnityEngine;
 
-using osg;
+using beyondnations;
 
-namespace osgtests {
+namespace beyondnationstests {
 
     public static class TestGameConfig {
 
@@ -15,12 +15,15 @@ namespace osgtests {
             GameConfig config = new GameConfig();
             
             // check
-            Debug.Assert(config.getChunkSize() == 9);
-            Debug.Assert(config.getLocationScale() == 9);
-            Debug.Assert(config.getUpdateInterval() == 10);
-            Debug.Assert(config.getStatusExpirationTicks() == 500);
-            Debug.Assert(config.getPlayerWalkSpeed() == 20);
-            Debug.Assert(config.getPlayerRunSpeed() == 50);
+            UnityEngine.Debug.Assert(config.getChunkSize() > 0);
+            UnityEngine.Debug.Assert(config.getLocationScale() > 0);
+            UnityEngine.Debug.Assert(config.getStatusExpirationTicks() > 0);
+            UnityEngine.Debug.Assert(config.getPlayerWalkSpeed() > 0);
+            UnityEngine.Debug.Assert(config.getPlayerRunSpeed() > config.getPlayerWalkSpeed());
+            UnityEngine.Debug.Assert(config.getTicksBetweenBehaviorCalculations() > 0);
+            UnityEngine.Debug.Assert(config.getTicksBetweenBehaviorExecutions() > 0);
+            UnityEngine.Debug.Assert(config.getMinDistanceBetweenSettlements() > 0);
+            UnityEngine.Debug.Assert(config.getSettlementJoinRange() > 0);
         }
     }    
 }

@@ -1,20 +1,27 @@
 using UnityEngine;
 
-namespace osgtests {
+namespace beyondnationstests {
 
     public static class Tests {
         
         public static void runTests() {
+            // behavior
+            TestPawnBehaviorCalculator.runTests();
+
             // config
             TestGameConfig.runTests();
 
             // entity
             TestPawn.runTests();    
-            TestRockEntity.runTests();
-            TestTreeEntity.runTests();
+            TestRock.runTests();
+            TestTree.runTests();
 
             // inventory
             TestInventory.runTests();
+
+            // market
+            TestMarket.runTests();
+            TestStall.runTests();
 
             // nation
             TestNation.runTests();
@@ -24,6 +31,11 @@ namespace osgtests {
 
             // tick
             TestTickCounter.runTests();
+
+            // ui
+            TestCanvasFactory.runTests();
+            TestStatus.runTests();
+            TestTextGameObject.runTests();
 
             // world
             TestLocationId.runTests();

@@ -1,10 +1,11 @@
 using System.Collections.Generic;
+using UnityEngine;
 
-namespace osg {
+namespace beyondnations {
 
     public static class PawnNameGenerator {
 
-        public static string[] names = new string[] {
+        private static string[] names = new string[] {
             "Bob",
             "Alice",
             "Charlie",
@@ -85,6 +86,11 @@ namespace osg {
                 return generate();
             }
             generated.Add(fullName);
+
+            if (generated.Count == names.Length * familyNames.Length) {
+                generated.Clear();
+            }
+
             return fullName;
         }
     }

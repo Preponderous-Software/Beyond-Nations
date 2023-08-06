@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace osg {
+namespace beyondnations {
 
     /*
     * An environment is a collection of chunks.
@@ -12,12 +12,13 @@ namespace osg {
         private EnvironmentId id;
         private List<Chunk> chunks = new List<Chunk>();
         private GameObject gameObject;
-        private List<EntityId> entityIds = new List<EntityId>();
+        private EntityRepository entityRepository;
 
-        public Environment(int chunkSize, int locationScale) {
+        public Environment(int chunkSize, int locationScale, EntityRepository entityRepository) {
+            this.entityRepository = entityRepository;
             this.id = new EnvironmentId();
             gameObject = new GameObject("Environment");
-            gameObject.transform.parent = GameObject.Find("Open Source Game").transform;
+            gameObject.transform.parent = GameObject.Find("Beyond Nations").transform;
             gameObject.transform.position = new Vector3(0, 0, 0);
 
             // create initial chunk
@@ -25,13 +26,14 @@ namespace osg {
             addChunk(chunk);
         }
 
-        public EnvironmentId getId() {
-            return id;
-        }
-
         public void addChunk(Chunk chunk) {
             chunk.getGameObject().transform.parent = gameObject.transform;
             chunks.Add(chunk);
+        }
+
+        public void removeChunk(Chunk chunk) {
+            chunks.Remove(chunk);
+            GameObject.Destroy(chunk.getGameObject());
         }
 
         public Chunk getChunk(int xpos, int zpos) {
@@ -43,7 +45,7 @@ namespace osg {
             return null;
         }
 
-        public int getSize() {
+        public int getNumChunks() {
             return chunks.Count;
         }
 
@@ -55,75 +57,39 @@ namespace osg {
             return chunks[0].getLocationScale();
         }
 
-        public bool isEntityPresent(Entity entity) {
-            for (int i = 0; i < chunks.Count; i++) {
-                if (chunks[i].isEntityPresent(entity)) {
-                    return true;
-                }
-            }
-            return false;
+        public AppleTree getNearestTree(Vector3 position) {
+            return (AppleTree)getNearestEntityOfType(position, EntityType.TREE);
         }
 
-        public List<Chunk> getChunks() {
-            return chunks;
-        }
-
-        public List<EntityId> getEntityIds() {
-            return entityIds;
-        }
-
-        public Entity getEntity(EntityId entityId) {
-            foreach (Chunk chunk in chunks) {
-                try {
-                    return chunk.getEntity(entityId);
-                } catch (System.Exception e) {
-                    // do nothing
-                }
-            }
-            throw new System.Exception("Entity not found in environment");
-        }
-
-        public void addEntityId(EntityId entityId) {
-            entityIds.Add(entityId);
-        }
-
-        public void removeEntityId(EntityId entityId) {
-            entityIds.Remove(entityId);
-        }
-
-        public TreeEntity getNearestTree(Vector3 position) {
-            return (TreeEntity)getNearestEntityOfType(position, EntityType.TREE);
-        }
-
-        public RockEntity getNearestRock(Vector3 position) {
-            return (RockEntity)getNearestEntityOfType(position, EntityType.ROCK);
+        public Rock getNearestRock(Vector3 position) {
+            return (Rock)getNearestEntityOfType(position, EntityType.ROCK);
         }
 
         public Entity getNearestEntityOfType(Vector3 position, EntityType type) {
+            List<Entity> entities = entityRepository.getEntitiesOfType(type);
+            if (entities.Count == 0) {
+                return null;
+            }
+
+            // find nearest entity
             Entity nearestEntity = null;
             float nearestDistance = float.MaxValue;
-            foreach (Chunk chunk in chunks) {
-                foreach (Entity entity in chunk.getEntities()) {
-                    if (entity.getType() == type) {
-                        float distance = Vector3.Distance(position, entity.getGameObject().transform.position);
-                        if (distance < nearestDistance) {
-                            nearestDistance = distance;
-                            nearestEntity = entity;
-                        }
+            foreach (Entity entity in entities) {
+                if (entity.getType() == EntityType.PAWN) {
+                    Pawn pawn = (Pawn) entity;
+                    if (pawn.isCurrentlyInSettlement()) {
+                        continue;
+                    }
+                }
+                if (entity.getType() == type) {
+                    float distance = Vector3.Distance(position, entity.getGameObject().transform.position);
+                    if (distance < nearestDistance) {
+                        nearestDistance = distance;
+                        nearestEntity = entity;
                     }
                 }
             }
             return nearestEntity;
-        }
-
-        public void removeEntity(Entity entity) {
-            foreach (Chunk chunk in chunks) {
-                if (chunk.isEntityPresent(entity)) {
-                    chunk.removeEntity(entity);
-                    break;
-                }
-            }
-            removeEntityId(entity.getId());
         }
 
         public Chunk getChunkAtPosition(Vector3 position) {
@@ -136,6 +102,14 @@ namespace osg {
 
         public void destroyGameObject() {
             UnityEngine.Object.Destroy(gameObject);
+        }
+
+        public Chunk getRandomChunk() {
+            if (chunks.Count == 0) {
+                return null;
+            }
+            int randomIndex = Random.Range(0, chunks.Count);
+            return chunks[randomIndex];
         }
     }
 }

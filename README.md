@@ -1,14 +1,29 @@
-# ![Open Source Game](https://raw.githubusercontent.com/Preponderous-Software/osg-project/master/.github/media/banner.svg)
-The Open Source Game Project is a collaborative effort between Preponderous Software and the Fairfield Programming Association. It aims to create an open-source game that can serve as a reference for aspiring developers.
+# ![Beyond Nations](https://raw.githubusercontent.com/Preponderous-Software/beyond-nations/master/.github/media/banner.svg)
+Beyond Nations, previously called the Open Source Game project, is a collaborative effort between Preponderous Software and the Fairfield Programming Association. It aims to create an open-source game that can serve as a reference for aspiring developers.
 
 ## Game Concept
-In this game, you'll be able to embark on an exciting adventure in a vast procedurally generated world filled with biomes, terrain, and other features.
+In this game, you'll be able to embark on an adventure in a procedurally generated world filled with resources, settlements and pawns.
 
-You'll be able to collect resources and use them to craft items, build structures and manage your territory. You can claim land and build your own nation, or join an existing one. Each nation will have its own unique qualities and will be able to form relations with other nations. You'll be able to interact with other entities in the world, including other players, animals, and NPCs. Citizens will have their own unique personalities and can interact with each other, the player, and the world.
+You'll be able to collect resources and use them to found settlements, build structures or craft items. You will have the option to join an existing nation or create your own. There will be differences between nations and they will be able to form relations with other nations, whether those be positive or negative. Interacting with the world will be a key activity of the game. Most entities will be interactable. Pawns will have different traits and will be able to interact with each other, the player & the world.
 
-As a leader, you'll need to ensure a prosperous life for your citizens, by providing them with shelter and storage in the buildings you construct. As a citizen, you'll need to provide for yourself and contribute to the nation's economy by collecting resources, crafting items and participating in trade.
+As a leader, you'll be able to manage your nation's relations with other nations, manage your nation's resources, and manage your nation's settlements. As a citizen, you'll be able to contribute to your nation's economy by collecting resources, crafting items and participating in trade.
 
-Join us on this exciting journey and help us create a game that will inspire and educate aspiring developers.
+## Game Features
+The following features are planned for the game:
+- Procedurally generated world
+- Settlements
+- Nations
+- Pawns
+- Resources
+- Crafting
+- Trade
+- Relations
+- Quests
+- Story
+- Combat
+- Player customization
+- Modding support
+
 
 ## Controls
 The following controls are available in the game:
@@ -25,11 +40,23 @@ The following controls are available in the game:
 | `N` | Create a new nation |
 | `J` | Join a random nation |
 | `L` | Leave your current nation |
-| `T` | Teleport all living entities to you |
-| `Num Lock` | Toggle auto-walk |
+| `F` | Found a settlement |
+| `P` | Plant a sapling |
+| `H` | Teleport to home settlement |
+| `B` | Build stall |
+| `I` | Open inventory |
+| `Insert` | Toggle auto-walk |
+| `Page Up` | Increase render distance |
+| `Page Down` | Decrease render distance |
+| `F1` | Toggle show debug menu |
+| `F2` | Generate nearby land |
+| `F3` | Spawn a new pawn |
+| `F4` | Spawn money |
+| `F5` | Spawn wood |
+| `F6` | Teleport all pawns to you |
 
 ## Game Systems
-There are a number of systems that will be implemented in the game. These systems will be used to create a rich and engaging gameplay experience. Details can be found in the [Systems Document](./docs/SYSTEMS.md).
+There are a number of systems that will be implemented in the game. These systems will be used to create an engaging gameplay experience. Details can be found in the [Systems Document](./docs/SYSTEMS.md).
 
 ## Tech Stack
 Our game will be built using the following technologies:
@@ -41,11 +68,40 @@ Our game will be built using the following technologies:
 - [GitHub](https://github.com/): A web-based Git repository hosting service that enables version control and collaboration for developers.
 - [Visual Studio Code](https://code.visualstudio.com/): A code editor that supports a wide range of programming languages and offers features such as debugging, syntax highlighting, and extensions.
 
-## Inspiration
-Our inspiration for this project primarily comes from the Medieval Factions Minecraft plugin. This plugin enables players to create their own nation, claim territory, and form relations with other nations. The plugin is limited because it is designed for a game that is not created for this kind of gameplay. The objective of our project is to develop a game specifically designed for this kind of gameplay.
+## Inspirations
+### Medieval Factions
+Medieval Factions is a Minecraft plugin that enables players to create their own nation, claim territory, and form relations with other nations. The plugin is limited because it is designed for a game that is not created for this kind of gameplay. The objective of our project is to develop a game specifically designed for this kind of gameplay.
 
-# Contributing
+### Mount & Blade: Warband
+Mount & Blade: Warband is a medieval action role-playing game that features a sandbox gameplay style. The game allows players to create their own character and choose which faction to join. Players can also create their own faction and conquer territories. The game features a variety of gameplay elements such as combat, diplomacy, and trade. The game is a great source of inspiration for our project because it features many of the gameplay elements that we want to implement in our game.
+
+### Minecraft
+Minecraft is a sandbox video game that allows players to explore a procedurally generated world, gather resources, craft items, and build structures. The game features a variety of gameplay elements such as combat, exploration, and resource gathering. The game is a great source of inspiration for our project because it features many of the gameplay elements that we want to implement in our game.
+
+## Contributing
 To get started contributing to this project, please read the [Contributing Guide](./CONTRIBUTING.md).
 
-## Roles
-Preponderous Software leads the development of this project and focuses on core elements such as player control, gameplay, story, UI, and more. The Fairfield Programming Association is responsible for community management, deadlines, publishing, press, advertisement, and general assistance with development.
+### Authors and acknowledgment
+#### Software Development
+Name | Main Contributions
+------------ | -------------
+Daniel McCoy Stephenson (Creator) | Conceived the game concept, wrote the game's codebase, wrote the game's documentation & managed the project's development
+Pasarus | Participated in brainstorming sessions & participated in PR reviews
+
+#### Other
+Name | Main Contributions
+------------ | -------------
+William McGonagle (Creator) | Reached out to Preponderous Software to collaborate on the project, wrote the license, participated in brainstorming sessions & managed the project's marketing/publishing
+Phil Garner | Participated in brainstorming sessions & provided feedback on economic mechanics
+Nathan Gates | Playtested the game & participated in brainstorming sessions
+Ezekiel | Participated in brainstorming sessions
+Sshinx | Contributed custom 3D models including trees, saplings & rocks
+
+### Roles
+Preponderous Software and the Fairfield Programming Association are the two organizations that are collaborating on this project.
+
+### Developing
+Preponderous Software is the lead developer of the project. They will be responsible for developing the game's codebase, creating the game's visual assets, and managing the project's development.
+
+### Publishing
+The Fairfield Programming Association is the publisher of the project, and will be responsible for publishing the game on various platforms, such as Steam, & Itch.io. They will also be responsible for marketing the game and managing the project's publishing.

@@ -1,6 +1,6 @@
 using System;
 
-namespace osg {
+namespace beyondnations {
 
     public class EntityId {
         private Guid id;

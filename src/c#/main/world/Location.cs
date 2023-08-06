@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace osg {
+namespace beyondnations {
 
     /**
     * A location is a single point in the world.
@@ -66,7 +66,7 @@ namespace osg {
             this.gameObject.transform.position = position;
             this.gameObject.transform.localScale = new Vector3(scale, 1, scale);
             // random green color
-            setColor(new Color(0, Random.value, 0));
+            setColor(new Color(0, UnityEngine.Random.value, 0));
         }
 
         private void setColor(Color color) {

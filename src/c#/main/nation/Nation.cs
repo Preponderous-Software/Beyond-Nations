@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace osg {
+namespace beyondnations {
 
     public class Nation {
         private NationId id;
@@ -9,8 +9,8 @@ namespace osg {
         private EntityId leaderId;
         private List<EntityId> members = new List<EntityId>();
         private Dictionary<EntityId, NationRole> roles = new Dictionary<EntityId, NationRole>();
-        // color
         private Color color;
+        private List<EntityId> settlements = new List<EntityId>();
 
         public Nation(string name, EntityId leaderId) {
             id = new NationId();
@@ -18,9 +18,7 @@ namespace osg {
             this.leaderId = leaderId;
             members.Add(leaderId);
             roles[leaderId] = NationRole.LEADER;
-
-            // random color
-            color = new Color(Random.value, Random.value, Random.value);
+            color = new Color(UnityEngine.Random.value, UnityEngine.Random.value, UnityEngine.Random.value);
         }
 
         public NationId getId() {
@@ -41,7 +39,7 @@ namespace osg {
 
         public void addMember(EntityId memberId) {
             members.Add(memberId);
-            roles[memberId] = NationRole.CITIZEN;
+            roles[memberId] = NationRole.SERF;
         }
 
         public void removeMember(EntityId memberId) {
@@ -70,8 +68,37 @@ namespace osg {
         }
 
         public EntityId getRandomMemberId() {
-            int randomIndex = Random.Range(0, members.Count);
+            int randomIndex = UnityEngine.Random.Range(0, members.Count);
             return members[randomIndex];
+        }
+
+        public EntityId getOldestMemberId() {
+            return members[0];
+        }
+
+        public List<EntityId> getSettlements() {
+            return settlements;
+        }
+
+        public void addSettlement(EntityId settlementId) {
+            settlements.Add(settlementId);
+        }
+
+        public void removeSettlement(EntityId settlementId) {
+            settlements.Remove(settlementId);
+        }
+
+        public int getNumberOfSettlements() {
+            return settlements.Count;
+        }
+
+        public EntityId getSettlement(int index) {
+            return settlements[index];
+        }
+
+        public EntityId getRandomSettlementId() {
+            int randomIndex = UnityEngine.Random.Range(0, settlements.Count);
+            return settlements[randomIndex];
         }
     }
 }

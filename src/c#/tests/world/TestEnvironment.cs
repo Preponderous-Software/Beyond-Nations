@@ -1,8 +1,8 @@
 using UnityEngine;
 
-using osg;
+using beyondnations;
 
-namespace osgtests {
+namespace beyondnationstests {
 
     public static class TestEnvironment {
 
@@ -12,13 +12,12 @@ namespace osgtests {
 
         public static void testInitialization() {
             // run
-            Environment environment = new Environment(1, 1);
+            EntityRepository entityRepository = new EntityRepository();
+            Environment environment = new Environment(1, 1, entityRepository);
 
             // verify
-            Debug.Assert(environment != null);
-            Debug.Assert(environment.getId() != null);
-            Debug.Assert(environment.getChunks() != null);
-            Debug.Assert(environment.getChunkAtPosition(new Vector3(0, 0, 0)) != null);
+            UnityEngine.Debug.Assert(environment != null);
+            UnityEngine.Debug.Assert(environment.getChunkAtPosition(new Vector3(0, 0, 0)) != null);
 
             // clean up
             environment.destroyGameObject();

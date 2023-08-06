@@ -1,8 +1,8 @@
 using UnityEngine;
 
-using osg;
+using beyondnations;
 
-namespace osgtests {
+namespace beyondnationstests {
 
     public static class TestNationNameGenerator {
 
@@ -15,8 +15,8 @@ namespace osgtests {
             string name = NationNameGenerator.generate();
 
             // verify
-            Debug.Assert(name != null);
-            Debug.Assert(name.Length > 0);
+            UnityEngine.Debug.Assert(name != null);
+            UnityEngine.Debug.Assert(name.Length > 0);
         }
     }
 }

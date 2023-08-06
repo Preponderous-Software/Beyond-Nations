@@ -1,7 +1,8 @@
-namespace osg {
+namespace beyondnations {
     public enum NationRole {
         NONE,
+        SERF,
+        MERCHANT,
         LEADER,
-        CITIZEN,
     }
 }

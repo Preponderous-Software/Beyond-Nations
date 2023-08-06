@@ -1,6 +1,7 @@
 using System.Collections.Generic;
+using UnityEngine;
 
-namespace osg {
+namespace beyondnations {
 
     public static class NationNameGenerator {
 

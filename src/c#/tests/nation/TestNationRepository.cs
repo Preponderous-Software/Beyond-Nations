@@ -1,8 +1,8 @@
 using UnityEngine;
 
-using osg;
+using beyondnations;
 
-namespace osgtests {
+namespace beyondnationstests {
 
     public static class TestNationRepository {
 
@@ -18,7 +18,7 @@ namespace osgtests {
             NationRepository repository = new NationRepository();
 
             // verify
-            Debug.Assert(repository != null);
+            UnityEngine.Debug.Assert(repository != null);
         }
 
         public static void testAddNation() {
@@ -31,7 +31,7 @@ namespace osgtests {
             repository.addNation(nation);
 
             // verify
-            Debug.Assert(repository.getNation(nation.getId()) == nation);     
+            UnityEngine.Debug.Assert(repository.getNation(nation.getId()) == nation);     
         }
 
         public static void testRemoveNation() {
@@ -45,7 +45,7 @@ namespace osgtests {
             repository.removeNation(nation);
 
             // verify
-            Debug.Assert(repository.getNation(nation.getId()) == null);
+            UnityEngine.Debug.Assert(repository.getNation(nation.getId()) == null);
         }
 
         public static void testGetNationByNationId() {
@@ -59,7 +59,7 @@ namespace osgtests {
             Nation retrievedNation = repository.getNation(nation.getId());
 
             // verify
-            Debug.Assert(retrievedNation.getId() == nation.getId());
+            UnityEngine.Debug.Assert(retrievedNation.getId() == nation.getId());
         }
     }
 }

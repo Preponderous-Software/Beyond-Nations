@@ -1,19 +1,14 @@
 using UnityEngine;
 
-namespace osg {
+namespace beyondnations {
 
     public class PlayerDeathEvent : Event {
 
         private Vector3 position;
         private Player player;
 
-        public PlayerDeathEvent(Vector3 position, Player player) : base(EventType.PlayerDeath, "Player " + player.getId() + " has died at (" + position.x + ", " + position.y + ", " + position.z + ").") {
-            this.position = position;
+        public PlayerDeathEvent(Player player) : base(EventType.PlayerDeath, "Player " + player.getId() + " has died.") {
             this.player = player;
-        }
-
-        public Vector3 getPosition() {
-            return position;
         }
 
         public Player getPlayer() {
@@ -21,7 +16,10 @@ namespace osg {
         }
 
         public override string ToString() {
-            return "PlayerDeathEvent [position=" + position + ", player=" + player + ", type=" + getType() + ", description=" + getDescription() + ", date=" + getDate() + "]";
+            return "PlayerDeathEvent{" +
+                    "position=" + position +
+                    ", player=" + player +
+                    '}';          
         }
     }
 }

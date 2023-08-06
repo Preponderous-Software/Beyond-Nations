@@ -1,17 +1,19 @@
 using UnityEngine;
 
-namespace osg {
+namespace beyondnations {
 
     abstract public class Entity {
         private EntityId id;
         private EntityType type;
+        private string name;
         private GameObject gameObject;
         private bool markedForDeletion = false;
         private Inventory inventory;
         
-        public Entity(EntityType type) {
+        public Entity(EntityType type, string name) {
             this.id = new EntityId();
             this.type = type;
+            this.name = name;
             this.inventory = new Inventory(0);
         }
 
@@ -21,6 +23,10 @@ namespace osg {
 
         public EntityType getType() {
             return type;
+        }
+
+        public string getName() {
+            return name;
         }
 
         public GameObject getGameObject() {
@@ -54,6 +60,9 @@ namespace osg {
         public void setInventory(Inventory inventory) {
             this.inventory = inventory;
         }
-    }
 
+        public Vector3 getPosition() {
+            return getGameObject().transform.position;
+        }
+    }
 }

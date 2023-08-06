@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace osg {
+namespace beyondnations {
 
     /**
     * The WorldGenerator class is responsible for generating the land.
@@ -15,13 +15,17 @@ namespace osg {
         private int locationScale = 3;
         private int currentChunkX = 0;
         private int currentChunkZ = 0;
+        private EntityRepository entityRepository;
+        private GameConfig gameConfig;
 
-        public WorldGenerator(Environment environment, Player player, EventProducer eventProducer) {
+        public WorldGenerator(Environment environment, Player player, EventProducer eventProducer, EntityRepository entityRepository, GameConfig gameConfig) {
             this.environment = environment;
             this.player = player;
             this.eventProducer = eventProducer;
             this.chunkSize = environment.getChunkSize();
             this.locationScale = environment.getLocationScale();
+            this.entityRepository = entityRepository;
+            this.gameConfig = gameConfig;
         }
 
         public void update() {
@@ -54,12 +58,13 @@ namespace osg {
             generateChunkIfNotExistent(chunkX + 1, chunkZ + 1);
         }
 
-        private void generateChunkIfNotExistent(int chunkX, int chunkZ) {
-            // check if chunk exists
+        private bool generateChunkIfNotExistent(int chunkX, int chunkZ) {
             Chunk chunk = environment.getChunk(chunkX, chunkZ);
             if (chunk == null) {
                 createNewChunkAt(chunkX, chunkZ);
+                return true;
             }
+            return false;
         }
 
         /**
@@ -95,7 +100,7 @@ namespace osg {
         }
 
         private void spawnTreeEntities(Chunk chunk) {
-            int numberOfTrees = Random.Range(chunk.getSize(), chunk.getSize() * 2);
+            int numberOfTrees = UnityEngine.Random.Range(chunk.getSize(), chunk.getSize() * 2);
             for (int i = 0; i < numberOfTrees; i++) {
                 Location randomLocation = chunk.getRandomLocation();
                 if (randomLocation.getNumberOfEntities() > 0) {
@@ -106,17 +111,13 @@ namespace osg {
 
                 // create tree
                 Vector3 position = new Vector3(locationPosition.x, locationPosition.y + 1, locationPosition.z);
-                TreeEntity tree = new TreeEntity(position, 5);
-
-                // add tree to chunk
-                chunk.addEntity(tree, randomLocation);
-                environment.addEntityId(tree.getId());
-                tree.getGameObject().transform.parent = randomLocation.getGameObject().transform;
+                AppleTree tree = new AppleTree(position, 5);
+                entityRepository.addEntity(tree);
             }
         }
 
         private void spawnRockEntities(Chunk chunk) {
-            int numberOfRocks = Random.Range(chunk.getSize()/4, chunk.getSize()/2);
+            int numberOfRocks = UnityEngine.Random.Range(chunk.getSize()/4, chunk.getSize()/2);
             for (int i = 0; i < numberOfRocks; i++) {
                 Location randomLocation = chunk.getRandomLocation();
                 if (randomLocation.getNumberOfEntities() > 0) {
@@ -127,19 +128,22 @@ namespace osg {
 
                 // create rock
                 Vector3 position = new Vector3(locationPosition.x, locationPosition.y + 1, locationPosition.z);
-                RockEntity rock = new RockEntity(position);
-
-                // add rock to chunk if location is not occupied
-                chunk.addEntity(rock, randomLocation);
-                environment.addEntityId(rock.getId());
-                rock.getGameObject().transform.parent = randomLocation.getGameObject().transform;
+                Rock rock = new Rock(position);
+                entityRepository.addEntity(rock);
             }
         }
 
         private void spawnPawns(Chunk chunk) {
+            if (gameConfig.getLagPreventionEnabled()) {
+                int maxNumberOfPawns = 100;
+                int numPawns = entityRepository.getNumEntitiesOfType(EntityType.PAWN);
+                if (numPawns >= maxNumberOfPawns) {
+                    return;
+                }
+            }
             
             // 10% change to spawn a pawn
-            bool shouldSpawnPawn = Random.Range(0, 100) < 10;
+            bool shouldSpawnPawn = UnityEngine.Random.Range(0, 100) < 10;
             if (shouldSpawnPawn) {
                 Location randomLocation = chunk.getRandomLocation();
                 Vector3 locationPosition = randomLocation.getPosition();
@@ -148,14 +152,11 @@ namespace osg {
                 Vector3 position = new Vector3(locationPosition.x, (float)(locationPosition.y + 1.5), locationPosition.z);
                 Pawn pawn = new Pawn(position, PawnNameGenerator.generate());
                 eventProducer.producePawnSpawnEvent(position, pawn);
-
-                chunk.addEntity(pawn, randomLocation);
-                environment.addEntityId(pawn.getId());
-                pawn.getGameObject().transform.parent = randomLocation.getGameObject().transform;
+                entityRepository.addEntity(pawn);
             }
         }
 
-        public void generateChunkAtPosition(Vector3 position) {
+        public bool generateChunkAtPosition(Vector3 position) {
             int lengthOfChunk = chunkSize * locationScale;
 
             int chunkX = 0;
@@ -172,7 +173,7 @@ namespace osg {
                 chunkZ = (int) (position.z / lengthOfChunk) - 1;
             }
 
-            generateChunkIfNotExistent(chunkX, chunkZ);
+            return generateChunkIfNotExistent(chunkX, chunkZ);
         }
 
         public void generateSurroundingChunksAtPosition(Vector3 position) {

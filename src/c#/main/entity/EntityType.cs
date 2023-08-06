@@ -1,4 +1,4 @@
-namespace osg {
+namespace beyondnations {
 
     public enum EntityType {
         NONE,
@@ -6,5 +6,7 @@ namespace osg {
         ROCK,
         PAWN,
         PLAYER,
+        SETTLEMENT,
+        SAPLING,
     }
 }

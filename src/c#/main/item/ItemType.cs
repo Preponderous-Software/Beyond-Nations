@@ -1,8 +1,9 @@
-namespace osg {
+namespace beyondnations {
     public enum ItemType {
-        GOLD_COIN,
+        COIN,
         WOOD,
         STONE,
         APPLE,
+        SAPLING,
     }
 }

@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace osg {
+namespace beyondnations {
 
     public class CanvasFactory {
         private static int canvasCount = 0;

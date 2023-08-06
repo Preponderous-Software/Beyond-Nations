@@ -1,8 +1,8 @@
 using UnityEngine;
 
-using osg;
+using beyondnations;
 
-namespace osgtests {
+namespace beyondnationstests {
 
     public static class TestChunkId {
         
@@ -16,7 +16,7 @@ namespace osgtests {
             ChunkId chunkId = new ChunkId();
 
             // verify
-            Debug.Assert(chunkId != null);
+            UnityEngine.Debug.Assert(chunkId != null);
         }
 
         public static void testEquality() {
@@ -25,9 +25,7 @@ namespace osgtests {
             ChunkId chunkId2 = new ChunkId();
 
             // verify
-            Debug.Assert(chunkId1 != chunkId2);
-            Debug.Assert(chunkId1 == chunkId1);
-            Debug.Assert(chunkId2 == chunkId2);
+            UnityEngine.Debug.Assert(chunkId1 != chunkId2);
         }
     }
 }

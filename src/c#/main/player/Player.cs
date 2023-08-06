@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace osg {
+namespace beyondnations {
 
     public class Player : Entity {
         private Rigidbody rigidBody = null;
@@ -14,47 +14,51 @@ namespace osg {
         private int currentSpeed;
         private Camera playerCamera = null;
         private NationId nationId = null;
+        private EntityId homeSettlementId = null;
         private Status status = null;
         private bool autoWalk = false;
         private float energy = 100;
-        private float metabolism = 0.01f;
+        private float metabolism = UnityEngine.Random.Range(0.001f, 0.010f);
 
-        public Player(GameObject gameObject, int walkSpeed, int runSpeed, Status status) : base(EntityType.PLAYER){
-            setGameObject(gameObject);
-            this.rigidBody = gameObject.GetComponent<Rigidbody>();
+        // map of entity id to integer representing relationship strength
+        private Dictionary<EntityId, int> relationships = new Dictionary<EntityId, int>();
+        private EntityId currentSettlementId = null;
+
+        public Player(int walkSpeed, int runSpeed, TickCounter tickCounter, int statusExpirationTicks, int renderDistance) : base(EntityType.PLAYER, "Player"){
+            createGameObject(new Vector3(0, 2, 0));
+            setupCamera(renderDistance);
+            this.rigidBody = getGameObject().GetComponent<Rigidbody>();
             this.walkSpeed = walkSpeed;
             this.runSpeed = runSpeed;
-            this.status = status;
+            status = new Status(tickCounter, statusExpirationTicks);
             this.currentSpeed = walkSpeed;
-            GameObject childCameraObject = gameObject.transform.GetChild(0).gameObject;
-            this.playerCamera = childCameraObject.GetComponent<Camera>();
-            getInventory().addItem(ItemType.GOLD_COIN, Random.Range(100, 400));
+            getInventory().addItem(ItemType.COIN, UnityEngine.Random.Range(100, 400));
         }
 
         public void update() {
             horizontalInput = Input.GetAxis("Horizontal");
             verticalInput = Input.GetAxis("Vertical");
 
-            // modify speed if shift pressed
             if (Input.GetKey(KeyCode.LeftShift)) {
                 currentSpeed = runSpeed;
             } else {
                 currentSpeed = walkSpeed;
             }
 
-            // jump if space pressed
             if (Input.GetKeyDown(KeyCode.Space)) {
                 jumpKeyWasPressed = true;
             }
         }
 
         public void fixedUpdate() {
-            // turn left and right
+            if (isCurrentlyInSettlement()) {
+                return;
+            }
+            
             if (horizontalInput != 0) {
                 rigidBody.transform.Rotate(Vector3.up * horizontalInput * 2);
             }
 
-            // move forward and backward
             if (verticalInput != 0 && !autoWalk) {
                 rigidBody.transform.Translate(Vector3.forward * verticalInput * currentSpeed * Time.deltaTime);
             }
@@ -69,18 +73,10 @@ namespace osg {
             }
 
             if (energy < 90 && getInventory().getNumItems(ItemType.APPLE) > 0) {
-                // eat apple
-                getInventory().removeItem(ItemType.APPLE, 1);
-                energy += 10;
+                eatApple();
             }
 
             energy -= metabolism;
-        }
-
-        private void jump() {
-            if (isGrounded()) {
-                rigidBody.AddForce(Vector3.up * 10, ForceMode.Impulse);
-            }
         }
 
         public Camera getCamera() {
@@ -94,7 +90,13 @@ namespace osg {
         }
 
         public override void createGameObject(Vector3 position) {
-            throw new System.NotImplementedException();
+            GameObject gameObject = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+            gameObject.transform.localScale = new Vector3(1, 1, 1);
+            gameObject.transform.position = position;
+            gameObject.name = "Player";
+            Rigidbody rigidbody = gameObject.AddComponent<Rigidbody>();
+            rigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
+            setGameObject(gameObject);
         }
 
         public override void destroyGameObject() {
@@ -113,6 +115,14 @@ namespace osg {
             this.nationId = nationId;
         }
 
+        public EntityId getHomeSettlementId() {
+            return homeSettlementId;
+        }
+
+        public void setHomeSettlementId(EntityId settlementId) {
+            this.homeSettlementId = settlementId;
+        }
+
         public Status getStatus() {
             return status;
         }
@@ -127,6 +137,102 @@ namespace osg {
 
         public void setEnergy(float energy) {
             this.energy = energy;
+        }
+
+        public int getRenderDistance() {
+            return (int) playerCamera.farClipPlane;
+        }
+
+        public void increaseRenderDistance() {
+            playerCamera.farClipPlane += 10;
+
+            int maxRenderDistance = 1000;
+            if (playerCamera.farClipPlane > maxRenderDistance) {
+                playerCamera.farClipPlane = maxRenderDistance;
+            }
+        }
+
+        public void decreaseRenderDistance() {
+            playerCamera.farClipPlane -= 10;
+
+            int minRenderDistance = 50;
+            if (playerCamera.farClipPlane < minRenderDistance) {
+                playerCamera.farClipPlane = minRenderDistance;
+            }
+        }
+
+        public Dictionary<EntityId, int> getRelationships() {
+            return relationships;
+        }
+
+        public void increaseRelationship(Entity entity, int amount) {
+            if (entity == null) {
+                Debug.LogError("entity is null in increaseRelationship()");
+                return;
+            }
+            if (entity.getId() == getId()) {
+                Debug.LogError("entity is self in increaseRelationship()");
+                return;
+            }
+            if (getRelationships().ContainsKey(entity.getId())) {
+                getRelationships()[entity.getId()] += amount;
+            }
+            else {
+                getRelationships().Add(entity.getId(), amount);
+            }
+        }
+
+        public void decreaseRelationship(Entity entity, int amount) {
+            if (entity == null) {
+                Debug.LogError("entity is null in decreaseRelationship()");
+                return;
+            }
+            if (entity.getId() == getId()) {
+                Debug.LogError("entity is self in decreaseRelationship()");
+                return;
+            }
+            if (getRelationships().ContainsKey(entity.getId())) {
+                getRelationships()[entity.getId()] -= amount;
+            }
+            else {
+                getRelationships().Add(entity.getId(), -amount);
+            }
+        }
+
+        public bool isCurrentlyInSettlement() {
+            return getCurrentSettlementId() != null;
+        }
+
+        public EntityId getCurrentSettlementId() {
+            return currentSettlementId;
+        }
+
+        public void setCurrentSettlementId(EntityId currentSettlementId) {
+            this.currentSettlementId = currentSettlementId;
+        }
+
+        public void clearCurrentSettlementId() {
+            setCurrentSettlementId(null);
+        }
+        
+        private void setupCamera(int renderDistance) {
+            GameObject cameraObject = GameObject.Find("/Camera");      
+            cameraObject.transform.SetParent(getGameObject().transform);
+            cameraObject.transform.position = new Vector3(0, 5, -10);
+            cameraObject.transform.LookAt(getGameObject().transform);
+            this.playerCamera = cameraObject.GetComponent<Camera>();
+            this.playerCamera.farClipPlane = renderDistance;
+        }
+
+        private void jump() {
+            if (isGrounded()) {
+                rigidBody.AddForce(Vector3.up * 10, ForceMode.Impulse);
+            }
+        }
+
+        private void eatApple() {
+            getInventory().removeItem(ItemType.APPLE, 1);
+            energy += 10;
         }
     }
 }

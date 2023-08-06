@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace osg {
+namespace beyondnations {
 
     public class EventRepository {
         private Dictionary<EventType, List<Event>> events;
@@ -22,6 +22,18 @@ namespace osg {
 
         public List<Event> getEvents(EventType eventType) {
             return events[eventType];
+        }
+
+        public int getTotalNumberOfEvents() {
+            int totalNumberOfEvents = 0;
+            foreach (List<Event> list in events.Values) {
+                totalNumberOfEvents += list.Count;
+            }
+            return totalNumberOfEvents;
+        }
+
+        public int getNumberOfEvents(EventType eventType) {
+            return events[eventType].Count;
         }
     }
 }

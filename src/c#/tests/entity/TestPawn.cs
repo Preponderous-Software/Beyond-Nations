@@ -1,8 +1,8 @@
 using UnityEngine;
 
-using osg;
+using beyondnations;
 
-namespace osgtests {
+namespace beyondnationstests {
 
     public static class TestPawn {
 
@@ -19,11 +19,11 @@ namespace osgtests {
             Pawn pawn = new Pawn(new Vector3(0, 0, 0), "Pawn");
 
             // check
-            Debug.Assert(pawn.getType() == EntityType.PAWN);
-            Debug.Assert(pawn.getGameObject().name == "Pawn");
-            Debug.Assert(pawn.getGameObject().transform.position == new Vector3(0, 0, 0));
-            Debug.Assert(pawn.getGameObject().transform.localScale == new Vector3(1, 1, 1));
-            Debug.Assert(pawn.getGameObject().GetComponent<Renderer>().material.color == Color.gray);
+            UnityEngine.Debug.Assert(pawn.getType() == EntityType.PAWN);
+            UnityEngine.Debug.Assert(pawn.getGameObject().name == "Pawn");
+            UnityEngine.Debug.Assert(pawn.getGameObject().transform.position == new Vector3(0, 0, 0));
+            UnityEngine.Debug.Assert(pawn.getGameObject().transform.localScale == new Vector3(1, 1, 1));
+            UnityEngine.Debug.Assert(pawn.getGameObject().GetComponent<Renderer>().material.color == Color.gray);
 
             // clean up
             GameObject.Destroy(pawn.getGameObject());
@@ -34,7 +34,7 @@ namespace osgtests {
             Pawn pawn = new Pawn(new Vector3(0, 0, 0), "Pawn");
 
             // check
-            Debug.Assert(pawn.getSpeed() > 0);
+            UnityEngine.Debug.Assert(pawn.getSpeed() > 0);
 
             // clean up
             GameObject.Destroy(pawn.getGameObject());
@@ -45,7 +45,7 @@ namespace osgtests {
             Pawn pawn = new Pawn(new Vector3(0, 0, 0), "Pawn");
 
             // check
-            Debug.Assert(!pawn.hasTargetEntity());
+            UnityEngine.Debug.Assert(!pawn.hasTargetEntity());
 
             // clean up
             GameObject.Destroy(pawn.getGameObject());
@@ -56,7 +56,7 @@ namespace osgtests {
             Pawn pawn = new Pawn(new Vector3(0, 0, 0), "Pawn");
 
             // check
-            Debug.Assert(pawn.getTargetEntity() == null);
+            UnityEngine.Debug.Assert(pawn.getTargetEntity() == null);
 
             // clean up
             GameObject.Destroy(pawn.getGameObject());
@@ -69,7 +69,7 @@ namespace osgtests {
             pawn.setTargetEntity(targetEntity);
 
             // check
-            Debug.Assert(pawn.getTargetEntity() == targetEntity);
+            UnityEngine.Debug.Assert(pawn.getTargetEntity() == targetEntity);
 
             // clean up
             GameObject.Destroy(pawn.getGameObject());
