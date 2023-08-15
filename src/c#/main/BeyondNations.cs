@@ -12,6 +12,7 @@ namespace beyondnations {
     public class BeyondNations : MonoBehaviour {
         private TitleScreen titleScreen;
         private WorldScreen worldScreen;
+        private PauseScreen pauseScreen;
     
         private GameConfig gameConfig;
 
@@ -30,6 +31,7 @@ namespace beyondnations {
                 Debug.Log("Not running tests. Set `runTests` to true to run tests.");
             }
             titleScreen = new TitleScreen();
+            pauseScreen = new PauseScreen();
             gameConfig = new GameConfig();
         }
 
@@ -41,10 +43,20 @@ namespace beyondnations {
                 return;
             }
             else if (currentScreen == ScreenType.WORLD) {
+                if (Input.GetKeyDown(KeyCode.Escape)) {
+                    currentScreen = ScreenType.PAUSE;
+                    return;
+                }
                 if (worldScreen == null) {
                     initializeWorldScreen();
                 }
                 worldScreen.Update();
+            }
+            else if (currentScreen == ScreenType.PAUSE) {
+                if (Input.GetKeyDown(KeyCode.Escape)) {
+                    currentScreen = ScreenType.WORLD;
+                    return;
+                }
             }
             else {
                 throw new Exception("Unknown screen type: " + currentScreen);
@@ -57,6 +69,9 @@ namespace beyondnations {
             }
             else if (currentScreen == ScreenType.WORLD) {
                 worldScreen.FixedUpdate();
+            }
+            else if (currentScreen == ScreenType.PAUSE) {
+                return;
             }
             else {
                 throw new Exception("Unknown screen type: " + currentScreen);
@@ -72,6 +87,9 @@ namespace beyondnations {
                     initializeWorldScreen();
                 }
                 worldScreen.OnGUI();
+            }
+            else if (currentScreen == ScreenType.PAUSE) {
+                pauseScreen.OnGUI();
             }
             else {
                 throw new Exception("Unknown screen type: " + currentScreen);
