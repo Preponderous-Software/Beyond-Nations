@@ -42,6 +42,8 @@ namespace beyondnations {
         }
 
         public void Update() {
+            captureScreenshotIfKeyPressed();
+
             if (currentScreen == ScreenType.TITLE) {
                 if (Input.anyKey) {
                     currentScreen = ScreenType.MAIN_MENU;
@@ -85,8 +87,6 @@ namespace beyondnations {
             else {
                 throw new Exception("Unknown screen type: " + currentScreen);
             }
-
-            captureScreenshotIfKeyPressed();
         }
 
         public void FixedUpdate() {
@@ -111,6 +111,8 @@ namespace beyondnations {
         }
 
         public void OnGUI() {
+            displayVersionNumber();
+            
             if (currentScreen == ScreenType.TITLE) {
                 titleScreen.OnGUI();
             }
@@ -132,12 +134,6 @@ namespace beyondnations {
             else {
                 throw new Exception("Unknown screen type: " + currentScreen);
             }
-
-            // put version number in bottom left corner
-            GUIStyle style = new GUIStyle();
-            style.normal.textColor = Color.white;
-            style.fontSize = 12;
-            GUI.Label(new Rect(10, Screen.height - 20, 100, 20), version, style);
         }
 
         private void initializeWorldScreen() {
@@ -158,6 +154,14 @@ namespace beyondnations {
                 ScreenCapture.CaptureScreenshot(path);
                 Debug.Log("Screenshot saved to " + path);
             }
+        }
+
+        private void displayVersionNumber() {
+            // put version number in bottom left corner
+            GUIStyle style = new GUIStyle();
+            style.normal.textColor = Color.white;
+            style.fontSize = 12;
+            GUI.Label(new Rect(10, Screen.height - 20, 100, 20), "v" + version, style);
         }
     }
 }
