@@ -81,23 +81,23 @@ Minecraft is a sandbox video game that allows players to explore a procedurally 
 ## Contributing
 To get started contributing to this project, please read the [Contributing Guide](./docs/CONTRIBUTING.md).
 
-### Authors and acknowledgment
-#### Software Development
+## Authors and acknowledgment
+### Software Development
 Name | Main Contributions
 ------------ | -------------
 Daniel McCoy Stephenson (Creator) | Conceived the game concept, wrote the game's codebase, wrote the game's documentation & managed the project's development
 Pasarus | Participated in brainstorming sessions & participated in PR reviews
 
-#### Other
+### Other
 Name | Main Contributions
 ------------ | -------------
 William McGonagle (Creator) | Reached out to Preponderous Software to collaborate on the project, wrote the license, participated in brainstorming sessions & managed the project's marketing/publishing
 Phil Garner | Participated in brainstorming sessions & provided feedback on economic mechanics
 Nathan Gates | Playtested the game & participated in brainstorming sessions
-Ezekiel | Participated in brainstorming sessions
+Ezekiel Martinez | Playtested the game & participated in brainstorming sessions
 Sshinx | Contributed custom 3D models including trees, saplings & rocks
 
-### Roles
+## Roles
 Preponderous Software and the Fairfield Programming Association are the two organizations that are collaborating on this project.
 
 ### Developing
