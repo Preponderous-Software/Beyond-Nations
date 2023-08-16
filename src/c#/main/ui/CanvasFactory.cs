@@ -15,7 +15,7 @@ namespace beyondnations {
             textObject.transform.SetParent(canvasObject.transform);
             Text textComponent = textObject.AddComponent<Text>();
             textComponent.text = text;
-            textComponent.font = Resources.GetBuiltinResource(typeof(Font), "Arial.ttf") as Font;
+            textComponent.font = Resources.GetBuiltinResource(typeof(Font), "LegacyRuntime.ttf") as Font;
             textComponent.fontSize = fontSize;
             textComponent.color = Color.black;
             textComponent.alignment = TextAnchor.MiddleCenter;

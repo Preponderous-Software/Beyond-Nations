@@ -79,7 +79,7 @@ Mount & Blade: Warband is a medieval action role-playing game that features a sa
 Minecraft is a sandbox video game that allows players to explore a procedurally generated world, gather resources, craft items, and build structures. The game features a variety of gameplay elements such as combat, exploration, and resource gathering. The game is a great source of inspiration for our project because it features many of the gameplay elements that we want to implement in our game.
 
 ## Contributing
-To get started contributing to this project, please read the [Contributing Guide](./CONTRIBUTING.md).
+To get started contributing to this project, please read the [Contributing Guide](./docs/CONTRIBUTING.md).
 
 ### Authors and acknowledgment
 #### Software Development
