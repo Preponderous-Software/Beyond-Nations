@@ -13,6 +13,8 @@ namespace beyondnations {
         private TitleScreen titleScreen;
         private WorldScreen worldScreen;
         private PauseScreen pauseScreen;
+        private MainMenuScreen mainMenuScreen;
+        private ConfigScreen configScreen;
     
         private GameConfig gameConfig;
 
@@ -32,13 +34,15 @@ namespace beyondnations {
             }
             titleScreen = new TitleScreen();
             pauseScreen = new PauseScreen();
+            mainMenuScreen = new MainMenuScreen();
+            configScreen = new ConfigScreen();
             gameConfig = new GameConfig();
         }
 
         public void Update() {
             if (currentScreen == ScreenType.TITLE) {
                 if (Input.anyKey) {
-                    currentScreen = ScreenType.WORLD;
+                    currentScreen = ScreenType.MAIN_MENU;
                 }
                 return;
             }
@@ -58,9 +62,29 @@ namespace beyondnations {
                     return;
                 }
             }
+            else if (currentScreen == ScreenType.MAIN_MENU) {
+                if (Input.GetKeyDown(KeyCode.Escape)) {
+                    // exit
+                    Application.Quit();
+
+                    // stop
+                    #if UNITY_EDITOR
+                    UnityEditor.EditorApplication.isPlaying = false;
+                    #endif
+                    return;
+                }
+            }
+            else if (currentScreen == ScreenType.CONFIG) {
+                if (Input.GetKeyDown(KeyCode.Escape)) {
+                    currentScreen = ScreenType.MAIN_MENU;
+                    return;
+                }
+            }
             else {
                 throw new Exception("Unknown screen type: " + currentScreen);
             }
+
+            captureScreenshotIfKeyPressed();
         }
 
         public void FixedUpdate() {
@@ -71,6 +95,12 @@ namespace beyondnations {
                 worldScreen.FixedUpdate();
             }
             else if (currentScreen == ScreenType.PAUSE) {
+                return;
+            }
+            else if (currentScreen == ScreenType.MAIN_MENU) {
+                return;
+            }
+            else if (currentScreen == ScreenType.CONFIG) {
                 return;
             }
             else {
@@ -91,6 +121,12 @@ namespace beyondnations {
             else if (currentScreen == ScreenType.PAUSE) {
                 pauseScreen.OnGUI();
             }
+            else if (currentScreen == ScreenType.MAIN_MENU) {
+                currentScreen = mainMenuScreen.OnGUI();
+            }
+            else if (currentScreen == ScreenType.CONFIG) {
+                currentScreen = configScreen.OnGUI(gameConfig);
+            }
             else {
                 throw new Exception("Unknown screen type: " + currentScreen);
             }
@@ -98,6 +134,19 @@ namespace beyondnations {
 
         private void initializeWorldScreen() {
             worldScreen = new WorldScreen(gameConfig, debugMode);
+        }
+
+        private void captureScreenshotIfKeyPressed() {
+            if (Input.GetKeyDown(KeyCode.F12)) {
+                string timestamp = DateTime.Now.ToString("yyyyMMddHHmmssffff");
+                string filename = "screenshot_" + timestamp + ".png";
+                string path = "C:\\BeyondNations\\Screenshots\\" + filename;
+
+                // create directory if it doesn't exist
+                System.IO.Directory.CreateDirectory("C:\\BeyondNations\\Screenshots\\"); // TODO: pull this in from config
+
+                ScreenCapture.CaptureScreenshot(path);
+            }
         }
     }
 }

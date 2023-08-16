@@ -1,50 +1,93 @@
 namespace beyondnations {
 
     public class GameConfig {
+        
+        // TODO: create "ConfigOption" class & make this more flexible
+
+        // modifiable
         private int chunkSize;
         private int locationScale;
+        private bool respawnPawns;
+        private bool keepInventoryOnDeath;
+        private bool lagPreventionEnabled;
+
+        // non-modifiable
         private int statusExpirationTicks;
         private int playerWalkSpeed;
         private int playerRunSpeed;
-        private bool respawnPawns;
-        private bool keepInventoryOnDeath;
         private int ticksBetweenBehaviorCalculations;
         private int ticksBetweenBehaviorExecutions;
         private int minDistanceBetweenSettlements;
         private int settlementJoinRange;
         private float settlementMetabolismMultiplier;
         private int renderDistance;
-        private bool lagPreventionEnabled;
         private int maxNumEntities;
         private int maxNumChunks;
 
         public GameConfig() {
+            // modifiable
             chunkSize = 7;
             locationScale = 15;
+            respawnPawns = false;
+            keepInventoryOnDeath = true;
+            lagPreventionEnabled = true;
+
+            // non-modifiable
             statusExpirationTicks = 500;
             playerWalkSpeed = 25;
             playerRunSpeed = 50;
-            respawnPawns = false;
-            keepInventoryOnDeath = true;
             ticksBetweenBehaviorCalculations = 1000;
             ticksBetweenBehaviorExecutions = 5;
             minDistanceBetweenSettlements = 250;
             settlementJoinRange = 500;
             settlementMetabolismMultiplier = 0.8f;
             renderDistance = 200;
-            lagPreventionEnabled = true;
             maxNumEntities = 100000;
             maxNumChunks = 10000;
         }
 
+        // modifiable
         public int getChunkSize() {
             return chunkSize;
+        }
+
+        public void setChunkSize(int chunkSize) {
+            this.chunkSize = chunkSize;
         }
 
         public int getLocationScale() {
             return locationScale;
         }
 
+        public void setLocationScale(int locationScale) {
+            this.locationScale = locationScale;
+        }
+
+        public bool getRespawnPawns() {
+            return respawnPawns;
+        }
+
+        public void setRespawnPawns(bool respawnPawns) {
+            this.respawnPawns = respawnPawns;
+        }
+
+        public bool getKeepInventoryOnDeath() {
+            return keepInventoryOnDeath;
+        }
+
+        public void setKeepInventoryOnDeath(bool keepInventoryOnDeath) {
+            this.keepInventoryOnDeath = keepInventoryOnDeath;
+        }
+
+        public bool getLagPreventionEnabled() {
+            return lagPreventionEnabled;
+        }
+
+        public void setLagPreventionEnabled(bool lagPreventionEnabled) {
+            this.lagPreventionEnabled = lagPreventionEnabled;
+        }
+
+        // non-modifiable
         public int getStatusExpirationTicks() {
             return statusExpirationTicks;
         }
@@ -55,14 +98,6 @@ namespace beyondnations {
 
         public int getPlayerRunSpeed() {
             return playerRunSpeed;
-        }
-
-        public bool getRespawnPawns() {
-            return respawnPawns;
-        }
-
-        public bool getKeepInventoryOnDeath() {
-            return keepInventoryOnDeath;
         }
 
         public int getTicksBetweenBehaviorCalculations() {
@@ -87,10 +122,6 @@ namespace beyondnations {
 
         public int getRenderDistance() {
             return renderDistance;
-        }
-
-        public bool getLagPreventionEnabled() {
-            return lagPreventionEnabled;
         }
 
         public int getMaxNumEntities() {
