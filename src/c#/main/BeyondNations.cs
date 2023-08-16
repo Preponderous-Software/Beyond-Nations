@@ -19,6 +19,8 @@ namespace beyondnations {
         private GameConfig gameConfig;
 
         private ScreenType currentScreen = ScreenType.TITLE;
+        
+        private string version = "0.3.0-alpha";
 
         public bool runTests;
         public bool debugMode;
@@ -130,6 +132,12 @@ namespace beyondnations {
             else {
                 throw new Exception("Unknown screen type: " + currentScreen);
             }
+
+            // put version number in bottom left corner
+            GUIStyle style = new GUIStyle();
+            style.normal.textColor = Color.white;
+            style.fontSize = 12;
+            GUI.Label(new Rect(10, Screen.height - 20, 100, 20), version, style);
         }
 
         private void initializeWorldScreen() {
@@ -137,15 +145,18 @@ namespace beyondnations {
         }
 
         private void captureScreenshotIfKeyPressed() {
-            if (Input.GetKeyDown(KeyCode.F12)) {
+            if (Input.GetKeyDown(KeyBindings.takeScreenshot)) {
+                // generate filename
                 string timestamp = DateTime.Now.ToString("yyyyMMddHHmmssffff");
                 string filename = "screenshot_" + timestamp + ".png";
                 string path = "C:\\BeyondNations\\Screenshots\\" + filename;
 
                 // create directory if it doesn't exist
-                System.IO.Directory.CreateDirectory("C:\\BeyondNations\\Screenshots\\"); // TODO: pull this in from config
+                System.IO.Directory.CreateDirectory(gameConfig.getBeyondNationsDirectoryPath() + "\\Screenshots\\");
 
+                // take screenshot
                 ScreenCapture.CaptureScreenshot(path);
+                Debug.Log("Screenshot saved to " + path);
             }
         }
     }

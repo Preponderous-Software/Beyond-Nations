@@ -54,6 +54,7 @@ The following controls are available in the game:
 | `F4` | Spawn money |
 | `F5` | Spawn wood |
 | `F6` | Teleport all pawns to you |
+| `F12` | Take screenshot |
 
 ## Game Systems
 There are a number of systems that will be implemented in the game. These systems will be used to create an engaging gameplay experience. Details can be found in the [Systems Document](./docs/SYSTEMS.md).

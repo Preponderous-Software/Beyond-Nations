@@ -23,6 +23,7 @@ namespace beyondnations {
         private int renderDistance;
         private int maxNumEntities;
         private int maxNumChunks;
+        private string beyondNationsDirectoryPath;
 
         public GameConfig() {
             // modifiable
@@ -44,6 +45,7 @@ namespace beyondnations {
             renderDistance = 200;
             maxNumEntities = 100000;
             maxNumChunks = 10000;
+            beyondNationsDirectoryPath = "C:\\BeyondNations";
         }
 
         // modifiable
@@ -130,6 +132,10 @@ namespace beyondnations {
 
         public int getMaxNumChunks() {
             return maxNumChunks;
+        }
+
+        public string getBeyondNationsDirectoryPath() {
+            return beyondNationsDirectoryPath;
         }
     }
 }
