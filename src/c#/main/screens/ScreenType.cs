@@ -3,6 +3,8 @@ namespace beyondnations {
     public enum ScreenType {
         TITLE,
         WORLD,
-        PAUSE
+        PAUSE,
+        MAIN_MENU,
+        CONFIG
     }
 }

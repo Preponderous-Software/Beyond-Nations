@@ -13,10 +13,14 @@ namespace beyondnations {
         private TitleScreen titleScreen;
         private WorldScreen worldScreen;
         private PauseScreen pauseScreen;
+        private MainMenuScreen mainMenuScreen;
+        private ConfigScreen configScreen;
     
         private GameConfig gameConfig;
 
         private ScreenType currentScreen = ScreenType.TITLE;
+        
+        private string version = "0.3.0-alpha";
 
         public bool runTests;
         public bool debugMode;
@@ -32,13 +36,17 @@ namespace beyondnations {
             }
             titleScreen = new TitleScreen();
             pauseScreen = new PauseScreen();
+            mainMenuScreen = new MainMenuScreen();
+            configScreen = new ConfigScreen();
             gameConfig = new GameConfig();
         }
 
         public void Update() {
+            captureScreenshotIfKeyPressed();
+
             if (currentScreen == ScreenType.TITLE) {
                 if (Input.anyKey) {
-                    currentScreen = ScreenType.WORLD;
+                    currentScreen = ScreenType.MAIN_MENU;
                 }
                 return;
             }
@@ -58,6 +66,24 @@ namespace beyondnations {
                     return;
                 }
             }
+            else if (currentScreen == ScreenType.MAIN_MENU) {
+                if (Input.GetKeyDown(KeyCode.Escape)) {
+                    // exit
+                    Application.Quit();
+
+                    // stop
+                    #if UNITY_EDITOR
+                    UnityEditor.EditorApplication.isPlaying = false;
+                    #endif
+                    return;
+                }
+            }
+            else if (currentScreen == ScreenType.CONFIG) {
+                if (Input.GetKeyDown(KeyCode.Escape)) {
+                    currentScreen = ScreenType.MAIN_MENU;
+                    return;
+                }
+            }
             else {
                 throw new Exception("Unknown screen type: " + currentScreen);
             }
@@ -73,12 +99,20 @@ namespace beyondnations {
             else if (currentScreen == ScreenType.PAUSE) {
                 return;
             }
+            else if (currentScreen == ScreenType.MAIN_MENU) {
+                return;
+            }
+            else if (currentScreen == ScreenType.CONFIG) {
+                return;
+            }
             else {
                 throw new Exception("Unknown screen type: " + currentScreen);
             }
         }
 
         public void OnGUI() {
+            displayVersionNumber();
+            
             if (currentScreen == ScreenType.TITLE) {
                 titleScreen.OnGUI();
             }
@@ -91,6 +125,12 @@ namespace beyondnations {
             else if (currentScreen == ScreenType.PAUSE) {
                 pauseScreen.OnGUI();
             }
+            else if (currentScreen == ScreenType.MAIN_MENU) {
+                currentScreen = mainMenuScreen.OnGUI();
+            }
+            else if (currentScreen == ScreenType.CONFIG) {
+                currentScreen = configScreen.OnGUI(gameConfig);
+            }
             else {
                 throw new Exception("Unknown screen type: " + currentScreen);
             }
@@ -98,6 +138,30 @@ namespace beyondnations {
 
         private void initializeWorldScreen() {
             worldScreen = new WorldScreen(gameConfig, debugMode);
+        }
+
+        private void captureScreenshotIfKeyPressed() {
+            if (Input.GetKeyDown(KeyBindings.takeScreenshot)) {
+                // generate filename
+                string timestamp = DateTime.Now.ToString("yyyyMMddHHmmssffff");
+                string filename = "screenshot_" + timestamp + ".png";
+                string path = "C:\\BeyondNations\\Screenshots\\" + filename;
+
+                // create directory if it doesn't exist
+                System.IO.Directory.CreateDirectory(gameConfig.getBeyondNationsDirectoryPath() + "\\Screenshots\\");
+
+                // take screenshot
+                ScreenCapture.CaptureScreenshot(path);
+                Debug.Log("Screenshot saved to " + path);
+            }
+        }
+
+        private void displayVersionNumber() {
+            // put version number in bottom left corner
+            GUIStyle style = new GUIStyle();
+            style.normal.textColor = Color.white;
+            style.fontSize = 12;
+            GUI.Label(new Rect(10, Screen.height - 20, 100, 20), "v" + version, style);
         }
     }
 }

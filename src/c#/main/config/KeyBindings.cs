@@ -27,5 +27,6 @@ namespace beyondnations {
         public static readonly KeyCode spawnMoney = KeyCode.F4;
         public static readonly KeyCode spawnWood = KeyCode.F5;
         public static readonly KeyCode teleportAllToPlayer = KeyCode.F6;
+        public static readonly KeyCode takeScreenshot = KeyCode.F12;
     }
 }

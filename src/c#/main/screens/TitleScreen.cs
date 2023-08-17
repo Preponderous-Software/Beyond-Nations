@@ -21,23 +21,12 @@ namespace beyondnations {
             int titleWidth = 200;
             int titleHeight = 100;
             int titleX = centerX - titleWidth / 2;
-            int titleY = centerY/2 - titleHeight / 2;
-
-            int buttonWidth = 100;
-            int buttonHeight = 50;
-            int buttonX = centerX - buttonWidth / 2;
-            int buttonY = centerY + buttonHeight / 2;
+            int titleY = centerY - titleHeight;
 
             // draw title in top center in large font
             GUI.Label(new Rect(titleX, titleY, titleWidth, titleHeight), "Beyond Nations", new GUIStyle() {
                 fontSize = Screen.height / 10,
                 fontStyle = FontStyle.Bold,
-                alignment = TextAnchor.MiddleCenter
-            });
-
-            // draw "press any key to start" in bottom center in small font
-            GUI.Label(new Rect(titleX, buttonY, titleWidth, titleHeight), "(Press any key to start)", new GUIStyle() {
-                fontSize = Screen.height / 30,
                 alignment = TextAnchor.MiddleCenter
             });
         }
