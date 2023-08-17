@@ -27,7 +27,7 @@ The Contributor represents and warrants that they have the legal right to grant 
 The Contributor agrees to indemnify, defend, and hold FPA and Preponderous harmless from any claims, damages, liabilities, or expenses arising from the Contribution.
 
 6. Governing Law and Jurisdiction:
-This agreement shall be governed by and construed in accordance with the laws of Conneticut, United States. Any legal action or proceeding arising out of or relating to this agreement shall be brought exclusively in the state or federal courts located in Conneticut, and the parties consent to the personal jurisdiction of such courts.
+This agreement shall be governed by and construed in accordance with the laws of Connecticut, United States. Any legal action or proceeding arising out of or relating to this agreement shall be brought exclusively in the state or federal courts located in Connecticut, and the parties consent to the personal jurisdiction of such courts.
 
 7. Entire Agreement:
 This CLA constitutes the entire agreement between the parties with respect to its subject matter and supersedes all prior or contemporaneous agreements, representations, warranties, and understandings.
