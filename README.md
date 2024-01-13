@@ -1,5 +1,5 @@
 # ![Beyond Nations](https://raw.githubusercontent.com/Preponderous-Software/beyond-nations/master/.github/media/banner.png)
-Beyond Nations, previously called the Open Source Game project, is a collaborative effort between Preponderous Software and the Fairfield Programming Association. It aims to create an open-source game that can serve as a reference for aspiring developers.
+Beyond Nations, previously called the Open Source Game project, started as a collaborative effort between Preponderous Software and the Fairfield Programming Association. It aims to create an open-source game that can serve as a reference for aspiring developers.
 
 ## Game Concept
 In this game, you'll be able to embark on an adventure in a procedurally generated world filled with resources, settlements and pawns.
@@ -85,23 +85,14 @@ To get started contributing to this project, please read the [Contributing Guide
 #### Software Development
 Name | Main Contributions
 ------------ | -------------
-Daniel McCoy Stephenson (Creator) | Conceived the game concept, wrote the game's codebase, wrote the game's documentation & managed the project's development
+Daniel McCoy Stephenson | Creator
 Pasarus | Participated in brainstorming sessions & participated in PR reviews
 
 #### Other
 Name | Main Contributions
 ------------ | -------------
-William McGonagle (Creator) | Reached out to Preponderous Software to collaborate on the project, wrote the license, participated in brainstorming sessions & managed the project's marketing/publishing
+William McGonagle | Initially reached out to Preponderous Software to collaborate on a unity project, participated in brainstorming sessions
 Phil Garner | Participated in brainstorming sessions & provided feedback on economic mechanics
 Nathan Gates | Playtested the game & participated in brainstorming sessions
-Ezekiel | Participated in brainstorming sessions
+Ezekiel Martinez | Participated in brainstorming sessions
 Sshinx | Contributed custom 3D models including trees, saplings & rocks
-
-### Roles
-Preponderous Software and the Fairfield Programming Association are the two organizations that are collaborating on this project.
-
-### Developing
-Preponderous Software is the lead developer of the project. They will be responsible for developing the game's codebase, creating the game's visual assets, and managing the project's development.
-
-### Publishing
-The Fairfield Programming Association is the publisher of the project, and will be responsible for publishing the game on various platforms, such as Steam, & Itch.io. They will also be responsible for marketing the game and managing the project's publishing.
