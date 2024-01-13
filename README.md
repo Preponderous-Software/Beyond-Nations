@@ -54,6 +54,7 @@ The following controls are available in the game:
 | `F4` | Spawn money |
 | `F5` | Spawn wood |
 | `F6` | Teleport all pawns to you |
+| `F12` | Take screenshot |
 
 ## Game Systems
 There are a number of systems that will be implemented in the game. These systems will be used to create an engaging gameplay experience. Details can be found in the [Systems Document](./docs/SYSTEMS.md).
@@ -79,16 +80,16 @@ Mount & Blade: Warband is a medieval action role-playing game that features a sa
 Minecraft is a sandbox video game that allows players to explore a procedurally generated world, gather resources, craft items, and build structures. The game features a variety of gameplay elements such as combat, exploration, and resource gathering. The game is a great source of inspiration for our project because it features many of the gameplay elements that we want to implement in our game.
 
 ## Contributing
-To get started contributing to this project, please read the [Contributing Guide](./CONTRIBUTING.md).
+To get started contributing to this project, please read the [Contributing Guide](./docs/CONTRIBUTING.md).
 
-### Authors and acknowledgment
-#### Software Development
+## Authors and acknowledgment
+### Software Development
 Name | Main Contributions
 ------------ | -------------
 Daniel McCoy Stephenson | Creator
 Pasarus | Participated in brainstorming sessions & participated in PR reviews
 
-#### Other
+### Other
 Name | Main Contributions
 ------------ | -------------
 William McGonagle | Initially reached out to Preponderous Software to collaborate on a unity project, participated in brainstorming sessions

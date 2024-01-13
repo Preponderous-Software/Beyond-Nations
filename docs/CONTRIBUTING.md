@@ -5,9 +5,9 @@ To get started with the project, follow these steps:
 
 1. Open Unity Hub.
 1. Click on the New Project button in the top right.
-1. Select the 3D template.
+1. Select the `3D (URP)` template.
 1. Name your project and choose where to store it.
-1. Select the Unity Editor version (2020.3.21f1 is recommended).
+1. Select the Unity Editor version (2022.3.7f1 is recommended).
 1. Click the Create Project button.
 1. Open a terminal and navigate to the Assets directory of the project.
 1. Clone this repository using the following command:
