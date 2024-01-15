@@ -1,5 +1,5 @@
 # ![Beyond Nations](https://raw.githubusercontent.com/Preponderous-Software/beyond-nations/master/.github/media/banner.png)
-Beyond Nations, previously called the Open Source Game project, is a collaborative effort between Preponderous Software and the Fairfield Programming Association. It aims to create an open-source game that can serve as a reference for aspiring developers.
+Beyond Nations, previously called the Open Source Game project, started as a collaborative effort between Preponderous Software and the Fairfield Programming Association. It aims to create an open-source game that can serve as a reference for aspiring developers.
 
 ## Game Concept
 In this game, you'll be able to embark on an adventure in a procedurally generated world filled with resources, settlements and pawns.
@@ -54,6 +54,7 @@ The following controls are available in the game:
 | `F4` | Spawn money |
 | `F5` | Spawn wood |
 | `F6` | Teleport all pawns to you |
+| `F12` | Take screenshot |
 
 ## Game Systems
 There are a number of systems that will be implemented in the game. These systems will be used to create an engaging gameplay experience. Details can be found in the [Systems Document](./docs/SYSTEMS.md).
@@ -79,29 +80,20 @@ Mount & Blade: Warband is a medieval action role-playing game that features a sa
 Minecraft is a sandbox video game that allows players to explore a procedurally generated world, gather resources, craft items, and build structures. The game features a variety of gameplay elements such as combat, exploration, and resource gathering. The game is a great source of inspiration for our project because it features many of the gameplay elements that we want to implement in our game.
 
 ## Contributing
-To get started contributing to this project, please read the [Contributing Guide](./CONTRIBUTING.md).
+To get started contributing to this project, please read the [Contributing Guide](./docs/CONTRIBUTING.md).
 
-### Authors and acknowledgment
-#### Software Development
+## Authors and acknowledgment
+### Software Development
 Name | Main Contributions
 ------------ | -------------
-Daniel McCoy Stephenson (Creator) | Conceived the game concept, wrote the game's codebase, wrote the game's documentation & managed the project's development
+Daniel McCoy Stephenson | Creator
 Pasarus | Participated in brainstorming sessions & participated in PR reviews
 
-#### Other
+### Other
 Name | Main Contributions
 ------------ | -------------
-William McGonagle (Creator) | Reached out to Preponderous Software to collaborate on the project, wrote the license, participated in brainstorming sessions & managed the project's marketing/publishing
+William McGonagle | Initially reached out to Preponderous Software to collaborate on a unity project, participated in brainstorming sessions
 Phil Garner | Participated in brainstorming sessions & provided feedback on economic mechanics
 Nathan Gates | Playtested the game & participated in brainstorming sessions
-Ezekiel | Participated in brainstorming sessions
+Ezekiel Martinez | Participated in brainstorming sessions
 Sshinx | Contributed custom 3D models including trees, saplings & rocks
-
-### Roles
-Preponderous Software and the Fairfield Programming Association are the two organizations that are collaborating on this project.
-
-### Developing
-Preponderous Software is the lead developer of the project. They will be responsible for developing the game's codebase, creating the game's visual assets, and managing the project's development.
-
-### Publishing
-The Fairfield Programming Association is the publisher of the project, and will be responsible for publishing the game on various platforms, such as Steam, & Itch.io. They will also be responsible for marketing the game and managing the project's publishing.
