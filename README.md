@@ -97,3 +97,14 @@ Phil Garner | Participated in brainstorming sessions & provided feedback on econ
 Nathan Gates | Playtested the game & participated in brainstorming sessions
 Ezekiel Martinez | Participated in brainstorming sessions
 Sshinx | Contributed custom 3D models including trees, saplings & rocks
+
+## 📄 License
+
+This project is licensed under the **Preponderous Non-Commercial License (Preponderous-NC)**.  
+It is free to use, modify, and self-host for **non-commercial** purposes, but **commercial use requires a separate license**.
+
+> **Disclaimer:** *Preponderous Software is not a legal entity.*  
+> All rights to works published under this license are reserved by the copyright holder, **Daniel McCoy Stephenson**.
+
+Full license text:  
+[https://github.com/Preponderous-Software/preponderous-nc-license/blob/main/LICENSE.md](https://github.com/Preponderous-Software/preponderous-nc-license/blob/main/LICENSE.md)
