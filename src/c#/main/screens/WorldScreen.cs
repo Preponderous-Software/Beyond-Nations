@@ -28,6 +28,7 @@ namespace beyondnations {
         private int numPawnDeaths = 0;
         private int numPlayerDeaths = 0;
         private bool inventoryInfoBoxEnabled = true;
+        private NationManagementInfoBox nationManagementInfoBox;
 
         public WorldScreen(GameConfig gameConfig, bool debugMode) {
             this.gameConfig = gameConfig;
@@ -45,6 +46,15 @@ namespace beyondnations {
             pawnBehaviorExecutor = new PawnBehaviorExecutor(environment, nationRepository, eventProducer, entityRepository);
             entityRepository.addEntity(player);
             lagPreventer = new LagPreventer(gameConfig, tickCounter, entityRepository, environment);
+            
+            // Initialize Nation Management InfoBox
+            int managementBoxX = 200;
+            int managementBoxY = 50;
+            int managementBoxWidth = 250;
+            int managementBoxHeight = 20;
+            int managementBoxPadding = 10;
+            nationManagementInfoBox = new NationManagementInfoBox(managementBoxX, managementBoxY, managementBoxWidth, managementBoxHeight, managementBoxPadding, "Nation Management", player, nationRepository, entityRepository, eventProducer);
+            
             player.getStatus().update("Press " + KeyBindings.createNewNation + " to create a nation.");
         }
 
@@ -285,6 +295,9 @@ namespace beyondnations {
             }
 
             drawPlayerInfo();
+
+            // Draw nation management UI
+            nationManagementInfoBox.draw();
         }
 
         private void drawCommandButtons() {
@@ -318,6 +331,14 @@ namespace beyondnations {
                     command.execute(player);
                 }
                 buttonX += buttonWidth + buttonSpacing;
+
+                // if leader, draw manage nation button
+                if (player.getId() == nation.getLeaderId()) {
+                    if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Manage Nation")) {
+                        nationManagementInfoBox.setVisible(!nationManagementInfoBox.getVisible());
+                    }
+                    buttonX += buttonWidth + buttonSpacing;
+                }
 
                 // if leader and no settlements and enough resources, draw found settlement
                 if (player.getId() == nation.getLeaderId() && nation.getNumberOfSettlements() == 0 && player.getInventory().getNumItems(ItemType.WOOD) >= Settlement.WOOD_COST_TO_BUILD) {

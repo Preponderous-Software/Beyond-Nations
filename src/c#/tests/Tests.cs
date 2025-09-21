@@ -28,6 +28,9 @@ namespace beyondnationstests {
             TestNationId.runTests();
             TestNationNameGenerator.runTests();
             TestNationRepository.runTests();
+            TestNationRenameCommand.runTests();
+            TestNationDisbandCommand.runTests();
+            TestNationTransferOwnershipCommand.runTests();
 
             // tick
             TestTickCounter.runTests();

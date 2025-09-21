@@ -29,6 +29,10 @@ namespace beyondnations {
             return name;
         }
 
+        public void setName(string name) {
+            this.name = name;
+        }
+
         public EntityId getLeaderId() {
             return leaderId;
         }
@@ -53,6 +57,10 @@ namespace beyondnations {
 
         public int getNumberOfMembers() {
             return members.Count;
+        }
+
+        public List<EntityId> getMembers() {
+            return new List<EntityId>(members);
         }
 
         public Color getColor() {
