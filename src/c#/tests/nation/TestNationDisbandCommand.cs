@@ -19,7 +19,7 @@ namespace beyondnationstests {
             EventRepository eventRepository = new EventRepository();
             EventProducer eventProducer = new EventProducer(eventRepository);
             
-            Player player = new Player(1.0f, 2.0f, new TickCounter(), 100, 50);
+            Player player = new Player(1, 2, new TickCounter(), 100, 50);
             Nation nation = new Nation("Test Nation", player.getId());
             nationRepository.addNation(nation);
             player.setNationId(nation.getId());
@@ -42,7 +42,7 @@ namespace beyondnationstests {
             EventRepository eventRepository = new EventRepository();
             EventProducer eventProducer = new EventProducer(eventRepository);
             
-            Player player = new Player(1.0f, 2.0f, new TickCounter(), 100, 50);
+            Player player = new Player(1, 2, new TickCounter(), 100, 50);
             
             NationDisbandCommand command = new NationDisbandCommand(nationRepository, entityRepository, eventProducer);
 
@@ -63,7 +63,7 @@ namespace beyondnationstests {
             EntityId leaderId = new EntityId();
             Nation nation = new Nation("Test Nation", leaderId);
             
-            Player player = new Player(1.0f, 2.0f, new TickCounter(), 100, 50);
+            Player player = new Player(1, 2, new TickCounter(), 100, 50);
             nation.addMember(player.getId());
             nationRepository.addNation(nation);
             player.setNationId(nation.getId());

@@ -16,7 +16,7 @@ namespace beyondnationstests {
         public static void testSuccessfulRename() {
             // prepare
             NationRepository nationRepository = new NationRepository();
-            Player player = new Player(1.0f, 2.0f, new TickCounter(), 100, 50);
+            Player player = new Player(1, 2, new TickCounter(), 100, 50);
             Nation nation = new Nation("Old Name", player.getId());
             nationRepository.addNation(nation);
             player.setNationId(nation.getId());
@@ -33,7 +33,7 @@ namespace beyondnationstests {
         public static void testRenameWithoutNation() {
             // prepare
             NationRepository nationRepository = new NationRepository();
-            Player player = new Player(1.0f, 2.0f, new TickCounter(), 100, 50);
+            Player player = new Player(1, 2, new TickCounter(), 100, 50);
             NationRenameCommand command = new NationRenameCommand(nationRepository, "New Name");
 
             // run
@@ -49,7 +49,7 @@ namespace beyondnationstests {
             EntityId leaderId = new EntityId();
             Nation nation = new Nation("Test Nation", leaderId);
             
-            Player player = new Player(1.0f, 2.0f, new TickCounter(), 100, 50);
+            Player player = new Player(1, 2, new TickCounter(), 100, 50);
             nation.addMember(player.getId());
             nationRepository.addNation(nation);
             player.setNationId(nation.getId());
@@ -66,7 +66,7 @@ namespace beyondnationstests {
         public static void testRenameWithEmptyName() {
             // prepare
             NationRepository nationRepository = new NationRepository();
-            Player player = new Player(1.0f, 2.0f, new TickCounter(), 100, 50);
+            Player player = new Player(1, 2, new TickCounter(), 100, 50);
             Nation nation = new Nation("Old Name", player.getId());
             nationRepository.addNation(nation);
             player.setNationId(nation.getId());

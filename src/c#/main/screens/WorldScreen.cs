@@ -53,7 +53,7 @@ namespace beyondnations {
             int managementBoxWidth = 250;
             int managementBoxHeight = 20;
             int managementBoxPadding = 10;
-            nationManagementInfoBox = new NationManagementInfoBox(managementBoxX, managementBoxY, managementBoxWidth, managementBoxHeight, managementBoxPadding, "Nation Management", player, nationRepository, entityRepository, eventProducer);
+            nationManagementInfoBox = new NationManagementInfoBox(managementBoxPadding, managementBoxWidth, managementBoxHeight, managementBoxX, managementBoxY, "Nation Management", player, nationRepository, entityRepository, eventProducer);
             
             player.getStatus().update("Press " + KeyBindings.createNewNation + " to create a nation.");
         }

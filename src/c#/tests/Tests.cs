@@ -31,6 +31,7 @@ namespace beyondnationstests {
             TestNationRenameCommand.runTests();
             TestNationDisbandCommand.runTests();
             TestNationTransferOwnershipCommand.runTests();
+            TestNationManagementIntegration.runTests();
 
             // tick
             TestTickCounter.runTests();

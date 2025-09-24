@@ -11,7 +11,7 @@ namespace beyondnations {
         private string newNationName = "";
         private EntityId selectedNewLeaderId = null;
 
-        public NationManagementInfoBox(int x, int y, int width, int height, int padding, string title, Player player, NationRepository nationRepository, EntityRepository entityRepository, EventProducer eventProducer) : base(x, y, width, height, padding, title) {
+        public NationManagementInfoBox(int padding, int width, int height, int x, int y, string title, Player player, NationRepository nationRepository, EntityRepository entityRepository, EventProducer eventProducer) : base(x, y, width, height, padding, title) {
             this.player = player;
             this.nationRepository = nationRepository;
             this.entityRepository = entityRepository;
