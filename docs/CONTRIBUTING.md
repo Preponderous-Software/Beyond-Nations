@@ -3,20 +3,28 @@
 ## Getting Started
 To get started with the project, follow these steps:
 
-1. Open Unity Hub.
-1. Click on the New Project button in the top right.
-1. Select the `3D (URP)` template.
-1. Name your project and choose where to store it.
-1. Select the Unity Editor version (2022.3.7f1 is recommended).
-1. Click the Create Project button.
-1. Open a terminal and navigate to the Assets directory of the project.
-1. Clone this repository using the following command:
-    > git clone https://github.com/Preponderous-Software/beyond-nations
-1. In Unity, navigate to the beyond-nations/src directory, which should now be in the Assets folder.
-1. Double click on the main scene to open it.
+1. Clone this repository:
+   ```bash
+   git clone https://github.com/Preponderous-Software/beyond-nations
+   cd beyond-nations
+   ```
+
+2. Open Unity Hub.
+
+3. Click "Add" (or "Open") and select the cloned `beyond-nations` directory.
+
+4. Select Unity Editor version **2022.3.7f1** (or compatible version) when prompted.
+   - If you don't have this version installed, Unity Hub will prompt you to install it.
+
+5. Once the project opens in Unity, the main scene should load automatically.
+   - If it doesn't, navigate to `Assets/Scenes/` in the Project window and double-click `main.unity`.
+
+6. Press the Play button in the Unity Editor to run the game.
 
 ### Troubleshooting
-If you encounter a Missing Editor Version error, it's probably because you tried to open the repository folder directly as a Unity project. It's recommended to clone the repository inside the Assets folder of an existing empty project.
+- **Missing Editor Version**: If you see this error, install Unity 2022.3.7f1 (or a compatible 2022.3.x version) through Unity Hub.
+- **Package Resolution Errors**: Unity will automatically download required packages when you first open the project. This may take a few minutes.
+- **Scene Not Loading**: Manually open the scene from `Assets/Scenes/main.unity` in the Project window.
 
 ## Branching
 To keep the codebase organized, we use a branching model that is similar to Git Flow. The main branch is the default branch, and it contains the latest stable version of the codebase. The develop branch contains the latest version of the codebase, and it is the branch that should be used for development.
