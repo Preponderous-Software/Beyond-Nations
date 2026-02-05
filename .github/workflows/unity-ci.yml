@@ -11,6 +11,10 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+# Limit GITHUB_TOKEN permissions to only what's needed
+permissions:
+  contents: read
+
 jobs:
   # Check for .meta file consistency
   check-meta-files:
@@ -110,6 +114,9 @@ jobs:
   test:
     name: Run Unity Tests
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
