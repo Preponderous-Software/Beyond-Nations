@@ -38,6 +38,14 @@ To contribute to the project, you must create a pull request. A pull request is 
 1. Create a pull request on GitHub.
 1. Wait for your pull request to be reviewed, approved & merged. Comments may be made on your pull request, and you may be asked to make changes.
 
+### Running CI Checks Locally
+Before creating a pull request, it's recommended to run the CI checks locally to ensure your changes pass all automated tests. See the [CI/CD Documentation](./CI-CD.md) for detailed instructions on:
+- Running Unity tests locally
+- Building the project to verify it compiles
+- Checking for missing or orphaned .meta files
+
+All pull requests must pass the automated CI checks before they can be merged.
+
 ## Issues
 If you encounter a bug or have a feature request, you can create an issue. An issue is a way to report a bug or request a feature. To create an issue, follow these steps:
 1. Create a new issue on GitHub.
