@@ -34,11 +34,6 @@ jobs:
           # Check Assets folder only (Unity doesn't create .meta files for ProjectSettings)
           if [ -d "Assets" ]; then
             while IFS= read -r -d '' file; do
-              # Skip if it's a .meta file itself
-              if [[ "$file" == *.meta ]]; then
-                continue
-              fi
-
               # Skip the Assets directory itself
               if [[ "$file" == "Assets" ]]; then
                 continue

@@ -25,14 +25,24 @@ The CI pipeline consists of three main jobs:
 - Merge conflicts that are difficult to resolve
 
 ### 2. Unity Tests
-**Purpose**: Runs all Edit Mode and Play Mode tests defined in the project.
+**Purpose**: Validates that the project's test infrastructure is properly configured.
+
+**Current state**:
+- The project uses a **custom test framework** based on `Debug.Assert` (see `Assets/Scripts/Tests/Tests.cs`)
+- These custom tests are **not compatible** with Unity Test Framework (NUnit-based)
+- The CI currently runs `game-ci/unity-test-runner` which expects Unity Test Framework tests
+- If no Unity Test Framework tests are found, the runner will report 0 tests and pass
 
 **What it checks**:
-- All unit tests pass
-- No runtime errors occur during test execution
-- Test coverage is maintained
+- Unity Test Framework infrastructure is functional
+- No compilation errors prevent test execution
+- Unity license activation is working
 
-**Test location**: Tests are located in `Assets/Scripts/Tests/`
+**Test location**: Custom tests are located in `Assets/Scripts/Tests/`
+
+**Note**: To have the CI actually run the existing custom tests, they would need to be either:
+1. Migrated to Unity Test Framework with proper `[Test]` attributes and NUnit assertions, or
+2. Executed via a custom script that calls `Tests.runTests()` in batch mode
 
 ### 3. Build Validation
 **Purpose**: Verifies the project can be built successfully for target platforms.
@@ -44,7 +54,7 @@ The CI pipeline consists of three main jobs:
 - Project compiles without errors
 - No missing script references
 - All required assets are included in the build
-- Build completes successfully without errors or warnings
+- Build completes successfully without errors
 
 ## Unity Version
 
@@ -94,17 +104,16 @@ You can run equivalent checks on your local machine before pushing code.
 ### Check for Missing .meta Files
 
 ```bash
-# Check Assets folder
-find Assets -type f -o -type d | while read file; do
-  if [[ ! "$file" =~ \.meta$ ]] && [ "$file" != "Assets" ]; then
-    if [ ! -f "$file.meta" ]; then
-      echo "Missing .meta: $file"
-    fi
+# Check Assets folder for missing .meta files
+# Uses null-terminated strings to handle filenames with spaces/special characters
+find Assets -type f -o -type d | grep -v "\.meta$" | while IFS= read -r file; do
+  if [[ "$file" != "Assets" ]] && [ ! -f "$file.meta" ]; then
+    echo "Missing .meta: $file"
   fi
 done
 
 # Check for orphaned .meta files
-find Assets -name "*.meta" | while read metafile; do
+find Assets -name "*.meta" -type f | while IFS= read -r metafile; do
   original="${metafile%.meta}"
   if [ ! -e "$original" ]; then
     echo "Orphaned .meta: $metafile"
@@ -112,7 +121,23 @@ find Assets -name "*.meta" | while read metafile; do
 done
 ```
 
+**Note**: For files with special characters in names, the CI uses a more robust approach with null-terminated strings (`tr '\n' '\0'` and `read -d ''`). The above simplified version works for most cases but may have issues with unusual filenames.
+
 ### Run Unity Tests Locally
+
+**Note**: The project currently uses a custom test framework, not Unity Test Framework.
+
+#### Running Custom Tests
+
+The existing tests in `Assets/Scripts/Tests/` use `Debug.Assert` and need to be manually triggered:
+
+1. Open the project in Unity Editor 2022.3.7f1
+2. In the Unity Console, call: `beyondnationstests.Tests.runTests()`
+3. Check the Console for any assertion failures
+
+#### Running Unity Test Framework Tests (if migrated)
+
+If/when tests are migrated to Unity Test Framework:
 
 1. Open the project in Unity Editor 2022.3.7f1
 2. Go to **Window → General → Test Runner**
@@ -120,7 +145,7 @@ done
 4. Click **Run All** to run all tests
 5. Ensure all tests pass (green checkmarks)
 
-Alternatively, run tests via command line:
+Alternatively, run via command line:
 
 ```bash
 # For macOS/Linux
