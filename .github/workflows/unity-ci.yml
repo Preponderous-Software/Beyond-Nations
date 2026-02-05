@@ -35,12 +35,17 @@ jobs:
                 continue
               fi
 
+              # Skip the Assets directory itself
+              if [[ "$file" == "Assets" ]]; then
+                continue
+              fi
+
               # Check if corresponding .meta file exists
               if [ ! -f "$file.meta" ]; then
                 echo "ERROR: Missing .meta file for: $file"
                 missing_meta=$((missing_meta + 1))
               fi
-            done < <(find Assets -type f -o -type d | grep -v "\.meta$" | grep -v "^Assets$" | tail -n +2 | tr '\n' '\0')
+            done < <(find Assets -type f -o -type d | grep -v "\.meta$" | tr '\n' '\0')
           fi
 
           # Check ProjectSettings folder for files only
