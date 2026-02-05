@@ -23,10 +23,10 @@ jobs:
       - name: Check for .meta Files
         run: |
           echo "Checking for missing .meta files..."
-          
+
           # Find all files and directories (excluding .git, Library, Temp, etc.)
           missing_meta=0
-          
+
           # Check Assets folder
           if [ -d "Assets" ]; then
             while IFS= read -r -d '' file; do
@@ -34,7 +34,7 @@ jobs:
               if [[ "$file" == *.meta ]]; then
                 continue
               fi
-              
+
               # Check if corresponding .meta file exists
               if [ ! -f "$file.meta" ]; then
                 echo "ERROR: Missing .meta file for: $file"
@@ -42,63 +42,63 @@ jobs:
               fi
             done < <(find Assets -type f -o -type d | grep -v "\.meta$" | grep -v "^Assets$" | tail -n +2 | tr '\n' '\0')
           fi
-          
+
           # Check ProjectSettings folder for files only
           if [ -d "ProjectSettings" ]; then
             while IFS= read -r -d '' file; do
               if [[ "$file" == *.meta ]]; then
                 continue
               fi
-              
+
               if [ ! -f "$file.meta" ]; then
                 echo "ERROR: Missing .meta file for: $file"
                 missing_meta=$((missing_meta + 1))
               fi
             done < <(find ProjectSettings -type f | grep -v "\.meta$" | tr '\n' '\0')
           fi
-          
+
           if [ $missing_meta -gt 0 ]; then
             echo "Found $missing_meta missing .meta file(s)"
             exit 1
           fi
-          
+
           echo "All .meta files present!"
 
       - name: Check for Orphaned .meta Files
         run: |
           echo "Checking for orphaned .meta files..."
-          
+
           orphaned_meta=0
-          
+
           # Check Assets folder
           if [ -d "Assets" ]; then
             while IFS= read -r -d '' metafile; do
               original="${metafile%.meta}"
-              
+
               if [ ! -e "$original" ]; then
                 echo "ERROR: Orphaned .meta file (original missing): $metafile"
                 orphaned_meta=$((orphaned_meta + 1))
               fi
             done < <(find Assets -name "*.meta" -type f | tr '\n' '\0')
           fi
-          
+
           # Check ProjectSettings folder
           if [ -d "ProjectSettings" ]; then
             while IFS= read -r -d '' metafile; do
               original="${metafile%.meta}"
-              
+
               if [ ! -e "$original" ]; then
                 echo "ERROR: Orphaned .meta file (original missing): $metafile"
                 orphaned_meta=$((orphaned_meta + 1))
               fi
             done < <(find ProjectSettings -name "*.meta" -type f | tr '\n' '\0')
           fi
-          
+
           if [ $orphaned_meta -gt 0 ]; then
             echo "Found $orphaned_meta orphaned .meta file(s)"
             exit 1
           fi
-          
+
           echo "No orphaned .meta files found!"
 
   # Test the Unity project
@@ -129,7 +129,7 @@ jobs:
           unityVersion: 2022.3.7f1
           githubToken: ${{ secrets.GITHUB_TOKEN }}
           checkName: Unity Test Results
-          
+
       - name: Upload Test Results
         uses: actions/upload-artifact@v3
         if: always()
@@ -170,7 +170,7 @@ jobs:
         with:
           unityVersion: 2022.3.7f1
           targetPlatform: ${{ matrix.targetPlatform }}
-          
+
       - name: Upload Build
         uses: actions/upload-artifact@v3
         with:
