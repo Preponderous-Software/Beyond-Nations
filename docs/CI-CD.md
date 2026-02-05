@@ -176,8 +176,8 @@ Alternatively, build via command line:
 
 The CI pipeline runs automatically on:
 
-- **Pull Requests**: All pull requests targeting `main` or `master` branch
-- **Push Events**: Direct pushes to `main` or `master` branch
+- **Pull Requests**: All pull requests targeting `main`, `master`, or `develop` branch
+- **Push Events**: Direct pushes to `main`, `master`, or `develop` branch
 
 The workflow uses concurrency control to automatically cancel previous runs when new commits are pushed to the same branch.
 

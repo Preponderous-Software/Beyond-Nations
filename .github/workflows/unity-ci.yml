@@ -2,9 +2,9 @@ name: Unity CI
 
 on:
   pull_request:
-    branches: ["main", "master"]
+    branches: ["main", "master", "develop"]
   push:
-    branches: ["main", "master"]
+    branches: ["main", "master", "develop"]
 
 # Stop previous runs for same workflow
 concurrency:
