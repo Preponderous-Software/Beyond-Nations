@@ -4,7 +4,7 @@ This document describes the CI/CD pipeline for the Beyond Nations Unity project.
 
 ## Overview
 
-The Beyond Nations project uses GitHub Actions for continuous integration to ensure code quality, project stability, and build consistency. The CI pipeline automatically runs on all pull requests and pushes to the main/master branch.
+The Beyond Nations project uses GitHub Actions for continuous integration to ensure code quality, project stability, and build consistency. The CI pipeline automatically runs on all pull requests and pushes to the main, master, or develop branches.
 
 ## CI Workflow
 

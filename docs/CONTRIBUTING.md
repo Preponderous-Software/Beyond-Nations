@@ -39,7 +39,7 @@ To contribute to the project, you must create a pull request. A pull request is 
 1. Wait for your pull request to be reviewed, approved & merged. Comments may be made on your pull request, and you may be asked to make changes.
 
 ### Running CI Checks Locally
-Before creating a pull request, it's recommended to run the CI checks locally to ensure your changes pass all automated tests. See the [CI/CD Documentation](CI-CD.md) for detailed instructions on:
+Before creating a pull request, it's recommended to run the CI checks locally to ensure your changes pass all automated tests. See the [CI/CD Documentation](./CI-CD.md) for detailed instructions on:
 - Running Unity tests locally
 - Building the project to verify it compiles
 - Checking for missing or orphaned .meta files
