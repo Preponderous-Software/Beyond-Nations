@@ -42,8 +42,8 @@ The CI pipeline consists of three main jobs:
 **What it checks**:
 - Project compiles without errors
 - No missing script references
-- All scenes can be loaded
-- Build completes successfully
+- All required assets are included in the build
+- Build completes successfully without errors or warnings
 
 ## Unity Version
 
