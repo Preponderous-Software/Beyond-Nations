@@ -31,7 +31,7 @@ jobs:
           # Find all files and directories (excluding .git, Library, Temp, etc.)
           missing_meta=0
 
-          # Check Assets folder
+          # Check Assets folder only (Unity doesn't create .meta files for ProjectSettings)
           if [ -d "Assets" ]; then
             while IFS= read -r -d '' file; do
               # Skip if it's a .meta file itself
@@ -52,20 +52,6 @@ jobs:
             done < <(find Assets -type f -o -type d | grep -v "\.meta$" | tr '\n' '\0')
           fi
 
-          # Check ProjectSettings folder for files only
-          if [ -d "ProjectSettings" ]; then
-            while IFS= read -r -d '' file; do
-              if [[ "$file" == *.meta ]]; then
-                continue
-              fi
-
-              if [ ! -f "$file.meta" ]; then
-                echo "ERROR: Missing .meta file for: $file"
-                missing_meta=$((missing_meta + 1))
-              fi
-            done < <(find ProjectSettings -type f | grep -v "\.meta$" | tr '\n' '\0')
-          fi
-
           if [ $missing_meta -gt 0 ]; then
             echo "Found $missing_meta missing .meta file(s)"
             exit 1
@@ -79,7 +65,7 @@ jobs:
 
           orphaned_meta=0
 
-          # Check Assets folder
+          # Check Assets folder only (Unity doesn't create .meta files for ProjectSettings)
           if [ -d "Assets" ]; then
             while IFS= read -r -d '' metafile; do
               original="${metafile%.meta}"
@@ -89,18 +75,6 @@ jobs:
                 orphaned_meta=$((orphaned_meta + 1))
               fi
             done < <(find Assets -name "*.meta" -type f | tr '\n' '\0')
-          fi
-
-          # Check ProjectSettings folder
-          if [ -d "ProjectSettings" ]; then
-            while IFS= read -r -d '' metafile; do
-              original="${metafile%.meta}"
-
-              if [ ! -e "$original" ]; then
-                echo "ERROR: Orphaned .meta file (original missing): $metafile"
-                orphaned_meta=$((orphaned_meta + 1))
-              fi
-            done < <(find ProjectSettings -name "*.meta" -type f | tr '\n' '\0')
           fi
 
           if [ $orphaned_meta -gt 0 ]; then

@@ -15,8 +15,9 @@ The CI pipeline consists of three main jobs:
 
 **What it checks**:
 - Every file and directory in `Assets/` has a `.meta` file
-- Every file in `ProjectSettings/` has a `.meta` file
 - No `.meta` files exist without their corresponding asset
+
+**Note**: Unity does not create `.meta` files for `ProjectSettings/` files, so they are not checked.
 
 **Why it matters**: Missing or orphaned `.meta` files can cause:
 - GUID conflicts between developers
