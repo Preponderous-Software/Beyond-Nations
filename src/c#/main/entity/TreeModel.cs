@@ -61,6 +61,22 @@ namespace beyondnations {
             UnityEngine.Object.Destroy(treeRoot);
         }
         
+        /// <summary>
+        /// Gets a default shader with fallback options.
+        /// Tries Standard shader first, then Unlit/Color, and finally uses a built-in fallback.
+        /// </summary>
+        private static Shader GetDefaultShader() {
+            Shader shader = Shader.Find("Standard");
+            if (shader == null) {
+                shader = Shader.Find("Unlit/Color");
+            }
+            if (shader == null) {
+                // Final fallback - use the built-in default diffuse shader
+                shader = Shader.Find("Diffuse");
+            }
+            return shader;
+        }
+        
         private static GameObject CreateTrunk(int height) {
             GameObject trunk = new GameObject("Trunk");
             
@@ -72,11 +88,7 @@ namespace beyondnations {
             meshFilter.mesh = trunkMesh;
             
             // Set brown bark material (matching original color)
-            Shader shader = Shader.Find("Standard");
-            if (shader == null) {
-                shader = Shader.Find("Unlit/Color");
-            }
-            Material trunkMaterial = new Material(shader);
+            Material trunkMaterial = new Material(GetDefaultShader());
             trunkMaterial.color = new Color(0.5f, 0.25f, 0);
             meshRenderer.material = trunkMaterial;
             
@@ -94,11 +106,7 @@ namespace beyondnations {
             meshFilter.mesh = leavesMesh;
             
             // Set green foliage material (matching original color)
-            Shader shader = Shader.Find("Standard");
-            if (shader == null) {
-                shader = Shader.Find("Unlit/Color");
-            }
-            Material leavesMaterial = new Material(shader);
+            Material leavesMaterial = new Material(GetDefaultShader());
             leavesMaterial.color = Color.green;
             meshRenderer.material = leavesMaterial;
             
