@@ -101,9 +101,9 @@ namespace beyondnationstests {
             // run - removing more than available results in negative quantity
             stack.removeQuantity(10);
 
-            // check
+            // check - isEmpty() returns true for quantities <= 0 (including negative)
             UnityEngine.Debug.Assert(stack.getQuantity() == -5);
-            UnityEngine.Debug.Assert(stack.isEmpty()); // Should be empty when negative
+            UnityEngine.Debug.Assert(stack.isEmpty());
         }
 
         public static void testIsEmpty() {

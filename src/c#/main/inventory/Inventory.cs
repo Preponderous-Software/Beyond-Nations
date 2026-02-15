@@ -61,10 +61,15 @@ namespace beyondnations {
             slots.Add(new ItemSlot(new ItemStack(itemType, numItems)));
         }
 
+        /// <summary>
+        /// Removes the specified number of items from the inventory.
+        /// Note: The slot will be cleared if the quantity becomes zero or negative after removal.
+        /// </summary>
         public void removeItem(ItemType itemType, int numItems) {
             foreach (ItemSlot slot in slots) {
                 if (slot.hasItemOfType(itemType)) {
                     slot.getItemStack().removeQuantity(numItems);
+                    // Clear the slot if empty (quantity <= 0)
                     if (slot.getItemStack().isEmpty()) {
                         slot.clear();
                     }

@@ -171,9 +171,9 @@ namespace beyondnationstests {
             Inventory inventory = new Inventory(0);
             inventory.addItem(ItemType.WOOD, 5);
 
-            // check
+            // check - Inventory initializes with 5 slots (one for each ItemType: COIN, WOOD, STONE, APPLE, SAPLING)
             UnityEngine.Debug.Assert(inventory.getSlots() != null);
-            UnityEngine.Debug.Assert(inventory.getSlots().Count == 5); // Should have exactly 5 slots (one per ItemType)
+            UnityEngine.Debug.Assert(inventory.getSlots().Count == 5);
         }
     }
 }
