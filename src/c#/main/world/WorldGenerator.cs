@@ -166,9 +166,9 @@ namespace beyondnations {
                 }
             }
             
-            // 20% chance to spawn chickens in a chunk
-            bool shouldSpawnChickens = UnityEngine.Random.Range(0, 100) < 20;
-            if (shouldSpawnChickens) {
+            int chickenSpawnProbability = 20;
+            bool spawnChickens = UnityEngine.Random.Range(0, 100) < chickenSpawnProbability;
+            if (spawnChickens) {
                 int numberOfChickens = UnityEngine.Random.Range(1, 4); // 1-3 chickens per chunk
                 for (int i = 0; i < numberOfChickens; i++) {
                     Location randomLocation = chunk.getRandomLocation();
