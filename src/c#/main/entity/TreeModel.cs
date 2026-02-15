@@ -13,6 +13,7 @@ namespace beyondnations {
         public static GameObject CreateTree(Vector3 position, int height, string name = "Tree") {
             // Validate height parameter
             if (height <= 0) {
+                UnityEngine.Debug.LogWarning($"Invalid tree height {height}, clamping to minimum of 1");
                 height = 1;
             }
             
