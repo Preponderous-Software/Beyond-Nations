@@ -31,12 +31,14 @@ The following controls are available in the game:
 | Key | Action |
 | --- | --- |
 | `W` | Move forward |
-| `A` | Turn left |
+| `A` | Strafe left |
 | `S` | Move backward |
-| `D` | Turn right |
+| `D` | Strafe right |
+| `Mouse` | Look around (first-person view) |
 | `E` | Interact with nearest entity |
 | `Space` | Jump |
 | `Left Shift` | Sprint |
+| `Escape` | Pause/Resume game |
 | `N` | Create a new nation |
 | `J` | Join a random nation |
 | `L` | Leave your current nation |
