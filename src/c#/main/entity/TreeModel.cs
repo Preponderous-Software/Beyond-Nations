@@ -36,9 +36,9 @@ namespace beyondnations {
             Mesh trunkMesh = CreateCylinderMesh(0.5f, height, 8);
             meshFilter.mesh = trunkMesh;
             
-            // Set brown bark material
+            // Set brown bark material (matching original color)
             Material trunkMaterial = new Material(Shader.Find("Standard"));
-            trunkMaterial.color = new Color(0.4f, 0.2f, 0.1f);
+            trunkMaterial.color = new Color(0.5f, 0.25f, 0);
             meshRenderer.material = trunkMaterial;
             
             return trunk;
@@ -54,9 +54,9 @@ namespace beyondnations {
             Mesh leavesMesh = CreateSphereMesh(2.5f, 10, 10);
             meshFilter.mesh = leavesMesh;
             
-            // Set green foliage material
+            // Set green foliage material (matching original color)
             Material leavesMaterial = new Material(Shader.Find("Standard"));
-            leavesMaterial.color = new Color(0.1f, 0.6f, 0.1f);
+            leavesMaterial.color = Color.green;
             meshRenderer.material = leavesMaterial;
             
             return leaves;
