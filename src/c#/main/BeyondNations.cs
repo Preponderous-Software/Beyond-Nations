@@ -53,6 +53,8 @@ namespace beyondnations {
             else if (currentScreen == ScreenType.WORLD) {
                 if (Input.GetKeyDown(KeyCode.Escape)) {
                     currentScreen = ScreenType.PAUSE;
+                    Cursor.lockState = CursorLockMode.None;
+                    Cursor.visible = true;
                     return;
                 }
                 if (worldScreen == null) {
@@ -63,6 +65,8 @@ namespace beyondnations {
             else if (currentScreen == ScreenType.PAUSE) {
                 if (Input.GetKeyDown(KeyCode.Escape)) {
                     currentScreen = ScreenType.WORLD;
+                    Cursor.lockState = CursorLockMode.Locked;
+                    Cursor.visible = false;
                     return;
                 }
             }

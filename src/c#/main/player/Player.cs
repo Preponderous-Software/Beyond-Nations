@@ -20,6 +20,11 @@ namespace beyondnations {
         private float energy = 100;
         private float metabolism = UnityEngine.Random.Range(0.001f, 0.010f);
 
+        // First-person camera variables
+        private float mouseSensitivity = 2.0f;
+        private float verticalRotation = 0f;
+        private float maxVerticalAngle = 80f;
+
         // map of entity id to integer representing relationship strength
         private Dictionary<EntityId, int> relationships = new Dictionary<EntityId, int>();
         private EntityId currentSettlementId = null;
@@ -33,11 +38,28 @@ namespace beyondnations {
             status = new Status(tickCounter, statusExpirationTicks);
             this.currentSpeed = walkSpeed;
             getInventory().addItem(ItemType.COIN, UnityEngine.Random.Range(100, 400));
+            
+            // Lock cursor for first-person view
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
         }
 
         public void update() {
+            // Handle movement input
             horizontalInput = Input.GetAxis("Horizontal");
             verticalInput = Input.GetAxis("Vertical");
+
+            // Handle mouse input for camera rotation
+            float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
+            float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
+
+            // Rotate player horizontally (Y-axis)
+            rigidBody.transform.Rotate(Vector3.up * mouseX);
+
+            // Rotate camera vertically (X-axis) with clamping
+            verticalRotation -= mouseY;
+            verticalRotation = Mathf.Clamp(verticalRotation, -maxVerticalAngle, maxVerticalAngle);
+            playerCamera.transform.localRotation = Quaternion.Euler(verticalRotation, 0f, 0f);
 
             if (Input.GetKey(KeyCode.LeftShift)) {
                 currentSpeed = runSpeed;
@@ -55,8 +77,9 @@ namespace beyondnations {
                 return;
             }
             
+            // Use A/D for strafing instead of rotation
             if (horizontalInput != 0) {
-                rigidBody.transform.Rotate(Vector3.up * horizontalInput * 2);
+                rigidBody.transform.Translate(Vector3.right * horizontalInput * currentSpeed * Time.deltaTime);
             }
 
             if (verticalInput != 0 && !autoWalk) {
@@ -96,6 +119,13 @@ namespace beyondnations {
             gameObject.name = "Player";
             Rigidbody rigidbody = gameObject.AddComponent<Rigidbody>();
             rigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
+            
+            // Hide the player capsule renderer for first-person view
+            Renderer renderer = gameObject.GetComponent<Renderer>();
+            if (renderer != null) {
+                renderer.enabled = false;
+            }
+            
             setGameObject(gameObject);
         }
 
@@ -218,8 +248,9 @@ namespace beyondnations {
         private void setupCamera(int renderDistance) {
             GameObject cameraObject = GameObject.Find("/Camera");      
             cameraObject.transform.SetParent(getGameObject().transform);
-            cameraObject.transform.position = new Vector3(0, 5, -10);
-            cameraObject.transform.LookAt(getGameObject().transform);
+            // Position camera at eye level for first-person view
+            cameraObject.transform.localPosition = new Vector3(0, 0.5f, 0);
+            cameraObject.transform.localRotation = Quaternion.identity;
             this.playerCamera = cameraObject.GetComponent<Camera>();
             this.playerCamera.farClipPlane = renderDistance;
         }
