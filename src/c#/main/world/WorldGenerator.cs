@@ -97,6 +97,7 @@ namespace beyondnations {
             spawnTreeEntities(chunk);
             spawnRockEntities(chunk);
             spawnPawns(chunk);
+            spawnChickens(chunk);
         }
 
         private void spawnTreeEntities(Chunk chunk) {
@@ -153,6 +154,31 @@ namespace beyondnations {
                 Pawn pawn = new Pawn(position, PawnNameGenerator.generate());
                 eventProducer.producePawnSpawnEvent(position, pawn);
                 entityRepository.addEntity(pawn);
+            }
+        }
+
+        private void spawnChickens(Chunk chunk) {
+            if (gameConfig.getLagPreventionEnabled()) {
+                int maxNumberOfChickens = 50;
+                int numChickens = entityRepository.getNumEntitiesOfType(EntityType.CHICKEN);
+                if (numChickens >= maxNumberOfChickens) {
+                    return;
+                }
+            }
+            
+            // 20% chance to spawn chickens in a chunk
+            bool shouldSpawnChickens = UnityEngine.Random.Range(0, 100) < 20;
+            if (shouldSpawnChickens) {
+                int numberOfChickens = UnityEngine.Random.Range(1, 4); // 1-3 chickens per chunk
+                for (int i = 0; i < numberOfChickens; i++) {
+                    Location randomLocation = chunk.getRandomLocation();
+                    Vector3 locationPosition = randomLocation.getPosition();
+
+                    // create chicken
+                    Vector3 position = new Vector3(locationPosition.x, (float)(locationPosition.y + 0.5), locationPosition.z);
+                    Chicken chicken = new Chicken(position);
+                    entityRepository.addEntity(chicken);
+                }
             }
         }
 

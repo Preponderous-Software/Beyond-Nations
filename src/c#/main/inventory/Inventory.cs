@@ -11,6 +11,7 @@ namespace beyondnations {
             items.Add(ItemType.STONE, 0);
             items.Add(ItemType.APPLE, 0);
             items.Add(ItemType.SAPLING, 0);
+            items.Add(ItemType.CHICKEN_MEAT, 0);
         }
         
         public int getNumItems(ItemType itemType) {
@@ -39,6 +40,7 @@ namespace beyondnations {
             items[ItemType.STONE] = 0;
             items[ItemType.APPLE] = 0;
             items[ItemType.SAPLING] = 0;
+            items[ItemType.CHICKEN_MEAT] = 0;
         }
 
         /**
@@ -52,6 +54,7 @@ namespace beyondnations {
             items[ItemType.STONE] += otherInventory.getNumItems(ItemType.STONE);
             items[ItemType.APPLE] += otherInventory.getNumItems(ItemType.APPLE);
             items[ItemType.SAPLING] += otherInventory.getNumItems(ItemType.SAPLING);
+            items[ItemType.CHICKEN_MEAT] += otherInventory.getNumItems(ItemType.CHICKEN_MEAT);
             otherInventory.clear();
         }
 
