@@ -102,6 +102,10 @@ namespace beyondnations {
             }
         }
 
+        /// <summary>
+        /// Clears all items from the inventory, including any coins.
+        /// After clearing, all item counts will be 0.
+        /// </summary>
         public void clear() {
             foreach (ItemSlot slot in slots) {
                 slot.clear();

@@ -173,7 +173,7 @@ namespace beyondnationstests {
 
             // check
             UnityEngine.Debug.Assert(inventory.getSlots() != null);
-            UnityEngine.Debug.Assert(inventory.getSlots().Count >= 5); // At least 5 initial slots
+            UnityEngine.Debug.Assert(inventory.getSlots().Count == 5); // Should have exactly 5 slots (one per ItemType)
         }
     }
 }
