@@ -23,7 +23,7 @@ namespace beyondnations {
         }
 
         public override void destroyGameObject() {
-            UnityEngine.Object.Destroy(getGameObject());
+            TreeModel.DestroyTree(getGameObject());
         }
     }
 }

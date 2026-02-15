@@ -24,10 +24,29 @@ namespace beyondnationstests {
             UnityEngine.Debug.Assert(tree.getGameObject().transform.GetChild(1).name == "Leaves");
             
             // Verify trunk and leaves have MeshFilter and MeshRenderer components (3D model)
-            UnityEngine.Debug.Assert(tree.getGameObject().transform.GetChild(0).GetComponent<MeshFilter>() != null);
-            UnityEngine.Debug.Assert(tree.getGameObject().transform.GetChild(0).GetComponent<MeshRenderer>() != null);
-            UnityEngine.Debug.Assert(tree.getGameObject().transform.GetChild(1).GetComponent<MeshFilter>() != null);
-            UnityEngine.Debug.Assert(tree.getGameObject().transform.GetChild(1).GetComponent<MeshRenderer>() != null);
+            Transform trunkTransform = tree.getGameObject().transform.GetChild(0);
+            Transform leavesTransform = tree.getGameObject().transform.GetChild(1);
+            
+            MeshFilter trunkMeshFilter = trunkTransform.GetComponent<MeshFilter>();
+            MeshRenderer trunkMeshRenderer = trunkTransform.GetComponent<MeshRenderer>();
+            MeshFilter leavesMeshFilter = leavesTransform.GetComponent<MeshFilter>();
+            MeshRenderer leavesMeshRenderer = leavesTransform.GetComponent<MeshRenderer>();
+            
+            // Components should exist
+            UnityEngine.Debug.Assert(trunkMeshFilter != null);
+            UnityEngine.Debug.Assert(trunkMeshRenderer != null);
+            UnityEngine.Debug.Assert(leavesMeshFilter != null);
+            UnityEngine.Debug.Assert(leavesMeshRenderer != null);
+            
+            // Meshes should be assigned
+            UnityEngine.Debug.Assert(trunkMeshFilter.mesh != null);
+            UnityEngine.Debug.Assert(leavesMeshFilter.mesh != null);
+            
+            // Materials should be assigned and have expected colors
+            UnityEngine.Debug.Assert(trunkMeshRenderer.material != null);
+            UnityEngine.Debug.Assert(leavesMeshRenderer.material != null);
+            UnityEngine.Debug.Assert(trunkMeshRenderer.material.color == new Color(0.5f, 0.25f, 0));
+            UnityEngine.Debug.Assert(leavesMeshRenderer.material.color == Color.green);
 
             // clean up
             GameObject.Destroy(tree.getGameObject());

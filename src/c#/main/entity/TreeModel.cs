@@ -6,17 +6,24 @@ namespace beyondnations {
     /// Creates a procedural 3D tree model.
     /// This replaces the simple primitive shapes (Cylinder + Cube) with a proper mesh-based tree.
     /// Can be easily replaced with an imported 3D model file when available.
+    /// Note: The trunk has a slight taper (top is 0.8x the bottom radius) for more realistic appearance.
     /// </summary>
     public class TreeModel {
         
         public static GameObject CreateTree(Vector3 position, int height, string name = "Tree") {
+            // Validate height parameter
+            if (height <= 0) {
+                height = 1;
+            }
+            
             GameObject treeRoot = new GameObject(name);
             treeRoot.transform.position = position;
             
-            // Create trunk
+            // Create trunk - position it to match original primitive cylinder behavior
+            // Unity's primitive cylinder is centered, so we offset by height/2 to match
             GameObject trunk = CreateTrunk(height);
             trunk.transform.parent = treeRoot.transform;
-            trunk.transform.localPosition = Vector3.zero;
+            trunk.transform.localPosition = new Vector3(0, height / 2.0f, 0);
             
             // Create leaves/canopy
             GameObject leaves = CreateLeaves(height);
@@ -24,6 +31,34 @@ namespace beyondnations {
             leaves.transform.localPosition = new Vector3(0, height - 1, 0);
             
             return treeRoot;
+        }
+        
+        /// <summary>
+        /// Properly destroys a tree and its associated mesh resources.
+        /// Call this instead of Object.Destroy to prevent memory leaks.
+        /// </summary>
+        public static void DestroyTree(GameObject treeRoot) {
+            if (treeRoot == null) return;
+            
+            // Explicitly destroy the meshes to prevent memory leaks
+            Transform trunk = treeRoot.transform.Find("Trunk");
+            if (trunk != null) {
+                MeshFilter meshFilter = trunk.GetComponent<MeshFilter>();
+                if (meshFilter != null && meshFilter.mesh != null) {
+                    UnityEngine.Object.Destroy(meshFilter.mesh);
+                }
+            }
+            
+            Transform leaves = treeRoot.transform.Find("Leaves");
+            if (leaves != null) {
+                MeshFilter meshFilter = leaves.GetComponent<MeshFilter>();
+                if (meshFilter != null && meshFilter.mesh != null) {
+                    UnityEngine.Object.Destroy(meshFilter.mesh);
+                }
+            }
+            
+            // Destroy the tree GameObject
+            UnityEngine.Object.Destroy(treeRoot);
         }
         
         private static GameObject CreateTrunk(int height) {
@@ -37,7 +72,11 @@ namespace beyondnations {
             meshFilter.mesh = trunkMesh;
             
             // Set brown bark material (matching original color)
-            Material trunkMaterial = new Material(Shader.Find("Standard"));
+            Shader shader = Shader.Find("Standard");
+            if (shader == null) {
+                shader = Shader.Find("Unlit/Color");
+            }
+            Material trunkMaterial = new Material(shader);
             trunkMaterial.color = new Color(0.5f, 0.25f, 0);
             meshRenderer.material = trunkMaterial;
             
@@ -55,7 +94,11 @@ namespace beyondnations {
             meshFilter.mesh = leavesMesh;
             
             // Set green foliage material (matching original color)
-            Material leavesMaterial = new Material(Shader.Find("Standard"));
+            Shader shader = Shader.Find("Standard");
+            if (shader == null) {
+                shader = Shader.Find("Unlit/Color");
+            }
+            Material leavesMaterial = new Material(shader);
             leavesMaterial.color = Color.green;
             meshRenderer.material = leavesMaterial;
             
@@ -77,29 +120,29 @@ namespace beyondnations {
             // Create vertices
             float angleStep = 360f / segments * Mathf.Deg2Rad;
             
-            // Bottom circle
+            // Bottom circle - centered at -height/2 to match Unity primitive cylinder
             for (int i = 0; i < segments; i++) {
                 float angle = i * angleStep;
                 float x = Mathf.Cos(angle) * radius;
                 float z = Mathf.Sin(angle) * radius;
-                vertices[i] = new Vector3(x, 0, z);
+                vertices[i] = new Vector3(x, -height / 2.0f, z);
                 normals[i] = new Vector3(x, 0, z).normalized;
                 uvs[i] = new Vector2((float)i / segments, 0);
             }
             
-            // Top circle
+            // Top circle - at +height/2 to match Unity primitive cylinder
             for (int i = 0; i < segments; i++) {
                 float angle = i * angleStep;
-                float x = Mathf.Cos(angle) * radius * 0.8f; // Slightly tapered
+                float x = Mathf.Cos(angle) * radius * 0.8f; // Slightly tapered for realism
                 float z = Mathf.Sin(angle) * radius * 0.8f;
-                vertices[segments + i] = new Vector3(x, height, z);
+                vertices[segments + i] = new Vector3(x, height / 2.0f, z);
                 normals[segments + i] = new Vector3(x, 0, z).normalized;
                 uvs[segments + i] = new Vector2((float)i / segments, 1);
             }
             
             // Center points for caps
-            vertices[segments * 2] = new Vector3(0, 0, 0); // Bottom center
-            vertices[segments * 2 + 1] = new Vector3(0, height, 0); // Top center
+            vertices[segments * 2] = new Vector3(0, -height / 2.0f, 0); // Bottom center
+            vertices[segments * 2 + 1] = new Vector3(0, height / 2.0f, 0); // Top center
             normals[segments * 2] = Vector3.down;
             normals[segments * 2 + 1] = Vector3.up;
             uvs[segments * 2] = new Vector2(0.5f, 0.5f);
