@@ -24,8 +24,6 @@ namespace beyondnations {
         private float mouseSensitivity = 2.0f;
         private float verticalRotation = 0f;
         private float maxVerticalAngle = 80f;
-        private float mouseX = 0f;
-        private float mouseY = 0f;
 
         // map of entity id to integer representing relationship strength
         private Dictionary<EntityId, int> relationships = new Dictionary<EntityId, int>();
@@ -51,9 +49,21 @@ namespace beyondnations {
             horizontalInput = Input.GetAxis("Horizontal");
             verticalInput = Input.GetAxis("Vertical");
 
-            // Capture mouse input
-            mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
-            mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
+            // Handle mouse input for camera rotation immediately for responsive control
+            float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
+            float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
+
+            // Rotate player horizontally (Y-axis)
+            if (mouseX != 0) {
+                rigidBody.transform.Rotate(Vector3.up * mouseX);
+            }
+
+            // Rotate camera vertically (X-axis) with clamping
+            if (mouseY != 0) {
+                verticalRotation -= mouseY;
+                verticalRotation = Mathf.Clamp(verticalRotation, -maxVerticalAngle, maxVerticalAngle);
+                playerCamera.transform.localRotation = Quaternion.Euler(verticalRotation, 0f, 0f);
+            }
 
             if (Input.GetKey(KeyCode.LeftShift)) {
                 currentSpeed = runSpeed;
@@ -69,19 +79,6 @@ namespace beyondnations {
         public void fixedUpdate() {
             if (isCurrentlyInSettlement()) {
                 return;
-            }
-            
-            // Handle mouse rotation for camera
-            if (mouseX != 0) {
-                // Rotate player horizontally (Y-axis)
-                rigidBody.transform.Rotate(Vector3.up * mouseX);
-            }
-
-            // Rotate camera vertically (X-axis) with clamping
-            if (mouseY != 0) {
-                verticalRotation -= mouseY;
-                verticalRotation = Mathf.Clamp(verticalRotation, -maxVerticalAngle, maxVerticalAngle);
-                playerCamera.transform.localRotation = Quaternion.Euler(verticalRotation, 0f, 0f);
             }
             
             // Use A/D for strafing instead of rotation
