@@ -19,7 +19,7 @@ namespace beyondnationstests {
             UnityEngine.Debug.Assert(tree.getType() == EntityType.TREE);
             UnityEngine.Debug.Assert(tree.getGameObject().name == "AppleTree");
             UnityEngine.Debug.Assert(tree.getGameObject().transform.position == new Vector3(0, 0, 0));
-            UnityEngine.Debug.Assert(tree.getGameObject().transform.childCount == 2); // Trunk and Leaves
+            UnityEngine.Debug.Assert(tree.getGameObject().transform.childCount == 2);
             UnityEngine.Debug.Assert(tree.getGameObject().transform.GetChild(0).name == "Trunk");
             UnityEngine.Debug.Assert(tree.getGameObject().transform.GetChild(1).name == "Leaves");
             

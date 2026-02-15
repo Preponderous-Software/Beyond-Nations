@@ -9,8 +9,8 @@ namespace beyondnations {
     /// </summary>
     public class TreeModel {
         
-        public static GameObject CreateTree(Vector3 position, int height) {
-            GameObject treeRoot = new GameObject("Tree");
+        public static GameObject CreateTree(Vector3 position, int height, string name = "Tree") {
+            GameObject treeRoot = new GameObject(name);
             treeRoot.transform.position = position;
             
             // Create trunk

@@ -13,8 +13,7 @@ namespace beyondnations {
 
         public override void createGameObject(Vector3 position) {
             // Use the new 3D tree model instead of primitives
-            GameObject gameObject = TreeModel.CreateTree(position, height);
-            gameObject.name = "AppleTree";
+            GameObject gameObject = TreeModel.CreateTree(position, height, "AppleTree");
             
             setGameObject(gameObject);
 
