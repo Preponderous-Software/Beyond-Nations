@@ -24,6 +24,8 @@ namespace beyondnations {
         private float mouseSensitivity = 2.0f;
         private float verticalRotation = 0f;
         private float maxVerticalAngle = 80f;
+        private float mouseX = 0f;
+        private float mouseY = 0f;
 
         // map of entity id to integer representing relationship strength
         private Dictionary<EntityId, int> relationships = new Dictionary<EntityId, int>();
@@ -38,10 +40,6 @@ namespace beyondnations {
             status = new Status(tickCounter, statusExpirationTicks);
             this.currentSpeed = walkSpeed;
             getInventory().addItem(ItemType.COIN, UnityEngine.Random.Range(100, 400));
-            
-            // Lock cursor for first-person view
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
         }
 
         public void update() {
@@ -49,21 +47,9 @@ namespace beyondnations {
             horizontalInput = Input.GetAxis("Horizontal");
             verticalInput = Input.GetAxis("Vertical");
 
-            // Handle mouse input for camera rotation immediately for responsive control
-            float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
-            float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
-
-            // Rotate player horizontally (Y-axis)
-            if (mouseX != 0) {
-                rigidBody.transform.Rotate(Vector3.up * mouseX);
-            }
-
-            // Rotate camera vertically (X-axis) with clamping
-            if (mouseY != 0) {
-                verticalRotation -= mouseY;
-                verticalRotation = Mathf.Clamp(verticalRotation, -maxVerticalAngle, maxVerticalAngle);
-                playerCamera.transform.localRotation = Quaternion.Euler(verticalRotation, 0f, 0f);
-            }
+            // Capture mouse input for processing in fixedUpdate
+            mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
+            mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
 
             if (Input.GetKey(KeyCode.LeftShift)) {
                 currentSpeed = runSpeed;
@@ -79,6 +65,19 @@ namespace beyondnations {
         public void fixedUpdate() {
             if (isCurrentlyInSettlement()) {
                 return;
+            }
+            
+            // Handle mouse rotation in fixedUpdate for proper physics integration
+            if (mouseX != 0) {
+                // Rotate player horizontally (Y-axis)
+                rigidBody.transform.Rotate(Vector3.up * mouseX);
+            }
+
+            // Rotate camera vertically (X-axis) with clamping
+            if (mouseY != 0) {
+                verticalRotation -= mouseY;
+                verticalRotation = Mathf.Clamp(verticalRotation, -maxVerticalAngle, maxVerticalAngle);
+                playerCamera.transform.localRotation = Quaternion.Euler(verticalRotation, 0f, 0f);
             }
             
             // Use A/D for strafing instead of rotation
@@ -139,7 +138,10 @@ namespace beyondnations {
         }
 
         public void setColor(Color color) {
-            getGameObject().GetComponent<Renderer>().material.color = color;
+            Renderer renderer = getGameObject().GetComponent<Renderer>();
+            if (renderer != null && renderer.enabled) {
+                renderer.material.color = color;
+            }
         }
 
         public NationId getNationId() {
