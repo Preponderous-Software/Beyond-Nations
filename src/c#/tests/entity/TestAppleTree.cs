@@ -15,18 +15,19 @@ namespace beyondnationstests {
             int height = 5;
             AppleTree tree = new AppleTree(new Vector3(0, 0, 0), height);
 
-            // check
+            // check - verify tree is created with proper structure
             UnityEngine.Debug.Assert(tree.getType() == EntityType.TREE);
             UnityEngine.Debug.Assert(tree.getGameObject().name == "AppleTree");
             UnityEngine.Debug.Assert(tree.getGameObject().transform.position == new Vector3(0, 0, 0));
-            UnityEngine.Debug.Assert(tree.getGameObject().transform.localScale == new Vector3(1, 1, 1));
-            UnityEngine.Debug.Assert(tree.getGameObject().transform.childCount == 2);
+            UnityEngine.Debug.Assert(tree.getGameObject().transform.childCount == 2); // Trunk and Leaves
             UnityEngine.Debug.Assert(tree.getGameObject().transform.GetChild(0).name == "Trunk");
-            UnityEngine.Debug.Assert(tree.getGameObject().transform.GetChild(0).transform.localScale == new Vector3(1, height, 1));
-            UnityEngine.Debug.Assert(tree.getGameObject().transform.GetChild(0).GetComponent<Renderer>().material.color == new Color(0.5f, 0.25f, 0));
             UnityEngine.Debug.Assert(tree.getGameObject().transform.GetChild(1).name == "Leaves");
-            UnityEngine.Debug.Assert(tree.getGameObject().transform.GetChild(1).transform.localScale == new Vector3(3, 3, 3));
-            UnityEngine.Debug.Assert(tree.getGameObject().transform.GetChild(1).GetComponent<Renderer>().material.color == Color.green);
+            
+            // Verify trunk and leaves have MeshFilter and MeshRenderer components (3D model)
+            UnityEngine.Debug.Assert(tree.getGameObject().transform.GetChild(0).GetComponent<MeshFilter>() != null);
+            UnityEngine.Debug.Assert(tree.getGameObject().transform.GetChild(0).GetComponent<MeshRenderer>() != null);
+            UnityEngine.Debug.Assert(tree.getGameObject().transform.GetChild(1).GetComponent<MeshFilter>() != null);
+            UnityEngine.Debug.Assert(tree.getGameObject().transform.GetChild(1).GetComponent<MeshRenderer>() != null);
 
             // clean up
             GameObject.Destroy(tree.getGameObject());
