@@ -3,12 +3,14 @@ using UnityEngine;
 namespace beyondnations {
 
     public class Chicken : Entity {
-        private int speed = UnityEngine.Random.Range(5, 10);
+        private int speed;
         private Vector3 wanderTarget;
         private float wanderTimer = 0f;
         private float wanderInterval = 3f;
+        private Rigidbody rigidbody;
         
         public Chicken(Vector3 position) : base(EntityType.CHICKEN, "Chicken") {
+            speed = UnityEngine.Random.Range(5, 10);
             createGameObject(position);
         }
 
@@ -22,7 +24,7 @@ namespace beyondnations {
             gameObject.GetComponent<Renderer>().material.color = new Color(1f, 0.9f, 0.8f); // Light beige/tan color
             gameObject.transform.position = position;
             gameObject.name = getName();
-            Rigidbody rigidbody = gameObject.AddComponent<Rigidbody>();
+            rigidbody = gameObject.AddComponent<Rigidbody>();
             rigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
             setGameObject(gameObject);
 
@@ -35,7 +37,7 @@ namespace beyondnations {
         }
 
         public void wander() {
-            wanderTimer += Time.deltaTime;
+            wanderTimer += Time.fixedDeltaTime;
             
             if (wanderTimer >= wanderInterval) {
                 // Pick a new random direction
@@ -51,10 +53,13 @@ namespace beyondnations {
             Vector3 currentPosition = getGameObject().transform.position;
             Vector3 direction = wanderTarget - currentPosition;
             direction.y = 0; // Keep movement horizontal
-            direction.Normalize();
-
-            if (direction.magnitude > 0.1f) {
-                getGameObject().GetComponent<Rigidbody>().velocity = direction * speed;
+            
+            if (direction.magnitude > 0.5f) {
+                direction.Normalize();
+                rigidbody.velocity = direction * speed;
+            } else {
+                // Stop moving when close to target
+                rigidbody.velocity = Vector3.zero;
             }
         }
     }
