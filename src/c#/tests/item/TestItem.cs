@@ -10,6 +10,7 @@ namespace beyondnationstests {
             testInitialization();
             testGetType();
             testIsSameTypeAs();
+            testIsSameTypeAsWithNull();
         }
 
         public static void testInitialization() {
@@ -40,6 +41,14 @@ namespace beyondnationstests {
             // check
             UnityEngine.Debug.Assert(wood1.isSameTypeAs(wood2));
             UnityEngine.Debug.Assert(!wood1.isSameTypeAs(stone));
+        }
+
+        public static void testIsSameTypeAsWithNull() {
+            // setup
+            Item wood = new Item(ItemType.WOOD);
+
+            // check
+            UnityEngine.Debug.Assert(!wood.isSameTypeAs(null));
         }
     }
 }

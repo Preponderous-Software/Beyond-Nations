@@ -13,6 +13,8 @@ namespace beyondnationstests {
             testSetQuantity();
             testAddQuantity();
             testRemoveQuantity();
+            testAddNegativeQuantity();
+            testRemoveExcessQuantity();
             testIsEmpty();
             testCanStackWith();
         }
@@ -79,6 +81,29 @@ namespace beyondnationstests {
 
             // check
             UnityEngine.Debug.Assert(stack.getQuantity() == 12);
+        }
+
+        public static void testAddNegativeQuantity() {
+            // setup
+            ItemStack stack = new ItemStack(ItemType.WOOD, 10);
+
+            // run - addQuantity can accept negative values
+            stack.addQuantity(-3);
+
+            // check
+            UnityEngine.Debug.Assert(stack.getQuantity() == 7);
+        }
+
+        public static void testRemoveExcessQuantity() {
+            // setup
+            ItemStack stack = new ItemStack(ItemType.STONE, 5);
+
+            // run - removing more than available results in negative quantity
+            stack.removeQuantity(10);
+
+            // check
+            UnityEngine.Debug.Assert(stack.getQuantity() == -5);
+            UnityEngine.Debug.Assert(stack.isEmpty()); // Should be empty when negative
         }
 
         public static void testIsEmpty() {

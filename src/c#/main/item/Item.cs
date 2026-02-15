@@ -15,6 +15,9 @@ namespace beyondnations {
         }
 
         public bool isSameTypeAs(Item other) {
+            if (other == null) {
+                return false;
+            }
             return this.type == other.type;
         }
     }

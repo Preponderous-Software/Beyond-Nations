@@ -33,10 +33,16 @@ namespace beyondnations {
             this.quantity = quantity;
         }
 
+        /// <summary>
+        /// Adds the specified amount to the quantity. Can accept negative values to decrease quantity.
+        /// </summary>
         public void addQuantity(int amount) {
             this.quantity += amount;
         }
 
+        /// <summary>
+        /// Removes the specified amount from the quantity. This can result in negative quantities if more is removed than available.
+        /// </summary>
         public void removeQuantity(int amount) {
             this.quantity -= amount;
         }
