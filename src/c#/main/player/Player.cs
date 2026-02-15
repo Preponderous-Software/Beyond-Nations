@@ -24,6 +24,8 @@ namespace beyondnations {
         private float mouseSensitivity = 2.0f;
         private float verticalRotation = 0f;
         private float maxVerticalAngle = 80f;
+        private float mouseX = 0f;
+        private float mouseY = 0f;
 
         // map of entity id to integer representing relationship strength
         private Dictionary<EntityId, int> relationships = new Dictionary<EntityId, int>();
@@ -49,17 +51,9 @@ namespace beyondnations {
             horizontalInput = Input.GetAxis("Horizontal");
             verticalInput = Input.GetAxis("Vertical");
 
-            // Handle mouse input for camera rotation
-            float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
-            float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
-
-            // Rotate player horizontally (Y-axis)
-            rigidBody.transform.Rotate(Vector3.up * mouseX);
-
-            // Rotate camera vertically (X-axis) with clamping
-            verticalRotation -= mouseY;
-            verticalRotation = Mathf.Clamp(verticalRotation, -maxVerticalAngle, maxVerticalAngle);
-            playerCamera.transform.localRotation = Quaternion.Euler(verticalRotation, 0f, 0f);
+            // Capture mouse input
+            mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
+            mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
 
             if (Input.GetKey(KeyCode.LeftShift)) {
                 currentSpeed = runSpeed;
@@ -77,13 +71,26 @@ namespace beyondnations {
                 return;
             }
             
+            // Handle mouse rotation for camera
+            if (mouseX != 0) {
+                // Rotate player horizontally (Y-axis)
+                rigidBody.transform.Rotate(Vector3.up * mouseX);
+            }
+
+            // Rotate camera vertically (X-axis) with clamping
+            if (mouseY != 0) {
+                verticalRotation -= mouseY;
+                verticalRotation = Mathf.Clamp(verticalRotation, -maxVerticalAngle, maxVerticalAngle);
+                playerCamera.transform.localRotation = Quaternion.Euler(verticalRotation, 0f, 0f);
+            }
+            
             // Use A/D for strafing instead of rotation
             if (horizontalInput != 0) {
-                rigidBody.transform.Translate(Vector3.right * horizontalInput * currentSpeed * Time.deltaTime);
+                rigidBody.transform.Translate(Vector3.right * horizontalInput * currentSpeed * Time.fixedDeltaTime);
             }
 
             if (verticalInput != 0 && !autoWalk) {
-                rigidBody.transform.Translate(Vector3.forward * verticalInput * currentSpeed * Time.deltaTime);
+                rigidBody.transform.Translate(Vector3.forward * verticalInput * currentSpeed * Time.fixedDeltaTime);
             }
 
             if (jumpKeyWasPressed) {
@@ -92,7 +99,7 @@ namespace beyondnations {
             }
 
             if (autoWalk) {
-                rigidBody.transform.Translate(Vector3.forward * currentSpeed * Time.deltaTime);
+                rigidBody.transform.Translate(Vector3.forward * currentSpeed * Time.fixedDeltaTime);
             }
 
             if (energy < 90 && getInventory().getNumItems(ItemType.APPLE) > 0) {
@@ -118,7 +125,8 @@ namespace beyondnations {
             gameObject.transform.position = position;
             gameObject.name = "Player";
             Rigidbody rigidbody = gameObject.AddComponent<Rigidbody>();
-            rigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
+            // Only freeze X and Z rotation to allow Y-axis rotation for mouse look
+            rigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
             
             // Hide the player capsule renderer for first-person view
             Renderer renderer = gameObject.GetComponent<Renderer>();
