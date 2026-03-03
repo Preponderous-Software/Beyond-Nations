@@ -85,7 +85,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      checks: write
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -101,15 +100,15 @@ jobs:
             Library-
 
       - name: Run Tests
-        uses: game-ci/unity-test-runner@v4
+        uses: game-ci/unity-builder@v4
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
           unityVersion: 2022.3.7f1
-          githubToken: ${{ secrets.GITHUB_TOKEN }}
-          checkName: Unity Test Results
+          targetPlatform: StandaloneLinux64
+          customParameters: -batchmode -nographics -quit -executeMethod beyondnationstests.Tests.runTests
 
       - name: Upload Test Results
         uses: actions/upload-artifact@v4
