@@ -1,6 +1,7 @@
 using UnityEngine;
 
 using beyondnations;
+using EntityId = beyondnations.EntityId;
 
 namespace beyondnationstests {
 

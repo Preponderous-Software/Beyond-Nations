@@ -1,6 +1,32 @@
 # ![Beyond Nations](https://raw.githubusercontent.com/Preponderous-Software/beyond-nations/master/.github/media/banner.png)
 Beyond Nations, previously called the Open Source Game project, started as a collaborative effort between Preponderous Software and the Fairfield Programming Association. It aims to create an open-source game that can serve as a reference for aspiring developers.
 
+## Quick Start
+To run the game:
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/Preponderous-Software/beyond-nations.git
+   cd beyond-nations
+   ```
+
+2. **Open in Unity Hub**
+   - Open Unity Hub
+   - Click "Add" or "Open" and select the cloned `beyond-nations` directory
+   - Use Unity Editor version **2022.3.7f1** (or compatible 2022.3.x version)
+
+3. **Play the game**
+   - Unity will load the project and download required packages
+   - The main scene should load automatically (or open from `Assets/Scenes/main.unity`)
+   - Press the Play button to start the game
+
+For detailed contribution guidelines, see the [Contributing Guide](./docs/CONTRIBUTING.md).
+
+## Project Status & CI
+[![Unity CI](https://github.com/Preponderous-Software/beyond-nations/actions/workflows/unity-ci.yml/badge.svg)](https://github.com/Preponderous-Software/beyond-nations/actions/workflows/unity-ci.yml)
+
+This project uses continuous integration to ensure code quality and stability. All pull requests are automatically tested. For more information about the CI pipeline and how to run checks locally, see the [CI/CD Documentation](./docs/CI-CD.md).
+
 ## Game Concept
 In this game, you'll be able to embark on an adventure in a procedurally generated world filled with resources, settlements and pawns.
 
