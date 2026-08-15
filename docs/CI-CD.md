@@ -25,24 +25,24 @@ The CI pipeline consists of three main jobs:
 - Merge conflicts that are difficult to resolve
 
 ### 2. Unity Tests
-**Purpose**: Validates that the project's test infrastructure is properly configured.
+**Purpose**: Runs the project's test suite and verifies it passes.
 
 **Current state**:
 - The project uses a **custom test framework** based on `Debug.Assert` (see `Assets/Scripts/Tests/Tests.cs`)
 - These custom tests are **not compatible** with Unity Test Framework (NUnit-based)
-- The CI currently runs `game-ci/unity-test-runner` which expects Unity Test Framework tests
-- If no Unity Test Framework tests are found, the runner will report 0 tests and pass
+- The CI runs `game-ci/unity-builder` in batch mode and invokes the custom runner directly via
+  `-executeMethod beyondnationstests.Tests.runTests`
 
 **What it checks**:
-- Unity Test Framework infrastructure is functional
+- Every test registered in `beyondnationstests.Tests.runTests()` passes its assertions
 - No compilation errors prevent test execution
 - Unity license activation is working
 
 **Test location**: Custom tests are located in `Assets/Scripts/Tests/`
 
-**Note**: To have the CI actually run the existing custom tests, they would need to be either:
-1. Migrated to Unity Test Framework with proper `[Test]` attributes and NUnit assertions, or
-2. Executed via a custom script that calls `Tests.runTests()` in batch mode
+**Note**: New tests must be plain C# classes using `Debug.Assert` and must be registered in
+`Assets/Scripts/Tests/Tests.cs` — a test that is not called from `runTests()` will never run in CI.
+Do not add NUnit `[Test]`/`[TestFixture]` attributes; the CI does not invoke the Unity Test Framework runner.
 
 ### 3. Build Validation
 **Purpose**: Verifies the project can be built successfully for target platforms.
@@ -58,7 +58,7 @@ The CI pipeline consists of three main jobs:
 
 ## Unity Version
 
-The project uses **Unity 2022.3.7f1** (LTS).
+The project uses **Unity 6000.0.30f1** (Unity 6 LTS).
 
 All CI jobs use this exact version to ensure consistency. If you need to update the Unity version:
 
@@ -78,7 +78,7 @@ The CI workflow requires Unity license credentials to be configured as GitHub re
 
 #### For Personal License (Free):
 
-1. Install Unity Hub and Unity Editor 2022.3.7f1 locally
+1. Install Unity Hub and Unity Editor 6000.0.30f1 locally
 2. Activate your personal license in Unity
 3. Find your license file:
    - **Windows**: `C:\ProgramData\Unity\Unity_lic.ulf`
@@ -129,49 +129,43 @@ done
 
 #### Running Custom Tests
 
-The existing tests in `Assets/Scripts/Tests/` use `Debug.Assert` and need to be manually triggered:
+The tests in `Assets/Scripts/Tests/` use `Debug.Assert` and are all invoked from the single entry point
+`beyondnationstests.Tests.runTests()`.
 
-1. Open the project in Unity Editor 2022.3.7f1
+From the Editor:
+
+1. Open the project in Unity Editor 6000.0.30f1
 2. In the Unity Console, call: `beyondnationstests.Tests.runTests()`
 3. Check the Console for any assertion failures
 
-#### Running Unity Test Framework Tests (if migrated)
-
-If/when tests are migrated to Unity Test Framework:
-
-1. Open the project in Unity Editor 2022.3.7f1
-2. Go to **Window → General → Test Runner**
-3. Select **EditMode** tab
-4. Click **Run All** to run all tests
-5. Ensure all tests pass (green checkmarks)
-
-Alternatively, run via command line:
+From the command line — this is the same entry point the CI uses:
 
 ```bash
 # For macOS/Linux
-/Applications/Unity/Hub/Editor/2022.3.7f1/Unity.app/Contents/MacOS/Unity \
+/Applications/Unity/Hub/Editor/6000.0.30f1/Unity.app/Contents/MacOS/Unity \
   -batchmode \
   -nographics \
   -projectPath . \
-  -runTests \
-  -testPlatform EditMode \
-  -testResults ./test-results.xml \
+  -executeMethod beyondnationstests.Tests.runTests \
+  -quit \
   -logFile -
 
 # For Windows
-"C:\Program Files\Unity\Hub\Editor\2022.3.7f1\Editor\Unity.exe" ^
+"C:\Program Files\Unity\Hub\Editor\6000.0.30f1\Editor\Unity.exe" ^
   -batchmode ^
   -nographics ^
   -projectPath . ^
-  -runTests ^
-  -testPlatform EditMode ^
-  -testResults ./test-results.xml ^
+  -executeMethod beyondnationstests.Tests.runTests ^
+  -quit ^
   -logFile -
 ```
 
+**Note**: Adding a new test file is not enough — register its `runTests()` call in
+`Assets/Scripts/Tests/Tests.cs` or it will never execute.
+
 ### Build Project Locally
 
-1. Open the project in Unity Editor 2022.3.7f1
+1. Open the project in Unity Editor 6000.0.30f1
 2. Go to **File → Build Settings**
 3. Select **Linux** (or your target platform)
 4. Click **Build** to ensure the project builds without errors
@@ -180,7 +174,7 @@ Alternatively, build via command line:
 
 ```bash
 # For macOS/Linux
-/Applications/Unity/Hub/Editor/2022.3.7f1/Unity.app/Contents/MacOS/Unity \
+/Applications/Unity/Hub/Editor/6000.0.30f1/Unity.app/Contents/MacOS/Unity \
   -batchmode \
   -nographics \
   -projectPath . \
@@ -189,7 +183,7 @@ Alternatively, build via command line:
   -logFile -
 
 # For Windows
-"C:\Program Files\Unity\Hub\Editor\2022.3.7f1\Editor\Unity.exe" ^
+"C:\Program Files\Unity\Hub\Editor\6000.0.30f1\Editor\Unity.exe" ^
   -batchmode ^
   -nographics ^
   -projectPath . ^
@@ -271,7 +265,8 @@ To download artifacts:
 **Cause**: Tests are failing due to code changes.
 
 **Solution**:
-1. Run tests locally using the Test Runner (Window → General → Test Runner)
+1. Run the custom test suite locally (see [Running Custom Tests](#running-custom-tests)) — either from the
+   Unity Console or via `-executeMethod beyondnationstests.Tests.runTests` in batch mode
 2. Fix failing tests
 3. Ensure all tests pass locally before pushing
 

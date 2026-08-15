@@ -13,7 +13,7 @@ To run the game:
 2. **Open in Unity Hub**
    - Open Unity Hub
    - Click "Add" or "Open" and select the cloned `beyond-nations` directory
-   - Use Unity Editor version **2022.3.7f1** (or compatible 2022.3.x version)
+   - Use Unity Editor version **6000.0.30f1** (Unity 6 LTS)
 
 3. **Play the game**
    - Unity will load the project and download required packages
@@ -56,10 +56,10 @@ The following controls are available in the game:
 ---
 | Key | Action |
 | --- | --- |
-| `W` | Move forward |
-| `A` | Turn left |
-| `S` | Move backward |
-| `D` | Turn right |
+| `W` / `Up Arrow` | Move forward |
+| `A` / `Left Arrow` | Turn left |
+| `S` / `Down Arrow` | Move backward |
+| `D` / `Right Arrow` | Turn right |
 | `E` | Interact with nearest entity |
 | `Space` | Jump |
 | `Left Shift` | Sprint |
@@ -70,17 +70,20 @@ The following controls are available in the game:
 | `P` | Plant a sapling |
 | `H` | Teleport to home settlement |
 | `B` | Build stall |
-| `I` | Open inventory |
+| `I` | Toggle the inventory display (shown by default) |
 | `Insert` | Toggle auto-walk |
 | `Page Up` | Increase render distance |
 | `Page Down` | Decrease render distance |
-| `F1` | Toggle show debug menu |
-| `F2` | Generate nearby land |
-| `F3` | Spawn a new pawn |
-| `F4` | Spawn money |
-| `F5` | Spawn wood |
-| `F6` | Teleport all pawns to you |
+| `Escape` | Pause / unpause; back out of a menu; quit from the main menu |
+| `F1` | Toggle debug mode (and the debug menu) |
+| `F2` | Generate nearby land *(debug mode only)* |
+| `F3` | Spawn a new pawn *(debug mode only)* |
+| `F4` | Spawn money *(debug mode only)* |
+| `F5` | Spawn wood *(debug mode only)* |
+| `F6` | Teleport all pawns to you *(debug mode only)* |
 | `F12` | Take screenshot |
+
+*(debug mode only)* keys do nothing until debug mode has been enabled with `F1`.
 
 ## Game Systems
 There are a number of systems that will be implemented in the game. These systems will be used to create an engaging gameplay experience. Details can be found in the [Systems Document](./docs/SYSTEMS.md).
