@@ -86,7 +86,7 @@ The following controls are available in the game:
 *(debug mode only)* keys do nothing until debug mode has been enabled with `F1`.
 
 ## Game Systems
-There are a number of systems that will be implemented in the game. These systems will be used to create an engaging gameplay experience. Details can be found in the [Systems Document](./docs/SYSTEMS.md).
+A number of systems combine to create the gameplay experience. Some are already implemented and some are still planned; the [Systems Document](./docs/SYSTEMS.md) lists each one with its current status.
 
 ## Tech Stack
 Our game will be built using the following technologies:
