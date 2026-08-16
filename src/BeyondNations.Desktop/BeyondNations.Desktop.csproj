@@ -8,6 +8,12 @@
     <ImplicitUsings>disable</ImplicitUsings>
     <RootNamespace>beyondnations.desktop</RootNamespace>
     <AssemblyName>BeyondNations.Desktop</AssemblyName>
+    <!--
+      The renderer hands vertex and instance data to the driver as raw pointers.
+      Copying it through a managed intermediate every frame would be exactly the
+      per-frame allocation #218 rules out.
+    -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>

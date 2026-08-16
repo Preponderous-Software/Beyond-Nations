@@ -5,6 +5,7 @@ using Silk.NET.Maths;
 using Silk.NET.OpenGL;
 using Silk.NET.Windowing;
 using beyondnations;
+using beyondnations.desktop.render;
 
 namespace beyondnations.desktop {
 
@@ -17,8 +18,9 @@ namespace beyondnations.desktop {
     * accumulates real elapsed time and advances the simulation a whole number of
     * fixed steps, so the tick rate is stable and independent of frame rate.
     *
-    * Rendering is not implemented here. #216 is the skeleton; #218 fills in the
-    * instanced primitive renderer, #219 the camera, #221 the UI.
+    * Drawing is delegated to PrimitiveRenderer, which turns the world snapshot
+    * into a few instanced draw calls (#218). The camera it is given is the
+    * placeholder #219 replaces; the UI arrives with #221.
     */
     public class Game : IDisposable {
         private readonly GameOptions options;
@@ -31,6 +33,12 @@ namespace beyondnations.desktop {
 
         private Simulation simulation;
         private readonly WorldSnapshot snapshot = new WorldSnapshot();
+
+        // --- #218 instanced renderer ---
+        private PrimitiveRenderer renderer;
+        private readonly PlaceholderCamera camera = new PlaceholderCamera();
+        private RenderStatsRecorder renderStats;
+        // --- end #218 ---
 
         // Fixed-step accumulator
         private readonly double fixedTimeStep;
@@ -94,6 +102,13 @@ namespace beyondnations.desktop {
             gl.Enable(EnableCap.CullFace);
             gl.CullFace(TriangleFace.Back);
             gl.ClearColor(0.45f, 0.65f, 0.90f, 1.0f);
+
+            // --- #218 instanced renderer ---
+            renderer = new PrimitiveRenderer(gl);
+            if (options.RenderStats) {
+                renderStats = new RenderStatsRecorder();
+            }
+            // --- end #218 ---
 
             onFramebufferResize(window.FramebufferSize);
 
@@ -190,16 +205,29 @@ namespace beyondnations.desktop {
         * changes it.
         */
         private void onRender(double deltaTime) {
+            renderStats?.beginFrame();
+
             gl.Clear((uint) (ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit));
 
             if (simulation != null && screens.isWorldActive()) {
                 // The snapshot is rebuilt into the same buffers every frame and
-                // is what #218 will draw from. Capturing it now keeps the seam
-                // honest: the renderer arrives without the host having to change.
+                // is what the renderer draws from. Capturing it here keeps the
+                // seam honest: the host reads the simulation, the renderer reads
+                // the snapshot, and neither reaches past the other.
                 snapshot.capture(simulation.getEntityRepository(), simulation.getEnvironment());
+
+                // --- #218 instanced renderer ---
+                // The camera is the placeholder #219 replaces; the renderer only
+                // wants a view and a projection and does not care whose they are.
+                camera.follow(simulation.getPlayer().getPosition());
+                renderer.render(snapshot, camera.getViewMatrix(), camera.getProjectionMatrix());
+                // --- end #218 ---
             }
 
             framesRendered++;
+            renderStats?.endFrame(
+                renderer != null ? renderer.getDrawCallCount() : 0,
+                renderer != null ? renderer.getInstancesDrawn() : 0);
         }
 
         private void onFramebufferResize(Vector2D<int> size) {
@@ -210,6 +238,7 @@ namespace beyondnations.desktop {
             int width = Math.Max(1, size.X);
             int height = Math.Max(1, size.Y);
             gl.Viewport(0, 0, (uint) width, (uint) height);
+            camera.setAspectRatio(width, height);
             Log.info("framebuffer resized to " + size.X + "x" + size.Y + ", viewport set to " + width + "x" + height);
         }
 
@@ -221,13 +250,28 @@ namespace beyondnations.desktop {
                 framesRendered, fixedStepsRun, seconds,
                 seconds > 0 ? framesRendered / seconds : 0,
                 seconds > 0 ? fixedStepsRun / seconds : 0));
+
+            // --- #218 instanced renderer ---
+            if (renderStats != null && renderStats.hasData()) {
+                Log.info(renderStats.summarize());
+            }
+            // Buffers and programs have to be deleted while the context that
+            // owns them still exists, which by Dispose() time it does not.
+            renderer?.Dispose();
+            renderer = null;
+            // --- end #218 ---
         }
 
         public WorldSnapshot getSnapshot() {
             return snapshot;
         }
 
+        public PrimitiveRenderer getRenderer() {
+            return renderer;
+        }
+
         public void Dispose() {
+            renderer?.Dispose();
             input?.Dispose();
             gl?.Dispose();
             window?.Dispose();

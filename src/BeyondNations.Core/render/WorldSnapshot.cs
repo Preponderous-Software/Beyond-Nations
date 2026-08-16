@@ -72,7 +72,14 @@ namespace beyondnations {
             groundItems.Clear();
             labels.Clear();
 
-            foreach (Entity entity in entityRepository.getEntities()) {
+            // Indexed rather than foreach throughout: getEntities() would copy
+            // the whole entity list, and enumerating an IReadOnlyList or a
+            // rectangular array through its interface allocates an enumerator.
+            // All three are allocations proportional to the number of things in
+            // the world, once a frame, which is what #218 rules out.
+            int entityCount = entityRepository.getEntityCount();
+            for (int e = 0; e < entityCount; e++) {
+                Entity entity = entityRepository.getEntityAt(e);
                 if (entity.isMarkedForDeletion() || !entity.isVisible()) {
                     continue;
                 }
@@ -80,7 +87,9 @@ namespace beyondnations {
                 Vector3 origin = entity.getPosition();
                 Appearance appearance = entity.getAppearance();
 
-                foreach (AppearancePart part in appearance.getParts()) {
+                IReadOnlyList<AppearancePart> parts = appearance.getParts();
+                for (int p = 0; p < parts.Count; p++) {
+                    AppearancePart part = parts[p];
                     RenderItem item;
                     item.kind = part.getKind();
                     item.position = origin + part.getOffset();
@@ -101,14 +110,24 @@ namespace beyondnations {
                 return;
             }
 
-            foreach (Chunk chunk in environment.getChunks()) {
-                foreach (Location location in chunk.getLocations()) {
-                    RenderItem item;
-                    item.kind = PrimitiveKind.Cube;
-                    item.position = location.getPosition();
-                    item.scale = location.getScaleVector();
-                    item.color = location.getColor();
-                    groundItems.Add(item);
+            List<Chunk> chunks = environment.getChunks();
+            for (int c = 0; c < chunks.Count; c++) {
+                Location[,] locations = chunks[c].getLocations();
+                int width = locations.GetLength(0);
+                int depth = locations.GetLength(1);
+                for (int x = 0; x < width; x++) {
+                    for (int z = 0; z < depth; z++) {
+                        Location location = locations[x, z];
+                        if (location == null) {
+                            continue;
+                        }
+                        RenderItem item;
+                        item.kind = PrimitiveKind.Cube;
+                        item.position = location.getPosition();
+                        item.scale = location.getScaleVector();
+                        item.color = location.getColor();
+                        groundItems.Add(item);
+                    }
                 }
             }
         }

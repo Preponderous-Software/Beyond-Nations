@@ -25,6 +25,25 @@ namespace beyondnations {
             return toReturn;
         }
 
+        /**
+        * How many entities exist, and the one at a given position in insertion
+        * order.
+        *
+        * getEntities() builds a fresh list on every call, which is fine for the
+        * simulation but not for something that runs once a frame: the world
+        * snapshot walks every entity to draw it, and copying the whole list
+        * first would be an allocation proportional to the number of objects in
+        * the world, which is what #218 forbids. These two let a caller walk the
+        * entities in the same order without that copy.
+        */
+        public int getEntityCount() {
+            return entityIds.Count;
+        }
+
+        public Entity getEntityAt(int index) {
+            return entities[entityIds[index]];
+        }
+
         public List<Entity> getEntitiesOfType(EntityType type) {
             List<Entity> entitiesOfType = new List<Entity>();
             foreach (EntityId id in entityIds) {
