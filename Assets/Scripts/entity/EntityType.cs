@@ -9,5 +9,6 @@ namespace beyondnations {
         SETTLEMENT,
         SAPLING,
         ITEM_DROP,
+        CHICKEN,
     }
 }

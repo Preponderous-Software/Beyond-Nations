@@ -5,5 +5,6 @@ namespace beyondnations {
         STONE,
         APPLE,
         SAPLING,
+        CHICKEN_MEAT,
     }
 }

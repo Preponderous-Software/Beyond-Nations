@@ -212,6 +212,10 @@ namespace beyondnations {
                         sapling.markForDeletion();
                     }
                 }
+                else if (entity.getType() == EntityType.CHICKEN) {
+                    Chicken chicken = (Chicken)entity;
+                    chicken.wander();
+                }
                 else if (entity.getType() == EntityType.SETTLEMENT) {
                     Settlement settlement = (Settlement)entity;
 
