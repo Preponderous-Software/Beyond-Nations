@@ -8,6 +8,7 @@ namespace beyondnations {
             {ItemType.WOOD, 60},
             {ItemType.STONE, 30},
             {ItemType.SAPLING, 20},
+            {ItemType.CHICKEN_MEAT, 50},
         };
 
         public static int getBaseCost(ItemType itemType) {

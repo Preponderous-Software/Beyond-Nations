@@ -28,6 +28,7 @@ namespace beyondnations {
             Rock rock = environment.getNearestRock(player.getGameObject().transform.position);
             Pawn pawn = (Pawn) environment.getNearestEntityOfType(player.getGameObject().transform.position, EntityType.PAWN);
             Settlement settlement = (Settlement) environment.getNearestEntityOfType(player.getGameObject().transform.position, EntityType.SETTLEMENT);
+            Chicken chicken = (Chicken) environment.getNearestEntityOfType(player.getGameObject().transform.position, EntityType.CHICKEN);
 
             if (settlement != null && Vector3.Distance(player.getGameObject().transform.position, settlement.getGameObject().transform.position) < 5) {
                 EnterSettlementCommand enterSettlementCommand = new EnterSettlementCommand(entityRepository);
@@ -53,6 +54,11 @@ namespace beyondnations {
                 rock.markForDeletion();
                 player.getInventory().transferContentsOfInventory(rock.getInventory());
                 player.getStatus().update("Gathered stone from rock.");
+            }
+            else if (chicken != null && Vector3.Distance(player.getGameObject().transform.position, chicken.getGameObject().transform.position) < 5) {
+                chicken.markForDeletion();
+                player.getInventory().transferContentsOfInventory(chicken.getInventory());
+                player.getStatus().update("Harvested chicken meat.");
             }
             else {
                 player.getStatus().update("No entities within range to interact with.");

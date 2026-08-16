@@ -4,7 +4,7 @@ using UnityEngine.UI;
 namespace beyondnations {
     public class InventoryInfoBox : InfoBox {
         private Inventory inventory;
-        private int numDataPoints = 5;
+        private int numDataPoints = 6;
 
         public InventoryInfoBox(int padding, int width, int height, int x, int y, string title, Inventory inventory) : base(padding, width, height, x, y, title) {
             this.inventory = inventory;
@@ -33,6 +33,10 @@ namespace beyondnations {
 
             // draw num saplings
             GUI.Label(new Rect(x, y, width, height), "Saplings: " + inventory.getNumItems(ItemType.SAPLING));
+            y += height;
+
+            // draw num chicken meat
+            GUI.Label(new Rect(x, y, width, height), "Chicken Meat: " + inventory.getNumItems(ItemType.CHICKEN_MEAT));
             y += height;
         }
     } 
