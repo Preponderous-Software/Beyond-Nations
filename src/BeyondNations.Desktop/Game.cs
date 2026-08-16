@@ -5,6 +5,7 @@ using Silk.NET.Maths;
 using Silk.NET.OpenGL;
 using Silk.NET.Windowing;
 using beyondnations;
+using beyondnations.desktop.input;
 
 namespace beyondnations.desktop {
 
@@ -28,6 +29,8 @@ namespace beyondnations.desktop {
         private IWindow window;
         private GL gl;
         private IInputContext input;
+        private InputService inputService;
+        private readonly PlayerInputController playerInputController = new PlayerInputController();
 
         private Simulation simulation;
         private readonly WorldSnapshot snapshot = new WorldSnapshot();
@@ -110,6 +113,7 @@ namespace beyondnations.desktop {
         private void onLoad() {
             gl = GL.GetApi(window);
             input = window.CreateInput();
+            inputService = new InputService(new SilkInputSource(input));
 
             Log.info("GL vendor:   " + gl.GetStringS(StringName.Vendor));
             Log.info("GL renderer: " + gl.GetStringS(StringName.Renderer));
@@ -180,16 +184,22 @@ namespace beyondnations.desktop {
             }
         }
 
+        /**
+        * The binding table lives in KeyBindings and is applied by
+        * PlayerInputController (src/BeyondNations.Desktop/input); see #217.
+        * Escape is the one binding that stays here, since toggling screens can
+        * close the window, which only the host owns.
+        */
         private void readInput() {
-            if (input == null) {
+            if (inputService == null) {
                 return;
             }
 
-            foreach (IKeyboard keyboard in input.Keyboards) {
-                if (keyboard.IsKeyPressed(Key.Escape)) {
-                    if (!screens.escapePressed()) {
-                        window.Close();
-                    }
+            inputService.update();
+
+            if (inputService.wasPressedThisFrame(KeyBindings.Pause)) {
+                if (!screens.escapePressed()) {
+                    window.Close();
                 }
             }
 
@@ -211,22 +221,7 @@ namespace beyondnations.desktop {
                 return;
             }
 
-            // The full binding table arrives with #217. What is wired here is
-            // only enough to prove the host feeds the simulation rather than the
-            // simulation polling an engine.
-            float horizontal = 0f;
-            float vertical = 0f;
-            bool sprinting = false;
-            foreach (IKeyboard keyboard in input.Keyboards) {
-                if (keyboard.IsKeyPressed(Key.A)) horizontal -= 1f;
-                if (keyboard.IsKeyPressed(Key.D)) horizontal += 1f;
-                if (keyboard.IsKeyPressed(Key.W)) vertical += 1f;
-                if (keyboard.IsKeyPressed(Key.S)) vertical -= 1f;
-                if (keyboard.IsKeyPressed(Key.ShiftLeft)) sprinting = true;
-                if (keyboard.IsKeyPressed(Key.Space)) simulation.getPlayer().requestJump();
-            }
-            simulation.getPlayer().setMovementInput(horizontal, vertical);
-            simulation.getPlayer().setSprinting(sprinting);
+            playerInputController.update(simulation, inputService);
         }
 
         /**
