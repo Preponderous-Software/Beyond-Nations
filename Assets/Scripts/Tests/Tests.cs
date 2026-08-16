@@ -19,6 +19,11 @@ namespace beyondnationstests {
             // inventory
             TestInventory.runTests();
 
+            // item
+            TestItem.runTests();
+            TestItemStack.runTests();
+            TestItemSlot.runTests();
+
             // market
             TestMarket.runTests();
             TestStall.runTests();
