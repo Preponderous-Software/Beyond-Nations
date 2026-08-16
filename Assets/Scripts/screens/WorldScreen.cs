@@ -291,7 +291,7 @@ namespace beyondnations {
             }
 
             if (gameConfig.getLagPreventionEnabled()) {
-                lagPreventer.markGameObjectsForDeletion();
+                lagPreventer.markEntitiesForDeletion();
             }
 
             deleteEntitiesMarkedForDeletion();

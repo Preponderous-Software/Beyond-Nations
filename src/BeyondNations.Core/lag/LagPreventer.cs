@@ -15,7 +15,12 @@ namespace beyondnations {
             this.environment = environment;
         }
         
-        public void markGameObjectsForDeletion() {
+        /**
+        * Named for game objects when entities owned one. Deletion is logical
+        * now, so the name follows: this marks entities and chunks, and releases
+        * nothing.
+        */
+        public void markEntitiesForDeletion() {
             // delete excess entities and chunks every 500 ticks
             if (tickCounter.getTotalTicks() % 500 == 0) {
                 deleteExcessEntities();
