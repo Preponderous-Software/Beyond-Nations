@@ -48,7 +48,7 @@ namespace beyondnations {
             renderDistance = 200;
             maxNumEntities = 100000;
             maxNumChunks = 10000;
-            beyondNationsDirectoryPath = "C:\\BeyondNations";
+            beyondNationsDirectoryPath = AppDataPaths.getBaseDirectory();
         }
 
         // modifiable

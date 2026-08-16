@@ -41,6 +41,14 @@ namespace beyondnations.desktop {
         private int fixedStepsRun;
         private readonly Stopwatch clock = new Stopwatch();
 
+        // Screenshot capture (#224). The key binding itself is minimal and
+        // temporary -- #217 owns the real binding table -- but the capture
+        // path (glReadPixels -> PNG) lives here so it can be exercised
+        // headlessly via --screenshot-after-frames.
+        private bool screenshotKeyWasDown;
+        private bool screenshotAfterFramesDone;
+        private string lastScreenshotPath;
+
         public Game(GameOptions options) {
             this.options = options;
             this.gameConfig = new GameConfig();
@@ -64,6 +72,23 @@ namespace beyondnations.desktop {
 
         public Simulation getSimulation() {
             return simulation;
+        }
+
+        public string getLastScreenshotPath() {
+            return lastScreenshotPath;
+        }
+
+        /**
+        * Reads the current framebuffer and writes it as a PNG under
+        * AppDataPaths.getScreenshotsDirectory(). Public so it can be
+        * invoked both from the (minimal, #217-owned) key binding below and
+        * from --screenshot-after-frames for headless verification.
+        */
+        public string takeScreenshot() {
+            Vector2D<int> size = window.FramebufferSize;
+            string path = ScreenshotCapture.capture(gl, size.X, size.Y, AppDataPaths.getScreenshotsDirectory());
+            lastScreenshotPath = path;
+            return path;
         }
 
         public void run() {
@@ -145,6 +170,11 @@ namespace beyondnations.desktop {
                 window.Size = resized;
             }
 
+            if (options.ScreenshotAfterFrames > 0 && !screenshotAfterFramesDone && framesRendered >= options.ScreenshotAfterFrames) {
+                screenshotAfterFramesDone = true;
+                takeScreenshot();
+            }
+
             if (options.ExitAfterFrames > 0 && framesRendered >= options.ExitAfterFrames) {
                 window.Close();
             }
@@ -162,6 +192,20 @@ namespace beyondnations.desktop {
                     }
                 }
             }
+
+            // Screenshot key, preserved from the original KeyBindings.takeScreenshot
+            // (F12). This is deliberately minimal -- #217 owns the real binding
+            // table -- it just proves the capture path still works from a keypress.
+            bool screenshotKeyIsDown = false;
+            foreach (IKeyboard keyboard in input.Keyboards) {
+                if (keyboard.IsKeyPressed(Key.F12)) {
+                    screenshotKeyIsDown = true;
+                }
+            }
+            if (screenshotKeyIsDown && !screenshotKeyWasDown) {
+                takeScreenshot();
+            }
+            screenshotKeyWasDown = screenshotKeyIsDown;
 
             if (simulation == null || !screens.isWorldActive()) {
                 return;

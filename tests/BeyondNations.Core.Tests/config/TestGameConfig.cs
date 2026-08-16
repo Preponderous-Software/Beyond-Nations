@@ -24,5 +24,17 @@ namespace beyondnationstests {
             Assert.True(config.getMinDistanceBetweenSettlements() > 0);
             Assert.True(config.getSettlementJoinRange() > 0);
         }
-    }    
+
+        [Fact]
+        public void testBeyondNationsDirectoryPathHasNoHardcodedWindowsPath() {
+            // run
+            GameConfig config = new GameConfig();
+
+            // check: used to be hardcoded to "C:\\BeyondNations" (#224)
+            string path = config.getBeyondNationsDirectoryPath();
+            Assert.False(string.IsNullOrWhiteSpace(path));
+            Assert.DoesNotContain("C:\\", path);
+            Assert.DoesNotContain("\\", path);
+        }
+    }
 }
