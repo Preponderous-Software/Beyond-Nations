@@ -10,6 +10,7 @@ namespace beyondnations {
         private bool respawnPawns;
         private bool keepInventoryOnDeath;
         private bool lagPreventionEnabled;
+        private int worldSeed;
 
         // non-modifiable
         private int statusExpirationTicks;
@@ -32,6 +33,8 @@ namespace beyondnations {
             respawnPawns = false;
             keepInventoryOnDeath = true;
             lagPreventionEnabled = true;
+            // 0 means pick a fresh seed each run; any other value reproduces that world.
+            worldSeed = 0;
 
             // non-modifiable
             statusExpirationTicks = 500;
@@ -49,6 +52,14 @@ namespace beyondnations {
         }
 
         // modifiable
+        public int getWorldSeed() {
+            return worldSeed;
+        }
+
+        public void setWorldSeed(int worldSeed) {
+            this.worldSeed = worldSeed;
+        }
+
         public int getChunkSize() {
             return chunkSize;
         }

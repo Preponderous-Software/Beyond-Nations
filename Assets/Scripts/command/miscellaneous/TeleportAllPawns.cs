@@ -1,11 +1,14 @@
 using UnityEngine;
+using Vector3 = System.Numerics.Vector3;
 
 namespace beyondnations {
 
     public class TeleportAllPawnsCommand {
+        private RandomSource random;
         private EntityRepository entityRepository;
 
-        public TeleportAllPawnsCommand(EntityRepository entityRepository) {
+        public TeleportAllPawnsCommand(EntityRepository entityRepository, RandomSource random) {
+            this.random = random;
             this.entityRepository = entityRepository;
         }
 
@@ -18,11 +21,11 @@ namespace beyondnations {
                             Settlement currentSettlement = entityRepository.getEntity(pawn.getCurrentSettlementId()) as Settlement;
                             currentSettlement.removeCurrentlyPresentEntity(pawn.getId());
                             pawn.clearCurrentSettlementId();
-                            pawn.createGameObject(player.getGameObject().transform.position + new Vector3(UnityEngine.Random.Range(-20, 20), 0, UnityEngine.Random.Range(-20, 20)));
+                            pawn.createGameObject(player.getGameObject().transform.position + new Vector3(random.range(-20, 20), 0, random.range(-20, 20)));
                             pawn.setColor(currentSettlement.getColor());
                     }
                     else {
-                        pawn.getGameObject().transform.position = player.getGameObject().transform.position + new Vector3(UnityEngine.Random.Range(-20, 20), 0, UnityEngine.Random.Range(-20, 20));
+                        pawn.getGameObject().transform.position = player.getGameObject().transform.position + new Vector3(random.range(-20, 20), 0, random.range(-20, 20));
                     }
 
                     pawn.setTargetEntity(null);

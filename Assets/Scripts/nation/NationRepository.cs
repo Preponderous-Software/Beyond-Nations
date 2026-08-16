@@ -4,10 +4,12 @@ using System.Collections.Generic;
 namespace beyondnations {
 
     public class NationRepository {
+        private RandomSource random;
         private Dictionary<NationId, Nation> nations;
         private List<NationId> nationIds;
 
-        public NationRepository() {
+        public NationRepository(RandomSource random) {
+            this.random = random;
             nations = new Dictionary<NationId, Nation>();
             nationIds = new List<NationId>();
         }
@@ -45,7 +47,7 @@ namespace beyondnations {
         }
 
         public Nation getRandomNation() {
-            int randomIndex = UnityEngine.Random.Range(0, nationIds.Count);
+            int randomIndex = random.range(0, nationIds.Count);
             NationId randomNationId = nationIds[randomIndex];
             return nations[randomNationId];
         }

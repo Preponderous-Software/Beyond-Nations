@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Vector3 = System.Numerics.Vector3;
 
 namespace beyondnations {
 
@@ -9,6 +10,7 @@ namespace beyondnations {
     * It is a part of a chunk.
     */
     public class Location {
+        private RandomSource random;
         private LocationId id;
         private Vector3 position;
         private int scale;
@@ -16,7 +18,8 @@ namespace beyondnations {
         private GameObject gameObject;
         private List<EntityId> entityIds = new List<EntityId>();
 
-        public Location(int xpos, int zpos, int scale) {
+        public Location(int xpos, int zpos, int scale, RandomSource random) {
+            this.random = random;
             this.id = new LocationId();
             this.position = new Vector3(xpos * scale, 0, zpos * scale);
             this.scale = scale;
@@ -66,7 +69,7 @@ namespace beyondnations {
             this.gameObject.transform.position = position;
             this.gameObject.transform.localScale = new Vector3(scale, 1, scale);
             // random green color
-            setColor(new Color(0, UnityEngine.Random.value, 0));
+            setColor(new Color(0, random.value(), 0));
         }
 
         private void setColor(Color color) {

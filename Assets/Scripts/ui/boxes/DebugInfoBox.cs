@@ -157,7 +157,7 @@ namespace beyondnations {
             
             // perform discrepency checks
             if (numPawns != numLeaders + numMerchants + numSerfs + numNationlessPawns) {
-                Debug.LogError("Discrepency in pawn count!");
+                Log.error("Discrepency in pawn count!");
             }
         }
     } 

@@ -3,10 +3,12 @@ using UnityEngine;
 namespace beyondnations {
 
     public class NationJoinCommand {
+        private RandomSource random;
         private NationRepository nationRepository;
         private EventProducer eventProducer;
 
-        public NationJoinCommand(NationRepository nationRepository, EventProducer eventProducer) {
+        public NationJoinCommand(NationRepository nationRepository, EventProducer eventProducer, RandomSource random) {
+            this.random = random;
             this.nationRepository = nationRepository;
             this.eventProducer = eventProducer;
         }
@@ -36,7 +38,7 @@ namespace beyondnations {
             // choose random nation settlement
             int numSettlements = nation.getSettlements().Count;
             if (numSettlements != 0) {
-                int randomSettlementIndex = UnityEngine.Random.Range(0, numSettlements);
+                int randomSettlementIndex = random.range(0, numSettlements);
                 EntityId randomSettlementId = nation.getSettlements()[randomSettlementIndex];
                 player.setHomeSettlementId(randomSettlementId);
             }

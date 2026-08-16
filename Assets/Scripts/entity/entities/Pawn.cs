@@ -1,10 +1,12 @@
 using UnityEngine;
+using Vector3 = System.Numerics.Vector3;
 using System.Collections.Generic;
 
 namespace beyondnations {
 
     public class Pawn : Entity {
-        private int speed = UnityEngine.Random.Range(10, 20);
+        private RandomSource random;
+        private int speed;
         private NationId nationId;
         private EntityId homeSettlementId;
         private Entity targetEntity;
@@ -14,15 +16,18 @@ namespace beyondnations {
 
         private GameObject nameTag;
         private float energy = 100.00f;
-        private float metabolism = UnityEngine.Random.Range(0.001f, 0.010f);
+        private float metabolism;
 
         // map of entity id to integer representing relationship strength
         private Dictionary<EntityId, int> relationships = new Dictionary<EntityId, int>();
         private EntityId currentSettlementId;
 
-        public Pawn(Vector3 position, string name) : base(EntityType.PAWN, name) {
+        public Pawn(Vector3 position, string name, RandomSource random) : base(EntityType.PAWN, name) {
+            this.random = random;
+            this.speed = random.range(10, 20);
+            this.metabolism = random.range(0.001f, 0.010f);
             createGameObject(position);
-            int startingGoldCoins = UnityEngine.Random.Range(50, 200);
+            int startingGoldCoins = random.range(50, 200);
             getInventory().addItem(ItemType.COIN, startingGoldCoins);
         }
 
@@ -72,14 +77,14 @@ namespace beyondnations {
             }
             if (targetEntity.getGameObject() == null) {
                 setTargetEntity(null);
-                Debug.LogWarning("target entity game object is null in moveTowardsTargetEntity()");
+                Log.warning("target entity game object is null in moveTowardsTargetEntity()");
                 return;
             }
 
             Vector3 targetPosition = targetEntity.getGameObject().transform.position;
             Vector3 currentPosition = getGameObject().transform.position;
             Vector3 direction = targetPosition - currentPosition;
-            direction.Normalize();
+            direction = VectorMath.normalized(direction);
 
             getGameObject().GetComponent<Rigidbody>().velocity = direction * getSpeed();
         }
@@ -98,14 +103,14 @@ namespace beyondnations {
             }
             if (targetEntity.getGameObject() == null) {
                 setTargetEntity(null);
-                Debug.LogWarning("target entity game object is null in isAtTargetEntity()");
+                Log.warning("target entity game object is null in isAtTargetEntity()");
                 return false;
             }
             Vector3 targetPosition = targetEntity.getGameObject().transform.position;
             Vector3 currentPosition = getGameObject().transform.position;
             Vector3 direction = targetPosition - currentPosition;
 
-            bool toReturn = direction.magnitude < distanceThreshold;
+            bool toReturn = direction.Length() < distanceThreshold;
 
             return toReturn;
         }
@@ -170,11 +175,11 @@ namespace beyondnations {
 
         public void increaseRelationship(Entity entity, int amount) {
             if (entity == null) {
-                Debug.LogError("entity is null in increaseRelationship()");
+                Log.error("entity is null in increaseRelationship()");
                 return;
             }
             if (entity.getId() == getId()) {
-                Debug.LogError("entity is self in increaseRelationship()");
+                Log.error("entity is self in increaseRelationship()");
                 return;
             }
             if (getRelationships().ContainsKey(entity.getId())) {
@@ -187,11 +192,11 @@ namespace beyondnations {
 
         public void decreaseRelationship(Entity entity, int amount) {
             if (entity == null) {
-                Debug.LogError("entity is null in decreaseRelationship()");
+                Log.error("entity is null in decreaseRelationship()");
                 return;
             }
             if (entity.getId() == getId()) {
-                Debug.LogError("entity is self in decreaseRelationship()");
+                Log.error("entity is self in decreaseRelationship()");
                 return;
             }
             if (getRelationships().ContainsKey(entity.getId())) {

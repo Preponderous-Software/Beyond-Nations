@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Vector3 = System.Numerics.Vector3;
 
 namespace beyondnations {
 
     public class Player : Entity {
+        private RandomSource random;
         private Rigidbody rigidBody = null;
         private bool jumpKeyWasPressed = false;
         private float horizontalInput = 0;
@@ -18,13 +20,15 @@ namespace beyondnations {
         private Status status = null;
         private bool autoWalk = false;
         private float energy = 100;
-        private float metabolism = UnityEngine.Random.Range(0.001f, 0.010f);
+        private float metabolism;
 
         // map of entity id to integer representing relationship strength
         private Dictionary<EntityId, int> relationships = new Dictionary<EntityId, int>();
         private EntityId currentSettlementId = null;
 
-        public Player(int walkSpeed, int runSpeed, TickCounter tickCounter, int statusExpirationTicks, int renderDistance) : base(EntityType.PLAYER, "Player"){
+        public Player(int walkSpeed, int runSpeed, TickCounter tickCounter, int statusExpirationTicks, int renderDistance, RandomSource random) : base(EntityType.PLAYER, "Player"){
+            this.random = random;
+            this.metabolism = random.range(0.001f, 0.010f);
             createGameObject(new Vector3(0, 2, 0));
             setupCamera(renderDistance);
             this.rigidBody = getGameObject().GetComponent<Rigidbody>();
@@ -32,7 +36,7 @@ namespace beyondnations {
             this.runSpeed = runSpeed;
             status = new Status(tickCounter, statusExpirationTicks);
             this.currentSpeed = walkSpeed;
-            getInventory().addItem(ItemType.COIN, UnityEngine.Random.Range(100, 400));
+            getInventory().addItem(ItemType.COIN, random.range(100, 400));
         }
 
         public void update() {
@@ -56,11 +60,11 @@ namespace beyondnations {
             }
             
             if (horizontalInput != 0) {
-                rigidBody.transform.Rotate(Vector3.up * horizontalInput * 2);
+                rigidBody.transform.Rotate(Vector3.UnitY * horizontalInput * 2);
             }
 
             if (verticalInput != 0 && !autoWalk) {
-                rigidBody.transform.Translate(Vector3.forward * verticalInput * currentSpeed * Time.deltaTime);
+                rigidBody.transform.Translate(Vector3.UnitZ * verticalInput * currentSpeed * Time.deltaTime);
             }
 
             if (jumpKeyWasPressed) {
@@ -69,7 +73,7 @@ namespace beyondnations {
             }
 
             if (autoWalk) {
-                rigidBody.transform.Translate(Vector3.forward * currentSpeed * Time.deltaTime);
+                rigidBody.transform.Translate(Vector3.UnitZ * currentSpeed * Time.deltaTime);
             }
 
             if (energy < 90 && getInventory().getNumItems(ItemType.APPLE) > 0) {
@@ -86,7 +90,7 @@ namespace beyondnations {
         public bool isGrounded() {
             int minY = 0;
             int maxY = 2;
-            return getGameObject().transform.position.y > minY && getGameObject().transform.position.y < maxY;
+            return getGameObject().transform.position.Y > minY && getGameObject().transform.position.Y < maxY;
         }
 
         public override void createGameObject(Vector3 position) {
@@ -167,11 +171,11 @@ namespace beyondnations {
 
         public void increaseRelationship(Entity entity, int amount) {
             if (entity == null) {
-                Debug.LogError("entity is null in increaseRelationship()");
+                Log.error("entity is null in increaseRelationship()");
                 return;
             }
             if (entity.getId() == getId()) {
-                Debug.LogError("entity is self in increaseRelationship()");
+                Log.error("entity is self in increaseRelationship()");
                 return;
             }
             if (getRelationships().ContainsKey(entity.getId())) {
@@ -184,11 +188,11 @@ namespace beyondnations {
 
         public void decreaseRelationship(Entity entity, int amount) {
             if (entity == null) {
-                Debug.LogError("entity is null in decreaseRelationship()");
+                Log.error("entity is null in decreaseRelationship()");
                 return;
             }
             if (entity.getId() == getId()) {
-                Debug.LogError("entity is self in decreaseRelationship()");
+                Log.error("entity is self in decreaseRelationship()");
                 return;
             }
             if (getRelationships().ContainsKey(entity.getId())) {
@@ -226,7 +230,7 @@ namespace beyondnations {
 
         private void jump() {
             if (isGrounded()) {
-                rigidBody.AddForce(Vector3.up * 10, ForceMode.Impulse);
+                rigidBody.AddForce(Vector3.UnitY * 10, ForceMode.Impulse);
             }
         }
 

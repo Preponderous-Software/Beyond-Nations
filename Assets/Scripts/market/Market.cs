@@ -5,13 +5,15 @@ using Enum = System.Enum;
 namespace beyondnations {
 
     public class Market {
+        private RandomSource random;
         private List<Stall> stalls = new List<Stall>();
         private int maxNumStalls;
         
         private int totalNumItemsBought = 0;
         private int totalNumItemsSold = 0;
 
-        public Market(int maxNumStalls) {
+        public Market(int maxNumStalls, RandomSource random) {
+            this.random = random;
             this.maxNumStalls = maxNumStalls;
         }
 
@@ -121,7 +123,7 @@ namespace beyondnations {
                 return null;
             }
 
-            int randomStallIndex = Random.Range(0, stallsToBuyFrom.Count);
+            int randomStallIndex = random.range(0, stallsToBuyFrom.Count);
             Stall stallToBuyFrom = stallsToBuyFrom[randomStallIndex];
 
             // transfer coins
@@ -134,7 +136,7 @@ namespace beyondnations {
 
             totalNumItemsBought += quantity;
 
-            UnityEngine.Debug.Log("Entity " + entity.getName() + " bought " + quantity + " " + itemType + " at the market for " + cost * quantity + " coins");
+            Log.info("Entity " + entity.getName() + " bought " + quantity + " " + itemType + " at the market for " + cost * quantity + " coins");
             return stallToBuyFrom.getOwnerId();
         }
 
@@ -172,7 +174,7 @@ namespace beyondnations {
                 return null;
             }
 
-            int randomStallIndex = Random.Range(0, stallsToSellTo.Count);
+            int randomStallIndex = random.range(0, stallsToSellTo.Count);
             Stall stallToSellTo = stallsToSellTo[randomStallIndex];
 
             foreach(ItemType itemType in Enum.GetValues(typeof(ItemType))) {
@@ -200,7 +202,7 @@ namespace beyondnations {
 
                 totalNumItemsSold++;
 
-                UnityEngine.Debug.Log("Entity " + entity.getName() + " sold 1 " + itemType + " at the market for " + cost + " coins");
+                Log.info("Entity " + entity.getName() + " sold 1 " + itemType + " at the market for " + cost + " coins");
             }
             return stallToSellTo.getOwnerId();
         }

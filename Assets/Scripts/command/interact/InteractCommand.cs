@@ -1,16 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Vector3 = System.Numerics.Vector3;
 
 namespace beyondnations {
 
     public class InteractCommand {
+        private RandomSource random;
         private Environment environment;
         private NationRepository nationRepository;
         private EventProducer eventProducer;
         private EntityRepository entityRepository;
 
-        public InteractCommand(Environment environment, NationRepository nationRepository, EventProducer eventProducer, EntityRepository entityRepository) {
+        public InteractCommand(Environment environment, NationRepository nationRepository, EventProducer eventProducer, EntityRepository entityRepository, RandomSource random) {
+            this.random = random;
             this.environment = environment;
             this.nationRepository = nationRepository;
             this.eventProducer = eventProducer;
@@ -42,7 +45,7 @@ namespace beyondnations {
                 Nation pawnsNation = nationRepository.getNation(pawn.getNationId());
 
                 List <string> phrases = generatePhrases(pawnsNation, pawn, player);
-                string phrase = phrases[UnityEngine.Random.Range(0, phrases.Count)];
+                string phrase = phrases[random.range(0, phrases.Count)];
                 player.getStatus().update(pawn.getName() + ": \"" + phrase + "\"");
             }
             else if (tree != null && Vector3.Distance(player.getGameObject().transform.position, tree.getGameObject().transform.position) < 5) {

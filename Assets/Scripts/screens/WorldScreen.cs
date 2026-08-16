@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Vector3 = System.Numerics.Vector3;
 using UnityEngine.UI;
 
 namespace beyondnations {
@@ -10,6 +11,9 @@ namespace beyondnations {
     * The world screen of the game.
     */
     public class WorldScreen {
+        private PawnNameGenerator pawnNameGenerator;
+        private NationNameGenerator nationNameGenerator;
+        private RandomSource random;
         private GameConfig gameConfig;
         private bool debugMode = false;
 
@@ -33,16 +37,28 @@ namespace beyondnations {
             this.gameConfig = gameConfig;
             this.debugMode = debugMode;
 
+            // One source of randomness for the whole world, seeded from config.
+            // A seed of 0 means pick a fresh one, which is then reported so the
+            // world can be reproduced later.
+            int configuredSeed = gameConfig.getWorldSeed();
+            random = configuredSeed == 0 ? new RandomSource() : new RandomSource(configuredSeed);
+            Log.info("world seed: " + random.getSeed());
+
+            // One generator each, so previously issued names are remembered for the
+            // life of the world and no longer leak between worlds as static state did.
+            pawnNameGenerator = new PawnNameGenerator(random);
+            nationNameGenerator = new NationNameGenerator(random);
+
             tickCounter = new TickCounter();
-            player = new Player(gameConfig.getPlayerWalkSpeed(), gameConfig.getPlayerRunSpeed(), tickCounter, gameConfig.getStatusExpirationTicks(), gameConfig.getRenderDistance());
+            player = new Player(gameConfig.getPlayerWalkSpeed(), gameConfig.getPlayerRunSpeed(), tickCounter, gameConfig.getStatusExpirationTicks(), gameConfig.getRenderDistance(), random);
             eventRepository = new EventRepository();
             eventProducer = new EventProducer(eventRepository);
-            entityRepository = new EntityRepository();
-            environment = new Environment(gameConfig.getChunkSize(), gameConfig.getLocationScale(), entityRepository);
-            worldGenerator = new WorldGenerator(environment, player, eventProducer, entityRepository, gameConfig);
-            nationRepository = new NationRepository();
-            pawnBehaviorCalculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository, gameConfig, tickCounter);
-            pawnBehaviorExecutor = new PawnBehaviorExecutor(environment, nationRepository, eventProducer, entityRepository);
+            entityRepository = new EntityRepository(random);
+            environment = new Environment(gameConfig.getChunkSize(), gameConfig.getLocationScale(), entityRepository, random);
+            worldGenerator = new WorldGenerator(environment, player, eventProducer, entityRepository, gameConfig, random, pawnNameGenerator);
+            nationRepository = new NationRepository(random);
+            pawnBehaviorCalculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository, gameConfig, tickCounter, random);
+            pawnBehaviorExecutor = new PawnBehaviorExecutor(environment, nationRepository, eventProducer, entityRepository, random, nationNameGenerator);
             entityRepository.addEntity(player);
             lagPreventer = new LagPreventer(gameConfig, tickCounter, entityRepository, environment);
             player.getStatus().update("Press " + KeyBindings.createNewNation + " to create a nation.");
@@ -96,19 +112,19 @@ namespace beyondnations {
 
                     if (!pawn.isCurrentlyInSettlement()) {
                         // check if pawn is falling into void
-                        float ypos = pawn.getGameObject().transform.position.y;
+                        float ypos = pawn.getGameObject().transform.position.Y;
                         if (ypos < -10) {
-                            Debug.Log("Entity " + pawn.getId() + " fell into void. Teleporting.");
+                            Log.info("Entity " + pawn.getId() + " fell into void. Teleporting.");
                             EntityId homeSettlementId = pawn.getHomeSettlementId();
                             if (homeSettlementId != null) {
                                 // pawn has home settlement, so respawn at settlement
                                 Settlement settlement = (Settlement)entityRepository.getEntity(homeSettlementId);
                                 Vector3 newPosition = settlement.getGameObject().transform.position;
-                                newPosition = new Vector3(newPosition.x, newPosition.y + 1, newPosition.z);
+                                newPosition = new Vector3(newPosition.X, newPosition.Y + 1, newPosition.Z);
                                 pawn.getGameObject().transform.position = newPosition;
                             } else {
                                 // pawn is not in a settlement, so respawn at spawn
-                                pawn.getGameObject().transform.position = new Vector3(UnityEngine.Random.Range(-100, 100), 100, UnityEngine.Random.Range(-100, 100));
+                                pawn.getGameObject().transform.position = new Vector3(random.range(-100, 100), 100, random.range(-100, 100));
                             }
                         }
 
@@ -137,7 +153,7 @@ namespace beyondnations {
                                     // pawn has home settlement, so respawn at settlement
                                     Settlement settlement = (Settlement)entityRepository.getEntity(homeSettlementId);
                                     Vector3 newPosition = settlement.getGameObject().transform.position;
-                                    newPosition = new Vector3(newPosition.x + UnityEngine.Random.Range(-20, 20), newPosition.y, newPosition.z + UnityEngine.Random.Range(-20, 20));
+                                    newPosition = new Vector3(newPosition.X + random.range(-20, 20), newPosition.Y, newPosition.Z + random.range(-20, 20));
                                     pawn.getGameObject().transform.position = newPosition;
                                 }
                                 else {
@@ -167,7 +183,7 @@ namespace beyondnations {
                                             nation.setRole(newLeader.getId(), NationRole.LEADER);
                                         }
                                         else {
-                                            Debug.Log("ERROR: Oldest member of nation " + nation.getName() + " is not a pawn or player.");
+                                            Log.info("ERROR: Oldest member of nation " + nation.getName() + " is not a pawn or player.");
                                         }
                                         
                                     }
@@ -207,7 +223,7 @@ namespace beyondnations {
                     Sapling sapling = (Sapling)entity;
                     if (sapling.isGrown()) {
                         // replace with tree
-                        AppleTree tree = new AppleTree(sapling.getGameObject().transform.position, 5);
+                        AppleTree tree = new AppleTree(sapling.getGameObject().transform.position, 5, random);
                         entityRepository.addEntity(tree);
                         sapling.markForDeletion();
                     }
@@ -253,11 +269,11 @@ namespace beyondnations {
                     // player has home settlement, so respawn at settlement
                     Settlement homeSettlement = (Settlement)entityRepository.getEntity(player.getHomeSettlementId());
                     Vector3 newPosition = homeSettlement.getGameObject().transform.position;
-                    newPosition = new Vector3(newPosition.x + UnityEngine.Random.Range(-20, 20), newPosition.y, newPosition.z + UnityEngine.Random.Range(-20, 20));
+                    newPosition = new Vector3(newPosition.X + random.range(-20, 20), newPosition.Y, newPosition.Z + random.range(-20, 20));
                     player.getGameObject().transform.position = newPosition;
                 }
                 else {
-                    player.getGameObject().transform.position = new Vector3(UnityEngine.Random.Range(-100, 100), 10, UnityEngine.Random.Range(-100, 100));
+                    player.getGameObject().transform.position = new Vector3(random.range(-100, 100), 10, random.range(-100, 100));
                 }
             }
 
@@ -301,14 +317,14 @@ namespace beyondnations {
             if (player.getNationId() == null) {
                 // draw create nation
                 if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Create Nation")) {
-                    NationCreateCommand command = new NationCreateCommand(nationRepository, eventProducer);
+                    NationCreateCommand command = new NationCreateCommand(nationRepository, eventProducer, random, nationNameGenerator);
                     command.execute(player);
                 }
                 buttonX += buttonWidth + buttonSpacing;
 
                 // draw join nation
                 if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Join Nation")) {
-                    NationJoinCommand command = new NationJoinCommand(nationRepository, eventProducer);
+                    NationJoinCommand command = new NationJoinCommand(nationRepository, eventProducer, random);
                     command.execute(player);
                 }
                 buttonX += buttonWidth + buttonSpacing;
@@ -327,7 +343,7 @@ namespace beyondnations {
                 if (player.getId() == nation.getLeaderId() && nation.getNumberOfSettlements() == 0 && player.getInventory().getNumItems(ItemType.WOOD) >= Settlement.WOOD_COST_TO_BUILD) {
                     // draw found settlement
                     if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Found Settlement")) {
-                        FoundSettlementCommand command = new FoundSettlementCommand(nationRepository, eventProducer, entityRepository, gameConfig);
+                        FoundSettlementCommand command = new FoundSettlementCommand(nationRepository, eventProducer, entityRepository, gameConfig, random);
                         command.execute(player);
                     }
                     buttonX += buttonWidth + buttonSpacing;
@@ -337,7 +353,7 @@ namespace beyondnations {
                 if (!player.isCurrentlyInSettlement() && player.getHomeSettlementId() != null) {
                     Settlement homeSettlement = (Settlement) entityRepository.getEntity(player.getHomeSettlementId());
                     if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Teleport Home")) {
-                        TeleportHomeCommand command = new TeleportHomeCommand(entityRepository);
+                        TeleportHomeCommand command = new TeleportHomeCommand(entityRepository, random);
                         command.execute(player);
                     }
                     buttonX += buttonWidth + buttonSpacing;
@@ -427,7 +443,7 @@ namespace beyondnations {
             // if saplings, plant sapling
             if (player.getInventory().getNumItems(ItemType.SAPLING) > 0 && !player.isCurrentlyInSettlement()) {
                 if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Plant Sapling")) {
-                    PlantSaplingCommand command = new PlantSaplingCommand(entityRepository);
+                    PlantSaplingCommand command = new PlantSaplingCommand(entityRepository, random);
                     command.execute(player);
                 }
                 buttonX += buttonWidth + buttonSpacing;
@@ -528,11 +544,11 @@ namespace beyondnations {
 
         private void handleCommands() {
             if (Input.GetKeyDown(KeyBindings.createNewNation)) {
-                NationCreateCommand command = new NationCreateCommand(nationRepository, eventProducer);
+                NationCreateCommand command = new NationCreateCommand(nationRepository, eventProducer, random, nationNameGenerator);
                 command.execute(player);
             }
             else if (Input.GetKeyDown(KeyBindings.joinNation)) {
-                NationJoinCommand command = new NationJoinCommand(nationRepository, eventProducer);
+                NationJoinCommand command = new NationJoinCommand(nationRepository, eventProducer, random);
                 command.execute(player);
             }
             else if (Input.GetKeyDown(KeyBindings.teleportAllToPlayer)) {
@@ -540,7 +556,7 @@ namespace beyondnations {
                     player.getStatus().update("Debug mode must be enabled to teleport all pawns to player. Press " + KeyBindings.toggleDebugMode + " to enable debug mode.");
                     return;
                 }
-                TeleportAllPawnsCommand command = new TeleportAllPawnsCommand(entityRepository);
+                TeleportAllPawnsCommand command = new TeleportAllPawnsCommand(entityRepository, random);
                 command.execute(player);
             }
             else if (Input.GetKeyDown(KeyBindings.toggleAutoWalk)) {
@@ -552,19 +568,19 @@ namespace beyondnations {
                 command.execute(player);
             }
             else if (Input.GetKeyDown(KeyBindings.interact)) {
-                InteractCommand command = new InteractCommand(environment, nationRepository, eventProducer, entityRepository);
+                InteractCommand command = new InteractCommand(environment, nationRepository, eventProducer, entityRepository, random);
                 command.execute(player);
             }
             else if (Input.GetKeyDown(KeyBindings.foundSettlement)) {
-                FoundSettlementCommand command = new FoundSettlementCommand(nationRepository, eventProducer, entityRepository, gameConfig);
+                FoundSettlementCommand command = new FoundSettlementCommand(nationRepository, eventProducer, entityRepository, gameConfig, random);
                 command.execute(player);
             }
             else if (Input.GetKeyDown(KeyBindings.plantSapling)) {
-                PlantSaplingCommand command = new PlantSaplingCommand(entityRepository);
+                PlantSaplingCommand command = new PlantSaplingCommand(entityRepository, random);
                 command.execute(player);
             }
             else if (Input.GetKeyDown(KeyBindings.teleportToHomeSettlement)) {
-                TeleportHomeCommand command = new TeleportHomeCommand(entityRepository);
+                TeleportHomeCommand command = new TeleportHomeCommand(entityRepository, random);
                 command.execute(player);
             }
             else if (Input.GetKeyDown(KeyBindings.buildStall)) {
@@ -579,7 +595,7 @@ namespace beyondnations {
                     player.getStatus().update("Debug mode must be enabled to spawn a pawn. Press " + KeyBindings.toggleDebugMode + " to enable debug mode.");
                     return;
                 }
-                SpawnPawnCommand command = new SpawnPawnCommand(eventProducer, entityRepository);
+                SpawnPawnCommand command = new SpawnPawnCommand(eventProducer, entityRepository, random, pawnNameGenerator);
                 command.execute(player);
             }
             else if (Input.GetKeyDown(KeyBindings.generateNearbyLand)) {
@@ -587,7 +603,7 @@ namespace beyondnations {
                     player.getStatus().update("Debug mode must be enabled to generate nearby land. Press " + KeyBindings.toggleDebugMode + " to enable debug mode.");
                     return;
                 }
-                GenerateLandCommand command = new GenerateLandCommand(environment, worldGenerator, gameConfig);
+                GenerateLandCommand command = new GenerateLandCommand(environment, worldGenerator, gameConfig, random);
                 command.execute(player);
             }
             else if (Input.GetKeyDown(KeyBindings.spawnMoney)) {
@@ -620,18 +636,18 @@ namespace beyondnations {
         }
 
         private void checkIfPlayerIsFallingIntoVoid() {
-            float ypos = player.getGameObject().transform.position.y;
+            float ypos = player.getGameObject().transform.position.Y;
             if (ypos < -10) {
                 eventProducer.producePlayerFallingIntoVoidEvent(player.getGameObject().transform.position);
                 if (player.getHomeSettlementId() != null) {
                     // player has home settlement, so respawn at settlement
                     Settlement homeSettlement = (Settlement)entityRepository.getEntity(player.getHomeSettlementId());
                     Vector3 newPosition = homeSettlement.getGameObject().transform.position;
-                    newPosition = new Vector3(newPosition.x + UnityEngine.Random.Range(-20, 20), newPosition.y, newPosition.z + UnityEngine.Random.Range(-20, 20));
+                    newPosition = new Vector3(newPosition.X + random.range(-20, 20), newPosition.Y, newPosition.Z + random.range(-20, 20));
                     player.getGameObject().transform.position = newPosition;
                 }
                 else {
-                    player.getGameObject().transform.position = new Vector3(UnityEngine.Random.Range(-100, 100), 10, UnityEngine.Random.Range(-100, 100));
+                    player.getGameObject().transform.position = new Vector3(random.range(-100, 100), 10, random.range(-100, 100));
                 }
                 player.getStatus().update("You fell into the void. You have been teleported to the surface.");
             }

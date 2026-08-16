@@ -1,16 +1,19 @@
 using UnityEngine;
+using Vector3 = System.Numerics.Vector3;
 
 namespace beyondnations {
 
     public class Chicken : Entity {
+        private RandomSource random;
         private int speed;
         private Vector3 wanderTarget;
         private float wanderTimer = 0f;
         private float wanderInterval = 3f;
         private Rigidbody rigidbody;
         
-        public Chicken(Vector3 position) : base(EntityType.CHICKEN, "Chicken") {
-            speed = UnityEngine.Random.Range(5, 10);
+        public Chicken(Vector3 position, RandomSource random) : base(EntityType.CHICKEN, "Chicken") {
+            this.random = random;
+            speed = random.range(5, 10);
             createGameObject(position);
         }
 
@@ -29,7 +32,7 @@ namespace beyondnations {
             setGameObject(gameObject);
 
             // Add chicken meat to inventory
-            getInventory().addItem(ItemType.CHICKEN_MEAT, UnityEngine.Random.Range(1, 3));
+            getInventory().addItem(ItemType.CHICKEN_MEAT, random.range(1, 3));
         }
 
         public override void destroyGameObject() {
@@ -42,9 +45,9 @@ namespace beyondnations {
             if (wanderTimer >= wanderInterval) {
                 // Pick a new random direction
                 wanderTarget = getGameObject().transform.position + new Vector3(
-                    UnityEngine.Random.Range(-10f, 10f),
+                    random.range(-10f, 10f),
                     0,
-                    UnityEngine.Random.Range(-10f, 10f)
+                    random.range(-10f, 10f)
                 );
                 wanderTimer = 0f;
             }
@@ -52,14 +55,14 @@ namespace beyondnations {
             // Move towards wander target
             Vector3 currentPosition = getGameObject().transform.position;
             Vector3 direction = wanderTarget - currentPosition;
-            direction.y = 0; // Keep movement horizontal
+            direction.Y = 0; // Keep movement horizontal
             
-            if (direction.magnitude > 0.5f) {
-                direction.Normalize();
+            if (direction.Length() > 0.5f) {
+                direction = VectorMath.normalized(direction);
                 rigidbody.velocity = direction * speed;
             } else {
                 // Stop moving when close to target
-                rigidbody.velocity = Vector3.zero;
+                rigidbody.velocity = Vector3.Zero;
             }
         }
     }

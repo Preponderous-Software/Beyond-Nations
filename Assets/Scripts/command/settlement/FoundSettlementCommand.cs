@@ -1,14 +1,17 @@
 using UnityEngine;
+using Vector3 = System.Numerics.Vector3;
 
 namespace beyondnations {
 
     public class FoundSettlementCommand {
+        private RandomSource random;
         private NationRepository nationRepository;
         private EventProducer eventProducer;
         private EntityRepository entityRepository;
         private GameConfig gameConfig;
 
-        public FoundSettlementCommand(NationRepository nationRepository, EventProducer eventProducer, EntityRepository entityRepository, GameConfig gameConfig) {
+        public FoundSettlementCommand(NationRepository nationRepository, EventProducer eventProducer, EntityRepository entityRepository, GameConfig gameConfig, RandomSource random) {
+            this.random = random;
             this.nationRepository = nationRepository;
             this.eventProducer = eventProducer;
             this.entityRepository = entityRepository;
@@ -49,7 +52,7 @@ namespace beyondnations {
             player.getInventory().removeItem(ItemType.WOOD, Settlement.WOOD_COST_TO_BUILD);
 
             // create settlement
-            Settlement settlement = new Settlement(player.getGameObject().transform.position, player.getNationId(), nation.getColor(), nation.getName());
+            Settlement settlement = new Settlement(player.getGameObject().transform.position, player.getNationId(), nation.getColor(), nation.getName(), random);
             entityRepository.addEntity(settlement);
             nationRepository.getNation(player.getNationId()).addSettlement(settlement.getId());
             player.getStatus().update("Settlement founded.");

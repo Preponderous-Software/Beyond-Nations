@@ -27,12 +27,12 @@ namespace beyondnations {
 
         public void Start() {
             if (runTests) {
-                Debug.Log("Running tests...");
+                Log.info("Running tests...");
                 beyondnationstests.Tests.runTests();
-                Debug.Log("Tests complete.");
+                Log.info("Tests complete.");
             }
             else {
-                Debug.Log("Not running tests. Set `runTests` to true to run tests.");
+                Log.info("Not running tests. Set `runTests` to true to run tests.");
             }
             titleScreen = new TitleScreen();
             pauseScreen = new PauseScreen();
@@ -152,7 +152,7 @@ namespace beyondnations {
 
                 // take screenshot
                 ScreenCapture.CaptureScreenshot(path);
-                Debug.Log("Screenshot saved to " + path);
+                Log.info("Screenshot saved to " + path);
             }
         }
 

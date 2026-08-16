@@ -1,14 +1,17 @@
 using System;
 using UnityEngine;
+using Vector3 = System.Numerics.Vector3;
 
 namespace beyondnations {
 
     public class AppleTree : Entity {
+        private RandomSource random;
         private GameObject trunk;
         private GameObject leaves;
         private int height;
         
-        public AppleTree(Vector3 position, int height) : base(EntityType.TREE, "Tree") {
+        public AppleTree(Vector3 position, int height, RandomSource random) : base(EntityType.TREE, "Tree") {
+            this.random = random;
             this.height = height;
             createGameObject(position);
         }
@@ -36,9 +39,9 @@ namespace beyondnations {
             
             setGameObject(gameObject);
 
-            getInventory().addItem(ItemType.WOOD, UnityEngine.Random.Range(3, 6));
-            getInventory().addItem(ItemType.APPLE, UnityEngine.Random.Range(0, 3));
-            getInventory().addItem(ItemType.SAPLING, UnityEngine.Random.Range(0, 3));
+            getInventory().addItem(ItemType.WOOD, random.range(3, 6));
+            getInventory().addItem(ItemType.APPLE, random.range(0, 3));
+            getInventory().addItem(ItemType.SAPLING, random.range(0, 3));
         }
 
         public override void destroyGameObject() {
