@@ -13,7 +13,7 @@ To get started with the project, follow these steps:
 
 3. Click "Add" (or "Open") and select the cloned `beyond-nations` directory.
 
-4. Select Unity Editor version **2022.3.7f1** (or compatible version) when prompted.
+4. Select Unity Editor version **6000.0.30f1** (Unity 6 LTS) when prompted.
    - If you don't have this version installed, Unity Hub will prompt you to install it.
 
 5. Once the project opens in Unity, the main scene should load automatically.
@@ -22,7 +22,7 @@ To get started with the project, follow these steps:
 6. Press the Play button in the Unity Editor to run the game.
 
 ### Troubleshooting
-- **Missing Editor Version**: If you see this error, install Unity 2022.3.7f1 (or a compatible 2022.3.x version) through Unity Hub.
+- **Missing Editor Version**: If you see this error, install Unity 6000.0.30f1 through Unity Hub.
 - **Package Resolution Errors**: Unity will automatically download required packages when you first open the project. This may take a few minutes.
 - **Scene Not Loading**: Manually open the scene from `Assets/Scenes/main.unity` in the Project window.
 
