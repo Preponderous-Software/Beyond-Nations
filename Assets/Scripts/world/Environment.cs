@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Vector3 = System.Numerics.Vector3;
 
 namespace beyondnations {
 
@@ -9,12 +10,14 @@ namespace beyondnations {
     * It is the world.
     */
     public class Environment {
+        private RandomSource random;
         private EnvironmentId id;
         private List<Chunk> chunks = new List<Chunk>();
         private GameObject gameObject;
         private EntityRepository entityRepository;
 
-        public Environment(int chunkSize, int locationScale, EntityRepository entityRepository) {
+        public Environment(int chunkSize, int locationScale, EntityRepository entityRepository, RandomSource random) {
+            this.random = random;
             this.entityRepository = entityRepository;
             this.id = new EnvironmentId();
             gameObject = new GameObject("Environment");
@@ -22,7 +25,7 @@ namespace beyondnations {
             gameObject.transform.position = new Vector3(0, 0, 0);
 
             // create initial chunk
-            Chunk chunk = new Chunk(0, 0, chunkSize, locationScale);
+            Chunk chunk = new Chunk(0, 0, chunkSize, locationScale, random);
             addChunk(chunk);
         }
 
@@ -95,8 +98,8 @@ namespace beyondnations {
         public Chunk getChunkAtPosition(Vector3 position) {
             int chunkSize = getChunkSize();
             int locationScale = getLocationScale();
-            int xpos = (int)(position.x / (chunkSize * locationScale));
-            int zpos = (int)(position.z / (chunkSize * locationScale));
+            int xpos = (int)(position.X / (chunkSize * locationScale));
+            int zpos = (int)(position.Z / (chunkSize * locationScale));
             return getChunk(xpos, zpos);
         }
 
@@ -108,7 +111,7 @@ namespace beyondnations {
             if (chunks.Count == 0) {
                 return null;
             }
-            int randomIndex = Random.Range(0, chunks.Count);
+            int randomIndex = random.range(0, chunks.Count);
             return chunks[randomIndex];
         }
     }

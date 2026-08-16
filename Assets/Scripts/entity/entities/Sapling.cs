@@ -1,10 +1,11 @@
 using System;
 using UnityEngine;
-using Random = UnityEngine.Random;
+using Vector3 = System.Numerics.Vector3;
 
 namespace beyondnations {
 
     public class Sapling : Entity {
+        private RandomSource random;
         private GameObject trunk;
         private GameObject leaves;
         private int height;
@@ -12,11 +13,12 @@ namespace beyondnations {
         private DateTime planted;
         private int growTime;
         
-        public Sapling(Vector3 position, int height) : base(EntityType.SAPLING, "Sapling") {
+        public Sapling(Vector3 position, int height, RandomSource random) : base(EntityType.SAPLING, "Sapling") {
+            this.random = random;
             this.height = height;
             createGameObject(position);
             planted = DateTime.Now;
-            growTime = UnityEngine.Random.Range(60, 600);
+            growTime = random.range(60, 600);
         }
 
         public override void createGameObject(Vector3 position) {
@@ -42,9 +44,9 @@ namespace beyondnations {
             
             setGameObject(gameObject);
 
-            getInventory().addItem(ItemType.WOOD, UnityEngine.Random.Range(3, 6));
-            getInventory().addItem(ItemType.APPLE, UnityEngine.Random.Range(2, 4));
-            getInventory().addItem(ItemType.SAPLING, UnityEngine.Random.Range(1, 3));
+            getInventory().addItem(ItemType.WOOD, random.range(3, 6));
+            getInventory().addItem(ItemType.APPLE, random.range(2, 4));
+            getInventory().addItem(ItemType.SAPLING, random.range(1, 3));
         }
 
         public override void destroyGameObject() {

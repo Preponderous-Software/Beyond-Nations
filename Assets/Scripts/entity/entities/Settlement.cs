@@ -1,9 +1,11 @@
 using UnityEngine;
+using Vector3 = System.Numerics.Vector3;
 using System.Collections.Generic;
 
 namespace beyondnations {
 
     public class Settlement : Entity {
+        private RandomSource random;
         private Color color;
         private GameObject nameTag;
         private NationId nationId;
@@ -13,13 +15,14 @@ namespace beyondnations {
 
         public static readonly int WOOD_COST_TO_BUILD = 100;
 
-        public Settlement(Vector3 position, NationId nationId, Color color, string nationName) : base(EntityType.SETTLEMENT, "Settlement") {
+        public Settlement(Vector3 position, NationId nationId, Color color, string nationName, RandomSource random) : base(EntityType.SETTLEMENT, "Settlement") {
+            this.random = random;
             this.color = color;
             this.nationId = nationId;
             createGameObject(position);
             this.nationName = nationName;
             initializeNameTag();
-            market = new Market(4);
+            market = new Market(4, random);
         }
 
         public override void createGameObject(Vector3 position) {

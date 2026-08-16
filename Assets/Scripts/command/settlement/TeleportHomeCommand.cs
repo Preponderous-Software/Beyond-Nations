@@ -1,11 +1,14 @@
 using UnityEngine;
+using Vector3 = System.Numerics.Vector3;
 
 namespace beyondnations {
 
     public class TeleportHomeCommand {
+        private RandomSource random;
         private EntityRepository entityRepository;
 
-        public TeleportHomeCommand(EntityRepository entityRepository) {
+        public TeleportHomeCommand(EntityRepository entityRepository, RandomSource random) {
+            this.random = random;
             this.entityRepository = entityRepository;
         }
 
@@ -21,7 +24,7 @@ namespace beyondnations {
                 return;
             }
             Entity homeSettlement = entityRepository.getEntity(homeSettlementId);
-            player.getGameObject().transform.position = homeSettlement.getGameObject().transform.position + new Vector3(UnityEngine.Random.Range(-20, 20), 0, UnityEngine.Random.Range(-20, 20));
+            player.getGameObject().transform.position = homeSettlement.getGameObject().transform.position + new Vector3(random.range(-20, 20), 0, random.range(-20, 20));
             player.getStatus().update("Welcome home!");
         }
     }

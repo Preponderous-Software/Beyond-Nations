@@ -4,6 +4,7 @@ using UnityEngine;
 namespace beyondnations {
 
     public class Nation {
+        private RandomSource random;
         private NationId id;
         private string name;
         private EntityId leaderId;
@@ -12,13 +13,14 @@ namespace beyondnations {
         private Color color;
         private List<EntityId> settlements = new List<EntityId>();
 
-        public Nation(string name, EntityId leaderId) {
+        public Nation(string name, EntityId leaderId, RandomSource random) {
+            this.random = random;
             id = new NationId();
             this.name = name;
             this.leaderId = leaderId;
             members.Add(leaderId);
             roles[leaderId] = NationRole.LEADER;
-            color = new Color(UnityEngine.Random.value, UnityEngine.Random.value, UnityEngine.Random.value);
+            color = new Color(random.value(), random.value(), random.value());
         }
 
         public NationId getId() {
@@ -68,7 +70,7 @@ namespace beyondnations {
         }
 
         public EntityId getRandomMemberId() {
-            int randomIndex = UnityEngine.Random.Range(0, members.Count);
+            int randomIndex = random.range(0, members.Count);
             return members[randomIndex];
         }
 
@@ -97,7 +99,7 @@ namespace beyondnations {
         }
 
         public EntityId getRandomSettlementId() {
-            int randomIndex = UnityEngine.Random.Range(0, settlements.Count);
+            int randomIndex = random.range(0, settlements.Count);
             return settlements[randomIndex];
         }
     }

@@ -3,7 +3,13 @@ using UnityEngine;
 
 namespace beyondnations {
 
-    public static class PawnNameGenerator {
+    public class PawnNameGenerator {
+        private RandomSource random;
+
+        public PawnNameGenerator(RandomSource random) {
+            this.random = random;
+        }
+
 
         private static string[] names = new string[] {
             "Bob",
@@ -76,11 +82,11 @@ namespace beyondnations {
         };
 
         // list of generated
-        private static List<string> generated = new List<string>();
+        private List<string> generated = new List<string>();
 
-        public static string generate() {
-            string name = names[UnityEngine.Random.Range(0, names.Length)];
-            string familyName = familyNames[UnityEngine.Random.Range(0, familyNames.Length)];
+        public string generate() {
+            string name = names[random.range(0, names.Length)];
+            string familyName = familyNames[random.range(0, familyNames.Length)];
             string fullName = name + " " + familyName;
             if (generated.Contains(fullName)) {
                 return generate();

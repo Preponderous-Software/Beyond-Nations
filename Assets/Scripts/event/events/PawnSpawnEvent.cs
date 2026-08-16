@@ -1,4 +1,5 @@
 using UnityEngine;
+using Vector3 = System.Numerics.Vector3;
 
 namespace beyondnations {
 
@@ -6,7 +7,7 @@ namespace beyondnations {
         private Vector3 position;
         private Pawn pawn;
 
-        public PawnSpawnEvent(Vector3 position, Pawn pawn) : base(EventType.PawnSpawn, "A pawn has spawned at (" + position.x + ", " + position.y + ", " + position.z + ").") {
+        public PawnSpawnEvent(Vector3 position, Pawn pawn) : base(EventType.PawnSpawn, "A pawn has spawned at (" + position.X + ", " + position.Y + ", " + position.Z + ").") {
             this.position = position;
             this.pawn = pawn;
         }

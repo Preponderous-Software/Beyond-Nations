@@ -1,11 +1,12 @@
 using UnityEngine;
+using Vector3 = System.Numerics.Vector3;
 
 namespace beyondnations {
 
     public class PlayerFallingIntoVoidEvent : Event {
         private Vector3 position;
 
-        public PlayerFallingIntoVoidEvent(Vector3 position) : base(EventType.PlayerFallingIntoVoid, "The player has fallen into the void at (" + position.x + ", " + position.y + ", " + position.z + ").") {
+        public PlayerFallingIntoVoidEvent(Vector3 position) : base(EventType.PlayerFallingIntoVoid, "The player has fallen into the void at (" + position.X + ", " + position.Y + ", " + position.Z + ").") {
             this.position = position;
         }
 

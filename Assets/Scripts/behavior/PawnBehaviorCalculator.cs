@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using UnityEngine;
+using Vector3 = System.Numerics.Vector3;
 
 namespace beyondnations {
 
@@ -7,13 +8,15 @@ namespace beyondnations {
      * A class that computes the behavior type of a pawn.
      */
     public class PawnBehaviorCalculator {
+        private RandomSource random;
         private Environment environment;
         private EntityRepository entityRepository;
         private NationRepository nationRepository;
         private GameConfig gameConfig;
         private TickCounter tickCounter;
 
-        public PawnBehaviorCalculator(Environment environment, EntityRepository entityRepository, NationRepository nationRepository, GameConfig gameConfig, TickCounter tickCounter) {
+        public PawnBehaviorCalculator(Environment environment, EntityRepository entityRepository, NationRepository nationRepository, GameConfig gameConfig, TickCounter tickCounter, RandomSource random) {
+            this.random = random;
             this.environment = environment;
             this.entityRepository = entityRepository;
             this.nationRepository = nationRepository;
@@ -23,7 +26,7 @@ namespace beyondnations {
         
         public BehaviorType computeBehaviorType(Pawn pawn) {
             if (pawn.isMarkedForDeletion()) {
-                UnityEngine.Debug.Log("[PBC] Pawn '" + pawn.getName() + " is marked for deletion. Returning NONE.");
+                Log.info("[PBC] Pawn '" + pawn.getName() + " is marked for deletion. Returning NONE.");
                 return BehaviorType.NONE;
             }
 
@@ -64,7 +67,7 @@ namespace beyondnations {
 
             if (role == NationRole.LEADER) {
                 if (pawn.getInventory().getNumItems(ItemType.COIN) < 100 && currentSettlement.getFunds() > 100) {
-                    UnityEngine.Debug.Log("[PBC] Pawn is low on coins. Withdrawing from settlement.");
+                    Log.info("[PBC] Pawn is low on coins. Withdrawing from settlement.");
                     return BehaviorType.WITHDRAW_SETTLEMENT_FUNDS;
                 }
 
@@ -81,7 +84,7 @@ namespace beyondnations {
                 }
                 else {
                     // 10% chance to exit settlement
-                    if (Random.Range(0, 100) < chanceToExitSettlement) {
+                    if (random.range(0, 100) < chanceToExitSettlement) {
                         return BehaviorType.EXIT_SETTLEMENT;
                     }
                     else {
@@ -102,7 +105,7 @@ namespace beyondnations {
                     }
 
                     // 10% chance to exit settlement
-                    if (Random.Range(0, 100) < chanceToExitSettlement) {
+                    if (random.range(0, 100) < chanceToExitSettlement) {
                         return BehaviorType.EXIT_SETTLEMENT;
                     }
                     else {
@@ -120,7 +123,7 @@ namespace beyondnations {
                     return BehaviorType.COLLECT_PROFIT_FROM_STALL;
                 }
                 
-                if (Random.Range(0, 100) < chanceToExitSettlement) {
+                if (random.range(0, 100) < chanceToExitSettlement) {
                     return BehaviorType.EXIT_SETTLEMENT;
                 }
                 else {

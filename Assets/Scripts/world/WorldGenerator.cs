@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Vector3 = System.Numerics.Vector3;
 
 namespace beyondnations {
 
@@ -8,6 +9,8 @@ namespace beyondnations {
     * The WorldGenerator class is responsible for generating the land.
     */
     public class WorldGenerator {
+        private PawnNameGenerator pawnNameGenerator;
+        private RandomSource random;
         private Environment environment;
         private Player player;
         private EventProducer eventProducer;
@@ -18,7 +21,9 @@ namespace beyondnations {
         private EntityRepository entityRepository;
         private GameConfig gameConfig;
 
-        public WorldGenerator(Environment environment, Player player, EventProducer eventProducer, EntityRepository entityRepository, GameConfig gameConfig) {
+        public WorldGenerator(Environment environment, Player player, EventProducer eventProducer, EntityRepository entityRepository, GameConfig gameConfig, RandomSource random, PawnNameGenerator pawnNameGenerator) {
+            this.pawnNameGenerator = pawnNameGenerator;
+            this.random = random;
             this.environment = environment;
             this.player = player;
             this.eventProducer = eventProducer;
@@ -74,16 +79,16 @@ namespace beyondnations {
             Vector3 playerPosition = player.getGameObject().transform.position;
             int lengthOfChunk = chunkSize * locationScale;
 
-            if (playerPosition.x >= 0) {
-                currentChunkX = (int) (playerPosition.x / lengthOfChunk);
+            if (playerPosition.X >= 0) {
+                currentChunkX = (int) (playerPosition.X / lengthOfChunk);
             } else {
-                currentChunkX = (int) (playerPosition.x / lengthOfChunk) - 1;
+                currentChunkX = (int) (playerPosition.X / lengthOfChunk) - 1;
             }
 
-            if (playerPosition.z >= 0) {
-                currentChunkZ = (int) (playerPosition.z / lengthOfChunk);
+            if (playerPosition.Z >= 0) {
+                currentChunkZ = (int) (playerPosition.Z / lengthOfChunk);
             } else {
-                currentChunkZ = (int) (playerPosition.z / lengthOfChunk) - 1;
+                currentChunkZ = (int) (playerPosition.Z / lengthOfChunk) - 1;
             }
         }
 
@@ -92,7 +97,7 @@ namespace beyondnations {
             eventProducer.produceChunkGenerateEvent(chunkX, chunkZ);
 
             // create new chunk
-            Chunk chunk = new Chunk(chunkX, chunkZ, chunkSize, locationScale);
+            Chunk chunk = new Chunk(chunkX, chunkZ, chunkSize, locationScale, random);
             environment.addChunk(chunk);
             spawnTreeEntities(chunk);
             spawnRockEntities(chunk);
@@ -101,7 +106,7 @@ namespace beyondnations {
         }
 
         private void spawnTreeEntities(Chunk chunk) {
-            int numberOfTrees = UnityEngine.Random.Range(chunk.getSize(), chunk.getSize() * 2);
+            int numberOfTrees = random.range(chunk.getSize(), chunk.getSize() * 2);
             for (int i = 0; i < numberOfTrees; i++) {
                 Location randomLocation = chunk.getRandomLocation();
                 if (randomLocation.getNumberOfEntities() > 0) {
@@ -111,14 +116,14 @@ namespace beyondnations {
                 Vector3 locationPosition = randomLocation.getPosition();
 
                 // create tree
-                Vector3 position = new Vector3(locationPosition.x, locationPosition.y + 1, locationPosition.z);
-                AppleTree tree = new AppleTree(position, 5);
+                Vector3 position = new Vector3(locationPosition.X, locationPosition.Y + 1, locationPosition.Z);
+                AppleTree tree = new AppleTree(position, 5, random);
                 entityRepository.addEntity(tree);
             }
         }
 
         private void spawnRockEntities(Chunk chunk) {
-            int numberOfRocks = UnityEngine.Random.Range(chunk.getSize()/4, chunk.getSize()/2);
+            int numberOfRocks = random.range(chunk.getSize()/4, chunk.getSize()/2);
             for (int i = 0; i < numberOfRocks; i++) {
                 Location randomLocation = chunk.getRandomLocation();
                 if (randomLocation.getNumberOfEntities() > 0) {
@@ -128,7 +133,7 @@ namespace beyondnations {
                 Vector3 locationPosition = randomLocation.getPosition();
 
                 // create rock
-                Vector3 position = new Vector3(locationPosition.x, locationPosition.y + 1, locationPosition.z);
+                Vector3 position = new Vector3(locationPosition.X, locationPosition.Y + 1, locationPosition.Z);
                 Rock rock = new Rock(position);
                 entityRepository.addEntity(rock);
             }
@@ -144,14 +149,14 @@ namespace beyondnations {
             }
             
             // 10% change to spawn a pawn
-            bool shouldSpawnPawn = UnityEngine.Random.Range(0, 100) < 10;
+            bool shouldSpawnPawn = random.range(0, 100) < 10;
             if (shouldSpawnPawn) {
                 Location randomLocation = chunk.getRandomLocation();
                 Vector3 locationPosition = randomLocation.getPosition();
 
                 // create pawn
-                Vector3 position = new Vector3(locationPosition.x, (float)(locationPosition.y + 1.5), locationPosition.z);
-                Pawn pawn = new Pawn(position, PawnNameGenerator.generate());
+                Vector3 position = new Vector3(locationPosition.X, (float)(locationPosition.Y + 1.5), locationPosition.Z);
+                Pawn pawn = new Pawn(position, pawnNameGenerator.generate(), random);
                 eventProducer.producePawnSpawnEvent(position, pawn);
                 entityRepository.addEntity(pawn);
             }
@@ -167,16 +172,16 @@ namespace beyondnations {
             }
             
             int chickenSpawnProbability = 20;
-            bool spawnChickens = UnityEngine.Random.Range(0, 100) < chickenSpawnProbability;
+            bool spawnChickens = random.range(0, 100) < chickenSpawnProbability;
             if (spawnChickens) {
-                int numberOfChickens = UnityEngine.Random.Range(1, 4); // 1-3 chickens per chunk
+                int numberOfChickens = random.range(1, 4); // 1-3 chickens per chunk
                 for (int i = 0; i < numberOfChickens; i++) {
                     Location randomLocation = chunk.getRandomLocation();
                     Vector3 locationPosition = randomLocation.getPosition();
 
                     // create chicken
-                    Vector3 position = new Vector3(locationPosition.x, (float)(locationPosition.y + 0.5), locationPosition.z);
-                    Chicken chicken = new Chicken(position);
+                    Vector3 position = new Vector3(locationPosition.X, (float)(locationPosition.Y + 0.5), locationPosition.Z);
+                    Chicken chicken = new Chicken(position, random);
                     entityRepository.addEntity(chicken);
                 }
             }
@@ -186,17 +191,17 @@ namespace beyondnations {
             int lengthOfChunk = chunkSize * locationScale;
 
             int chunkX = 0;
-            if (position.x >= 0) {
-                chunkX = (int) (position.x / lengthOfChunk);
+            if (position.X >= 0) {
+                chunkX = (int) (position.X / lengthOfChunk);
             } else {
-                chunkX = (int) (position.x / lengthOfChunk) - 1;
+                chunkX = (int) (position.X / lengthOfChunk) - 1;
             }
 
             int chunkZ = 0;
-            if (position.z >= 0) {
-                chunkZ = (int) (position.z / lengthOfChunk);
+            if (position.Z >= 0) {
+                chunkZ = (int) (position.Z / lengthOfChunk);
             } else {
-                chunkZ = (int) (position.z / lengthOfChunk) - 1;
+                chunkZ = (int) (position.Z / lengthOfChunk) - 1;
             }
 
             return generateChunkIfNotExistent(chunkX, chunkZ);
@@ -206,17 +211,17 @@ namespace beyondnations {
             int lengthOfChunk = chunkSize * locationScale;
 
             int chunkX = 0;
-            if (position.x >= 0) {
-                chunkX = (int) (position.x / lengthOfChunk);
+            if (position.X >= 0) {
+                chunkX = (int) (position.X / lengthOfChunk);
             } else {
-                chunkX = (int) (position.x / lengthOfChunk) - 1;
+                chunkX = (int) (position.X / lengthOfChunk) - 1;
             }
 
             int chunkZ = 0;
-            if (position.z >= 0) {
-                chunkZ = (int) (position.z / lengthOfChunk);
+            if (position.Z >= 0) {
+                chunkZ = (int) (position.Z / lengthOfChunk);
             } else {
-                chunkZ = (int) (position.z / lengthOfChunk) - 1;
+                chunkZ = (int) (position.Z / lengthOfChunk) - 1;
             }
 
             generateSurroundingChunksAt(chunkX, chunkZ);

@@ -29,7 +29,7 @@ namespace beyondnations {
             int maxNumEntities = gameConfig.getMaxNumEntities();
             int numEntities = entityRepository.getNumEntities();
             if (numEntities > maxNumEntities) {
-                Debug.Log("Num entities (" + numEntities + ") is greater than max (" + maxNumEntities + "). Deleting some.");
+                Log.info("Num entities (" + numEntities + ") is greater than max (" + maxNumEntities + "). Deleting some.");
                 
                 // whitelist of entity types to not delete
                 List<EntityType> entityTypesToNotDelete = new List<EntityType>();
@@ -42,11 +42,11 @@ namespace beyondnations {
                 for (int i = 0; i < numEntitiesToDelete; i++) {
                     Entity entityToDelete = entityRepository.getRandomEntity();
                     if (entityTypesToNotDelete.Contains(entityToDelete.getType())) {
-                        Debug.Log("Skipping deletion of entity type: " + entityToDelete.getType());
+                        Log.info("Skipping deletion of entity type: " + entityToDelete.getType());
                         continue;
                     }
                     entityToDelete.markForDeletion();
-                    Debug.Log("Marked entity for deletion: " + entityToDelete.getId() + " " + entityToDelete.getType());
+                    Log.info("Marked entity for deletion: " + entityToDelete.getId() + " " + entityToDelete.getType());
                 }
             }
         }
@@ -56,14 +56,14 @@ namespace beyondnations {
             int maxNumChunks = gameConfig.getMaxNumChunks();
             int numChunks = environment.getNumChunks();
             if (numChunks > maxNumChunks) {
-                Debug.Log("Num chunks (" + numChunks + ") is greater than max (" + maxNumChunks + "). Deleting some.");
+                Log.info("Num chunks (" + numChunks + ") is greater than max (" + maxNumChunks + "). Deleting some.");
                 
                 // delete # of chunks over max
                 int numChunksToDelete = numChunks - maxNumChunks;
                 for (int i = 0; i < numChunksToDelete; i++) {
                     Chunk chunkToDelete = environment.getRandomChunk();
                     environment.removeChunk(chunkToDelete);
-                    Debug.Log("Deleted chunk: " + chunkToDelete.getPosition());
+                    Log.info("Deleted chunk: " + chunkToDelete.getPosition());
                 }
             }
         }

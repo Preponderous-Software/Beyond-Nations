@@ -4,22 +4,32 @@ using System.Collections.Generic;
 namespace beyondnations {
 
     public class EntityRepository {
+        private RandomSource random;
         // TODO: transition to using a dictionary of dictionaries with entity type as the key for the outer dictionary
         private Dictionary<EntityId, Entity> entities;
         private List<EntityId> entityIds;
 
-        public EntityRepository() {
+        public EntityRepository(RandomSource random) {
+            this.random = random;
             entities = new Dictionary<EntityId, Entity>();
             entityIds = new List<EntityId>();
         }
 
         public List<Entity> getEntities() {
-            return new List<Entity>(entities.Values);
+            // Iterates entityIds rather than entities.Values: dictionary order
+            // follows EntityId's Guid hash and therefore varies between runs,
+            // which makes world generation irreproducible. Insertion order does not.
+            List<Entity> toReturn = new List<Entity>();
+            foreach (EntityId id in entityIds) {
+                toReturn.Add(entities[id]);
+            }
+            return toReturn;
         }
 
         public List<Entity> getEntitiesOfType(EntityType type) {
             List<Entity> entitiesOfType = new List<Entity>();
-            foreach (Entity entity in entities.Values) {
+            foreach (EntityId id in entityIds) {
+                Entity entity = entities[id];
                 if (entity.getType() == type) {
                     entitiesOfType.Add(entity);
                 }
@@ -63,7 +73,7 @@ namespace beyondnations {
             if (entities.Count == 0) {
                 return null;
             }
-            int randomIndex = Random.Range(0, entities.Count);
+            int randomIndex = random.range(0, entities.Count);
             return entities[entityIds[randomIndex]];
         }
     }

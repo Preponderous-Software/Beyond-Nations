@@ -3,7 +3,13 @@ using UnityEngine;
 
 namespace beyondnations {
 
-    public static class NationNameGenerator {
+    public class NationNameGenerator {
+        private RandomSource random;
+
+        public NationNameGenerator(RandomSource random) {
+            this.random = random;
+        }
+
 
         private static string[] prefixes = new string[] {
             "New",
@@ -53,11 +59,11 @@ namespace beyondnations {
         };
 
         // list of generated
-        private static List<string> generated = new List<string>();
+        private List<string> generated = new List<string>();
 
-        public static string generate() {
-            string prefix = prefixes[UnityEngine.Random.Range(0, prefixes.Length)];
-            string suffix = suffixes[UnityEngine.Random.Range(0, suffixes.Length)];
+        public string generate() {
+            string prefix = prefixes[random.range(0, prefixes.Length)];
+            string suffix = suffixes[random.range(0, suffixes.Length)];
 
             // check if name already generated
             string name = prefix + suffix;

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Vector3 = System.Numerics.Vector3;
 
 namespace beyondnations {
 
@@ -9,6 +10,7 @@ namespace beyondnations {
     * It is a part of the environment.
     */
     public class Chunk {
+        private RandomSource random;
         private ChunkId id;
         private int size;
         private Location[,] locations;
@@ -18,7 +20,8 @@ namespace beyondnations {
         private string name;
         private GameObject gameObject;
 
-        public Chunk(int xpos, int zpos, int size, int locationScale) {
+        public Chunk(int xpos, int zpos, int size, int locationScale, RandomSource random) {
+            this.random = random;
             this.id = new ChunkId();
             this.size = size;
             this.locations = new Location[size, size];
@@ -67,8 +70,8 @@ namespace beyondnations {
         }
 
         public Location getRandomLocation() {
-            int x = UnityEngine.Random.Range(0, size);
-            int z = UnityEngine.Random.Range(0, size);
+            int x = random.range(0, size);
+            int z = random.range(0, size);
             return locations[x, z];
         }
 
@@ -91,7 +94,7 @@ namespace beyondnations {
         private void generateLocations(int locationScale) {
             for (int x = 0; x < size; x++) {
                 for (int z = 0; z < size; z++) {
-                    locations[x, z] = new Location(xpos * size + x, zpos * size + z, locationScale);
+                    locations[x, z] = new Location(xpos * size + x, zpos * size + z, locationScale, random);
                     locations[x, z].getGameObject().transform.parent = gameObject.transform;
                 }
             }

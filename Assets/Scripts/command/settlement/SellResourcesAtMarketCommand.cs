@@ -39,7 +39,7 @@ namespace beyondnations {
             // increase relationship with owner of stall
             Entity stallOwner = entityRepository.getEntity(stallOwnerId);
             if (stallOwner == null) {
-                Debug.LogError("stall owner is null");
+                Log.error("stall owner is null");
                 return;
             }
             player.increaseRelationship(stallOwner, 1);
@@ -52,7 +52,7 @@ namespace beyondnations {
                 stallOwnerPawn.increaseRelationship(player, 1);
             }
             else {
-                Debug.LogError("stall owner is not a player or pawn");
+                Log.error("stall owner is not a player or pawn");
                 return;
             }
             

@@ -1,10 +1,14 @@
 namespace beyondnations {
 
     public class NationCreateCommand {
+        private NationNameGenerator nationNameGenerator;
+        private RandomSource random;
         private NationRepository nationRepository;
         private EventProducer eventProducer;
 
-        public NationCreateCommand(NationRepository nationRepository, EventProducer eventProducer) {
+        public NationCreateCommand(NationRepository nationRepository, EventProducer eventProducer, RandomSource random, NationNameGenerator nationNameGenerator) {
+            this.nationNameGenerator = nationNameGenerator;
+            this.random = random;
             this.nationRepository = nationRepository;
             this.eventProducer = eventProducer;
         }
@@ -20,7 +24,7 @@ namespace beyondnations {
                 }
                 return;
             }
-            Nation nation = new Nation(NationNameGenerator.generate(), player.getId());
+            Nation nation = new Nation(nationNameGenerator.generate(), player.getId(), random);
             nationRepository.addNation(nation);
             player.setNationId(nation.getId());
             player.setColor(nation.getColor());
