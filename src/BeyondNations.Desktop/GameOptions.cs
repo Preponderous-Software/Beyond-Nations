@@ -50,6 +50,13 @@ namespace beyondnations.desktop {
         */
         public int ScreenshotAfterFrames = 0;
 
+        /**
+        * Record draw calls, frame times and render-loop allocation, and print
+        * them on shutdown. The instanced renderer makes claims about scale and
+        * about allocating nothing per object; this is how a run proves them.
+        */
+        public bool RenderStats = false;
+
         public static GameOptions parse(string[] args) {
             GameOptions options = new GameOptions();
             for (int i = 0; i < args.Length; i++) {
@@ -63,6 +70,7 @@ namespace beyondnations.desktop {
                     case "--seed":             options.Seed = intAfter(args, ref i, options.Seed); break;
                     case "--no-vsync":         options.VSync = false; break;
                     case "--smoke-resize":     options.SmokeResize = true; break;
+                    case "--render-stats":     options.RenderStats = true; break;
                     case "--help":
                     case "-h":
                         printUsage();
@@ -103,6 +111,7 @@ namespace beyondnations.desktop {
             Console.WriteLine("  --seed N                world seed; 0 picks one");
             Console.WriteLine("  --no-vsync              do not wait for vertical sync");
             Console.WriteLine("  --smoke-resize          resize part-way through, to exercise resize handling");
+            Console.WriteLine("  --render-stats          report draw calls, frame times and allocation on exit");
         }
     }
 }
