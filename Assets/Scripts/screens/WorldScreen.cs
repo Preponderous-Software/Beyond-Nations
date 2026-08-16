@@ -66,7 +66,20 @@ namespace beyondnations {
 
         public void Update() {
             handleCommands();
-            player.update();
+            feedPlayerInput();
+        }
+
+        /**
+        * The player no longer polls the engine for input; the host reads it and
+        * hands it over. This is the seam #217 replaces with the Silk.NET input
+        * layer, at which point this method moves into the host.
+        */
+        private void feedPlayerInput() {
+            player.setMovementInput(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+            player.setSprinting(Input.GetKey(KeyCode.LeftShift));
+            if (Input.GetKeyDown(KeyCode.Space)) {
+                player.requestJump();
+            }
         }
 
         public void FixedUpdate() {
@@ -112,26 +125,26 @@ namespace beyondnations {
 
                     if (!pawn.isCurrentlyInSettlement()) {
                         // check if pawn is falling into void
-                        float ypos = pawn.getGameObject().transform.position.Y;
+                        float ypos = pawn.getPosition().Y;
                         if (ypos < -10) {
                             Log.info("Entity " + pawn.getId() + " fell into void. Teleporting.");
                             EntityId homeSettlementId = pawn.getHomeSettlementId();
                             if (homeSettlementId != null) {
                                 // pawn has home settlement, so respawn at settlement
                                 Settlement settlement = (Settlement)entityRepository.getEntity(homeSettlementId);
-                                Vector3 newPosition = settlement.getGameObject().transform.position;
+                                Vector3 newPosition = settlement.getPosition();
                                 newPosition = new Vector3(newPosition.X, newPosition.Y + 1, newPosition.Z);
-                                pawn.getGameObject().transform.position = newPosition;
+                                pawn.setPosition(newPosition);
                             } else {
                                 // pawn is not in a settlement, so respawn at spawn
-                                pawn.getGameObject().transform.position = new Vector3(random.range(-100, 100), 100, random.range(-100, 100));
+                                pawn.setPosition(new Vector3(random.range(-100, 100), 100, random.range(-100, 100)));
                             }
                         }
 
                         // check if pawn is in a new chunk
-                        Chunk retrievedChunk = environment.getChunkAtPosition(pawn.getGameObject().transform.position);
+                        Chunk retrievedChunk = environment.getChunkAtPosition(pawn.getPosition());
                         if (retrievedChunk == null) {
-                            positionsToGenerateChunksAt.Add(pawn.getGameObject().transform.position);
+                            positionsToGenerateChunksAt.Add(pawn.getPosition());
                         }
                     }
 
@@ -152,13 +165,13 @@ namespace beyondnations {
                                 if (homeSettlementId != null) {
                                     // pawn has home settlement, so respawn at settlement
                                     Settlement settlement = (Settlement)entityRepository.getEntity(homeSettlementId);
-                                    Vector3 newPosition = settlement.getGameObject().transform.position;
+                                    Vector3 newPosition = settlement.getPosition();
                                     newPosition = new Vector3(newPosition.X + random.range(-20, 20), newPosition.Y, newPosition.Z + random.range(-20, 20));
-                                    pawn.getGameObject().transform.position = newPosition;
+                                    pawn.setPosition(newPosition);
                                 }
                                 else {
                                     // pawn is not in a settlement, so respawn at spawn
-                                    pawn.getGameObject().transform.position = new Vector3(0, 10, 0);
+                                    pawn.setPosition(new Vector3(0, 10, 0));
                                 }
                             }                            
                         }
@@ -223,14 +236,14 @@ namespace beyondnations {
                     Sapling sapling = (Sapling)entity;
                     if (sapling.isGrown()) {
                         // replace with tree
-                        AppleTree tree = new AppleTree(sapling.getGameObject().transform.position, 5, random);
+                        AppleTree tree = new AppleTree(sapling.getPosition(), 5, random);
                         entityRepository.addEntity(tree);
                         sapling.markForDeletion();
                     }
                 }
                 else if (entity.getType() == EntityType.CHICKEN) {
                     Chicken chicken = (Chicken)entity;
-                    chicken.wander();
+                    chicken.wander(Time.fixedDeltaTime);
                 }
                 else if (entity.getType() == EntityType.SETTLEMENT) {
                     Settlement settlement = (Settlement)entity;
@@ -268,12 +281,12 @@ namespace beyondnations {
                 if (player.getHomeSettlementId() != null) {
                     // player has home settlement, so respawn at settlement
                     Settlement homeSettlement = (Settlement)entityRepository.getEntity(player.getHomeSettlementId());
-                    Vector3 newPosition = homeSettlement.getGameObject().transform.position;
+                    Vector3 newPosition = homeSettlement.getPosition();
                     newPosition = new Vector3(newPosition.X + random.range(-20, 20), newPosition.Y, newPosition.Z + random.range(-20, 20));
-                    player.getGameObject().transform.position = newPosition;
+                    player.setPosition(newPosition);
                 }
                 else {
-                    player.getGameObject().transform.position = new Vector3(random.range(-100, 100), 10, random.range(-100, 100));
+                    player.setPosition(new Vector3(random.range(-100, 100), 10, random.range(-100, 100)));
                 }
             }
 
@@ -450,9 +463,9 @@ namespace beyondnations {
             }
 
             if (!player.isCurrentlyInSettlement()) {
-                Settlement nearestSettlement = (Settlement) environment.getNearestEntityOfType(player.getGameObject().transform.position, EntityType.SETTLEMENT);
+                Settlement nearestSettlement = (Settlement) environment.getNearestEntityOfType(player.getPosition(), EntityType.SETTLEMENT);
                 if (nearestSettlement != null) {
-                    int distanceToNearestSettlement = (int) Vector3.Distance(player.getGameObject().transform.position, nearestSettlement.getGameObject().transform.position);
+                    int distanceToNearestSettlement = (int) Vector3.Distance(player.getPosition(), nearestSettlement.getPosition());
                     int distanceThreshold = 50;
                     if (distanceToNearestSettlement < distanceThreshold) {
                         if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Enter Settlement")) {
@@ -636,18 +649,18 @@ namespace beyondnations {
         }
 
         private void checkIfPlayerIsFallingIntoVoid() {
-            float ypos = player.getGameObject().transform.position.Y;
+            float ypos = player.getPosition().Y;
             if (ypos < -10) {
-                eventProducer.producePlayerFallingIntoVoidEvent(player.getGameObject().transform.position);
+                eventProducer.producePlayerFallingIntoVoidEvent(player.getPosition());
                 if (player.getHomeSettlementId() != null) {
                     // player has home settlement, so respawn at settlement
                     Settlement homeSettlement = (Settlement)entityRepository.getEntity(player.getHomeSettlementId());
-                    Vector3 newPosition = homeSettlement.getGameObject().transform.position;
+                    Vector3 newPosition = homeSettlement.getPosition();
                     newPosition = new Vector3(newPosition.X + random.range(-20, 20), newPosition.Y, newPosition.Z + random.range(-20, 20));
-                    player.getGameObject().transform.position = newPosition;
+                    player.setPosition(newPosition);
                 }
                 else {
-                    player.getGameObject().transform.position = new Vector3(random.range(-100, 100), 10, random.range(-100, 100));
+                    player.setPosition(new Vector3(random.range(-100, 100), 10, random.range(-100, 100)));
                 }
                 player.getStatus().update("You fell into the void. You have been teleported to the surface.");
             }
@@ -661,7 +674,9 @@ namespace beyondnations {
                 }
             }
             foreach (Entity entity in entitiesToDelete) {
-                entity.destroyGameObject();
+                // Deletion is purely logical: removing the entity from the
+                // repository removes it from the next snapshot, and there is no
+                // graphics resource to release.
                 entityRepository.removeEntity(entity);
             }
         }

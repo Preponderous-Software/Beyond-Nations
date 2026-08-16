@@ -45,7 +45,7 @@ namespace beyondnations {
             y += 20;
 
             // current chunk
-            Chunk currentChunk = environment.getChunkAtPosition(player.getGameObject().transform.position);
+            Chunk currentChunk = environment.getChunkAtPosition(player.getPosition());
             if (currentChunk != null) {
                 GUI.Label(new Rect(x, y, width, height), "Chunk: " + currentChunk.getX() + ", " + currentChunk.getZ());
             }
