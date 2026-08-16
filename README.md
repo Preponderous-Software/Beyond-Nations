@@ -23,7 +23,7 @@ To run the game:
 For detailed contribution guidelines, see the [Contributing Guide](./docs/CONTRIBUTING.md).
 
 ## Project Status & CI
-[![Unity CI](https://github.com/Preponderous-Software/beyond-nations/actions/workflows/unity-ci.yml/badge.svg)](https://github.com/Preponderous-Software/beyond-nations/actions/workflows/unity-ci.yml)
+[![CI](https://github.com/Preponderous-Software/beyond-nations/actions/workflows/ci.yml/badge.svg)](https://github.com/Preponderous-Software/beyond-nations/actions/workflows/ci.yml)
 
 This project uses continuous integration to ensure code quality and stability. All pull requests are automatically tested. For more information about the CI pipeline and how to run checks locally, see the [CI/CD Documentation](./docs/CI-CD.md).
 
