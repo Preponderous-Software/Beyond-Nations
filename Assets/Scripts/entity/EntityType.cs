@@ -8,5 +8,6 @@ namespace beyondnations {
         PLAYER,
         SETTLEMENT,
         SAPLING,
+        ITEM_DROP,
     }
 }
