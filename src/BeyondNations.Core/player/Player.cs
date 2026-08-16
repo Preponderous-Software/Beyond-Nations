@@ -104,7 +104,11 @@ namespace beyondnations {
             if (autoWalk) {
                 forwardAmount = 1f;
             }
-            setVelocity(getForward() * forwardAmount * currentSpeed);
+            // Only horizontal velocity is decided here. Vertical velocity
+            // belongs to the movement integrator (#220) -- gravity and the
+            // jump impulse -- so it is carried over rather than overwritten.
+            Vector3 horizontalVelocity = getForward() * forwardAmount * currentSpeed;
+            setVelocity(new Vector3(horizontalVelocity.X, getVelocity().Y, horizontalVelocity.Z));
 
             if (energy < 90 && getInventory().getNumItems(ItemType.APPLE) > 0) {
                 eatApple();

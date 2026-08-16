@@ -178,7 +178,9 @@ namespace beyondnations {
             }
             Vector3 currentPosition = pawn.getPosition();
             Vector3 targetPosition = currentPosition + new Vector3(random.range(-1f, 1f), 0, random.range(-1f, 1f));
-            pawn.setVelocity(VectorMath.normalized(targetPosition - currentPosition) * pawn.getSpeed());
+            // Horizontal only -- see the comment in Pawn.moveTowardsTargetEntity().
+            Vector3 horizontalVelocity = VectorMath.normalized(targetPosition - currentPosition) * pawn.getSpeed();
+            pawn.setVelocity(new Vector3(horizontalVelocity.X, pawn.getVelocity().Y, horizontalVelocity.Z));
         }
 
         private void executePurchaseFoodBehavior(Pawn pawn) {

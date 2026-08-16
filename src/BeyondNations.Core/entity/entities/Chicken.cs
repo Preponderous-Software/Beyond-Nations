@@ -41,10 +41,14 @@ namespace beyondnations {
             Vector3 direction = wanderTarget - getPosition();
             direction.Y = 0; // keep movement horizontal
 
+            // Vertical velocity belongs to the movement integrator (#220), so
+            // it is carried over here rather than overwritten.
+            float verticalVelocity = getVelocity().Y;
             if (direction.Length() > 0.5f) {
-                setVelocity(VectorMath.normalized(direction) * speed);
+                Vector3 horizontalVelocity = VectorMath.normalized(direction) * speed;
+                setVelocity(new Vector3(horizontalVelocity.X, verticalVelocity, horizontalVelocity.Z));
             } else {
-                setVelocity(Vector3.Zero);
+                setVelocity(new Vector3(0, verticalVelocity, 0));
             }
         }
     }

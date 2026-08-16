@@ -43,6 +43,14 @@ namespace beyondnations.desktop {
         public bool SmokeResize = false;
 
         /**
+        * Take a screenshot once this many frames have rendered, then continue
+        * running. Zero disables it. This is what makes the screenshot path
+        * (glReadPixels -> PNG) checkable headlessly, without a person pressing
+        * the screenshot key against a visible window. See #224.
+        */
+        public int ScreenshotAfterFrames = 0;
+
+        /**
         * Record draw calls, frame times and render-loop allocation, and print
         * them on shutdown. The instanced renderer makes claims about scale and
         * about allocating nothing per object; this is how a run proves them.
@@ -58,6 +66,7 @@ namespace beyondnations.desktop {
                     case "--height":           options.Height = intAfter(args, ref i, options.Height); break;
                     case "--ticks-per-second": options.TicksPerSecond = intAfter(args, ref i, options.TicksPerSecond); break;
                     case "--exit-after-frames":options.ExitAfterFrames = intAfter(args, ref i, options.ExitAfterFrames); break;
+                    case "--screenshot-after-frames": options.ScreenshotAfterFrames = intAfter(args, ref i, options.ScreenshotAfterFrames); break;
                     case "--seed":             options.Seed = intAfter(args, ref i, options.Seed); break;
                     case "--no-vsync":         options.VSync = false; break;
                     case "--smoke-resize":     options.SmokeResize = true; break;
@@ -98,6 +107,7 @@ namespace beyondnations.desktop {
             Console.WriteLine("  --height N              window height         (default 720)");
             Console.WriteLine("  --ticks-per-second N    simulation rate       (default 50)");
             Console.WriteLine("  --exit-after-frames N   render N frames then exit; 0 runs until closed");
+            Console.WriteLine("  --screenshot-after-frames N  take a screenshot once N frames have rendered; 0 disables");
             Console.WriteLine("  --seed N                world seed; 0 picks one");
             Console.WriteLine("  --no-vsync              do not wait for vertical sync");
             Console.WriteLine("  --smoke-resize          resize part-way through, to exercise resize handling");

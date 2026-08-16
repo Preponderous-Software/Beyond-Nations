@@ -36,6 +36,15 @@ namespace beyondnations {
         private int numPawnDeaths = 0;
         private int numPlayerDeaths = 0;
 
+        // How high off the flat tile plane (y = 0) each mover's collider used
+        // to rest in Unity. The ground has no slope (#220), so a constant per
+        // entity type is all a clamp needs. Pawn and chicken values match the
+        // height WorldGenerator already spawns them at; the player's matches
+        // isGrounded()'s 0 < y < 2 band.
+        private const float PlayerGroundHeight = 1f;
+        private const float PawnGroundHeight = 1.5f;
+        private const float ChickenGroundHeight = 0.5f;
+
         public Simulation(GameConfig gameConfig) {
             this.gameConfig = gameConfig;
 
@@ -288,12 +297,43 @@ namespace beyondnations {
                         }
                     }
 
+                    integrateMovement(fixedDeltaTime);
+
                     if (gameConfig.getLagPreventionEnabled()) {
                         lagPreventer.markEntitiesForDeletion();
                     }
 
                     deleteEntitiesMarkedForDeletion();
                 }
+
+        /**
+        * Replaces Rigidbody (#220): gravity, the ground clamp and the jump
+        * impulse for the player, and the same integrator for pawns and
+        * chickens so every mover in the game falls and lands the same way.
+        * Horizontal velocity was already decided above, by player.fixedUpdate(),
+        * PawnBehaviorExecutor and Chicken.wander(); this only ever adds the
+        * vertical component and moves positions.
+        */
+        private void integrateMovement(float fixedDeltaTime) {
+            if (!player.isCurrentlyInSettlement()) {
+                if (player.consumeJumpRequest() && player.isGrounded()) {
+                    MovementIntegrator.jump(player);
+                }
+                MovementIntegrator.step(player, fixedDeltaTime, PlayerGroundHeight);
+            }
+
+            foreach (Entity entity in entityRepository.getEntities()) {
+                if (entity.getType() == EntityType.PAWN) {
+                    Pawn pawn = (Pawn) entity;
+                    if (!pawn.isCurrentlyInSettlement()) {
+                        MovementIntegrator.step(pawn, fixedDeltaTime, PawnGroundHeight);
+                    }
+                }
+                else if (entity.getType() == EntityType.CHICKEN) {
+                    MovementIntegrator.step(entity, fixedDeltaTime, ChickenGroundHeight);
+                }
+            }
+        }
 
         private void checkIfPlayerIsFallingIntoVoid() {
                     float ypos = player.getPosition().Y;

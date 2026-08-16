@@ -5,6 +5,7 @@ using Silk.NET.Maths;
 using Silk.NET.OpenGL;
 using Silk.NET.Windowing;
 using beyondnations;
+using beyondnations.desktop.input;
 using beyondnations.desktop.render;
 
 namespace beyondnations.desktop {
@@ -30,6 +31,8 @@ namespace beyondnations.desktop {
         private IWindow window;
         private GL gl;
         private IInputContext input;
+        private InputService inputService;
+        private readonly PlayerInputController playerInputController = new PlayerInputController();
 
         private Simulation simulation;
         private readonly WorldSnapshot snapshot = new WorldSnapshot();
@@ -48,6 +51,14 @@ namespace beyondnations.desktop {
         private bool smokeResizeDone;
         private int fixedStepsRun;
         private readonly Stopwatch clock = new Stopwatch();
+
+        // Screenshot capture (#224). The key binding itself is minimal and
+        // temporary -- #217 owns the real binding table -- but the capture
+        // path (glReadPixels -> PNG) lives here so it can be exercised
+        // headlessly via --screenshot-after-frames.
+        private bool screenshotKeyWasDown;
+        private bool screenshotAfterFramesDone;
+        private string lastScreenshotPath;
 
         public Game(GameOptions options) {
             this.options = options;
@@ -74,6 +85,23 @@ namespace beyondnations.desktop {
             return simulation;
         }
 
+        public string getLastScreenshotPath() {
+            return lastScreenshotPath;
+        }
+
+        /**
+        * Reads the current framebuffer and writes it as a PNG under
+        * AppDataPaths.getScreenshotsDirectory(). Public so it can be
+        * invoked both from the (minimal, #217-owned) key binding below and
+        * from --screenshot-after-frames for headless verification.
+        */
+        public string takeScreenshot() {
+            Vector2D<int> size = window.FramebufferSize;
+            string path = ScreenshotCapture.capture(gl, size.X, size.Y, AppDataPaths.getScreenshotsDirectory());
+            lastScreenshotPath = path;
+            return path;
+        }
+
         public void run() {
             WindowOptions windowOptions = WindowOptions.Default;
             windowOptions.Size = new Vector2D<int>(options.Width, options.Height);
@@ -93,6 +121,7 @@ namespace beyondnations.desktop {
         private void onLoad() {
             gl = GL.GetApi(window);
             input = window.CreateInput();
+            inputService = new InputService(new SilkInputSource(input));
 
             Log.info("GL vendor:   " + gl.GetStringS(StringName.Vendor));
             Log.info("GL renderer: " + gl.GetStringS(StringName.Renderer));
@@ -160,44 +189,54 @@ namespace beyondnations.desktop {
                 window.Size = resized;
             }
 
+            if (options.ScreenshotAfterFrames > 0 && !screenshotAfterFramesDone && framesRendered >= options.ScreenshotAfterFrames) {
+                screenshotAfterFramesDone = true;
+                takeScreenshot();
+            }
+
             if (options.ExitAfterFrames > 0 && framesRendered >= options.ExitAfterFrames) {
                 window.Close();
             }
         }
 
+        /**
+        * The binding table lives in KeyBindings and is applied by
+        * PlayerInputController (src/BeyondNations.Desktop/input); see #217.
+        * Escape is the one binding that stays here, since toggling screens can
+        * close the window, which only the host owns.
+        */
         private void readInput() {
-            if (input == null) {
+            if (inputService == null) {
                 return;
             }
 
-            foreach (IKeyboard keyboard in input.Keyboards) {
-                if (keyboard.IsKeyPressed(Key.Escape)) {
-                    if (!screens.escapePressed()) {
-                        window.Close();
-                    }
+            inputService.update();
+
+            if (inputService.wasPressedThisFrame(KeyBindings.Pause)) {
+                if (!screens.escapePressed()) {
+                    window.Close();
                 }
             }
+
+            // Screenshot key, preserved from the original KeyBindings.takeScreenshot
+            // (F12). This is deliberately minimal -- #217 owns the real binding
+            // table -- it just proves the capture path still works from a keypress.
+            bool screenshotKeyIsDown = false;
+            foreach (IKeyboard keyboard in input.Keyboards) {
+                if (keyboard.IsKeyPressed(Key.F12)) {
+                    screenshotKeyIsDown = true;
+                }
+            }
+            if (screenshotKeyIsDown && !screenshotKeyWasDown) {
+                takeScreenshot();
+            }
+            screenshotKeyWasDown = screenshotKeyIsDown;
 
             if (simulation == null || !screens.isWorldActive()) {
                 return;
             }
 
-            // The full binding table arrives with #217. What is wired here is
-            // only enough to prove the host feeds the simulation rather than the
-            // simulation polling an engine.
-            float horizontal = 0f;
-            float vertical = 0f;
-            bool sprinting = false;
-            foreach (IKeyboard keyboard in input.Keyboards) {
-                if (keyboard.IsKeyPressed(Key.A)) horizontal -= 1f;
-                if (keyboard.IsKeyPressed(Key.D)) horizontal += 1f;
-                if (keyboard.IsKeyPressed(Key.W)) vertical += 1f;
-                if (keyboard.IsKeyPressed(Key.S)) vertical -= 1f;
-                if (keyboard.IsKeyPressed(Key.ShiftLeft)) sprinting = true;
-                if (keyboard.IsKeyPressed(Key.Space)) simulation.getPlayer().requestJump();
-            }
-            simulation.getPlayer().setMovementInput(horizontal, vertical);
-            simulation.getPlayer().setSprinting(sprinting);
+            playerInputController.update(simulation, inputService);
         }
 
         /**
