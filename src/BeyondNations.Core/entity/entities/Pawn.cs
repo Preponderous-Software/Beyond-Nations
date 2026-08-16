@@ -77,8 +77,13 @@ namespace beyondnations {
                 return;
             }
 
-            Vector3 direction = VectorMath.normalized(targetEntity.getPosition() - getPosition());
-            setVelocity(direction * getSpeed());
+            // Horizontal only: vertical velocity belongs to the movement
+            // integrator (#220), which this and PawnBehaviorExecutor's wander
+            // share with the player so both move the same way.
+            Vector3 toTarget = targetEntity.getPosition() - getPosition();
+            toTarget.Y = 0;
+            Vector3 horizontalVelocity = VectorMath.normalized(toTarget) * getSpeed();
+            setVelocity(new Vector3(horizontalVelocity.X, getVelocity().Y, horizontalVelocity.Z));
         }
 
         public bool isAtTargetEntity() {
