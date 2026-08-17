@@ -35,8 +35,6 @@ namespace beyondnations.desktop.ui {
         private readonly WorldHud worldHud = new WorldHud();
         private readonly FrameRateCounter frameRate = new FrameRateCounter();
 
-        private bool debugMode;
-        private bool inventoryVisible = true;
         private bool quitRequested;
         private bool startRequested;
 
@@ -60,25 +58,10 @@ namespace beyondnations.desktop.ui {
             return requested;
         }
 
-        public void setDebugMode(bool debugMode) {
-            this.debugMode = debugMode;
-        }
 
-        public bool isDebugMode() {
-            return debugMode;
-        }
 
-        public void toggleDebugMode() {
-            debugMode = !debugMode;
-        }
 
-        public void setInventoryVisible(bool visible) {
-            this.inventoryVisible = visible;
-        }
 
-        public void toggleInventory() {
-            inventoryVisible = !inventoryVisible;
-        }
 
         public int getFramesPerSecond() {
             return frameRate.getFramesPerSecond();
@@ -87,8 +70,12 @@ namespace beyondnations.desktop.ui {
         /**
         * Draws whichever screen is active. simulation may be null, which is the
         * case on every screen except the world.
+        *
+        * debugMode and inventoryVisible are passed in rather than held here,
+        * because the input layer already owns them: F1 gates the debug
+        * commands as well as the overlay, and two copies would drift.
         */
-        public void render(double deltaTime, float width, float height, Simulation simulation) {
+        public void render(double deltaTime, float width, float height, Simulation simulation, bool debugMode, bool inventoryVisible) {
             frameRate.record(deltaTime);
             controller.Update((float) deltaTime);
 

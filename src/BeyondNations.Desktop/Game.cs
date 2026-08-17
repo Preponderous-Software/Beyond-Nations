@@ -167,7 +167,7 @@ namespace beyondnations.desktop {
 
             // --- #221 imgui user interface ---
             ui = new UiHost(gl, window, input, screens, gameConfig);
-            ui.setDebugMode(options.DebugMode);
+            playerInputController.setDebugMode(options.DebugMode);
             // --- end #221 ---
 
             onFramebufferResize(window.FramebufferSize);
@@ -341,7 +341,8 @@ namespace beyondnations.desktop {
 
             // --- #221 imgui user interface ---
             // Drawn last, so it sits over the world rather than under it.
-            ui?.render(deltaTime, window.FramebufferSize.X, window.FramebufferSize.Y, simulation);
+            ui?.render(deltaTime, window.FramebufferSize.X, window.FramebufferSize.Y, simulation,
+                      playerInputController.isDebugMode(), playerInputController.isInventoryVisible());
             if (ui != null) {
                 if (ui.consumeStartRequest()) {
                     createWorld();

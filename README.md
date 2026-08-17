@@ -2,25 +2,24 @@
 Beyond Nations, previously called the Open Source Game project, started as a collaborative effort between Preponderous Software and the Fairfield Programming Association. It aims to create an open-source game that can serve as a reference for aspiring developers.
 
 ## Quick Start
-To run the game:
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/Preponderous-Software/beyond-nations.git
-   cd beyond-nations
-   ```
+The only prerequisite is the [.NET SDK](https://dotnet.microsoft.com/download) 8.0 or newer. There is no editor to install, no account to create and no licence to obtain.
 
-2. **Open in Unity Hub**
-   - Open Unity Hub
-   - Click "Add" or "Open" and select the cloned `beyond-nations` directory
-   - Use Unity Editor version **6000.0.30f1** (Unity 6 LTS)
+```bash
+git clone https://github.com/Preponderous-Software/beyond-nations.git
+cd beyond-nations
+dotnet run --project src/BeyondNations.Desktop
+```
 
-3. **Play the game**
-   - Unity will load the project and download required packages
-   - The main scene should load automatically (or open from `Assets/Scenes/main.unity`)
-   - Press the Play button to start the game
+That builds the game and opens it. To run the tests instead:
 
-For detailed contribution guidelines, see the [Contributing Guide](./docs/CONTRIBUTING.md).
+```bash
+dotnet test
+```
+
+On Linux the game needs an OpenGL 3.3 capable driver and the usual X11 or Wayland libraries, both of which a desktop install already has.
+
+For detailed contribution guidelines, see the [Contributing Guide](./docs/CONTRIBUTING.md). For how the code is laid out, see the [Architecture Note](./docs/ARCHITECTURE.md).
 
 ## Project Status & CI
 [![CI](https://github.com/Preponderous-Software/beyond-nations/actions/workflows/ci.yml/badge.svg)](https://github.com/Preponderous-Software/beyond-nations/actions/workflows/ci.yml)
@@ -89,14 +88,15 @@ The following controls are available in the game:
 A number of systems combine to create the gameplay experience. Some are already implemented and some are still planned; the [Systems Document](./docs/SYSTEMS.md) lists each one with its current status.
 
 ## Tech Stack
-Our game will be built using the following technologies:
-- [C#](https://docs.microsoft.com/en-us/dotnet/csharp/): This object-oriented programming language will be used to write the game's code.
-- [Unity](https://unity.com/): A popular game engine that provides a framework for designing and developing games.
-- [Blender](https://www.blender.org/): A powerful 3D modeling software that will be used to create the game's visual assets.
-- [JSON](https://www.json.org/json-en.html): A lightweight data format that will be used to store and exchange game data, providing efficient and reliable data persistence.
-- [Git](https://git-scm.com/): A version control system that allows for collaborative development and efficient management of codebase changes.
-- [GitHub](https://github.com/): A web-based Git repository hosting service that enables version control and collaboration for developers.
-- [Visual Studio Code](https://code.visualstudio.com/): A code editor that supports a wide range of programming languages and offers features such as debugging, syntax highlighting, and extensions.
+- [C#](https://docs.microsoft.com/en-us/dotnet/csharp/) on [.NET 8](https://dotnet.microsoft.com/): the whole game, simulation and host alike.
+- [Silk.NET](https://github.com/dotnet/Silk.NET): windowing, OpenGL and input, maintained under the `dotnet` organisation.
+- [Dear ImGui](https://github.com/ImGuiNET/ImGui.NET): the menus, the heads-up display and the info boxes.
+- [FontStashSharp](https://github.com/FontStashSharp/FontStashSharp): the glyph atlas behind world-space nametags.
+- [Git](https://git-scm.com/) and [GitHub](https://github.com/): version control, review and continuous integration.
+
+The game does not use a commercial engine. Everything it draws is a coloured primitive generated in code, so the renderer, camera, input and user interface are written in the repository rather than supplied by a vendor. The reasoning is recorded in the [Engine Migration Rationale](./docs/ENGINE-MIGRATION-RATIONALE.md).
+
+Third-party assets and their licences are listed in [THIRD-PARTY.md](./docs/THIRD-PARTY.md).
 
 ## Inspirations
 ### Medieval Factions
