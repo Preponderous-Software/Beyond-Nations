@@ -35,6 +35,7 @@ namespace beyondnations.desktop.render {
 
         private int drawCalls;
         private int instancesDrawn;
+        private int instancesCulled;
 
         public PrimitiveRenderer(GL gl) {
             this.gl = gl;
@@ -70,6 +71,12 @@ namespace beyondnations.desktop.render {
         public int getDrawCallCount() { return drawCalls; }
         public int getInstancesDrawn() { return instancesDrawn; }
 
+        /**
+        * How many snapshot items the culler rejected on the last frame, and so
+        * how much work the instance buffers were spared (#219).
+        */
+        public int getInstancesCulled() { return instancesCulled; }
+
         public int getInstanceCount(PrimitiveKind kind) {
             return batches[(int) kind].getInstanceCount();
         }
@@ -83,12 +90,22 @@ namespace beyondnations.desktop.render {
         * written, so the simulation cannot be disturbed by having been drawn.
         */
         public void render(WorldSnapshot snapshot, Matrix4x4 view, Matrix4x4 projection) {
+            render(snapshot, view, projection, null);
+        }
+
+        /**
+        * As above, but with a culler (#219) deciding what reaches an instance
+        * buffer at all. A null culler draws everything, which is what the
+        * renderer did before the camera existed.
+        */
+        public void render(WorldSnapshot snapshot, Matrix4x4 view, Matrix4x4 projection, RenderCuller culler) {
             for (int i = 0; i < batches.Length; i++) {
                 batches[i].clear();
             }
 
-            appendAll(snapshot.getGroundItems());
-            appendAll(snapshot.getEntityItems());
+            instancesCulled = 0;
+            appendAll(snapshot.getGroundItems(), culler);
+            appendAll(snapshot.getEntityItems(), culler);
 
             shader.use();
 
@@ -116,10 +133,17 @@ namespace beyondnations.desktop.render {
         * through its interface allocates an enumerator every frame, which is
         * exactly the per-object allocation #218 forbids.
         */
-        private void appendAll(IReadOnlyList<RenderItem> items) {
+        private void appendAll(IReadOnlyList<RenderItem> items, RenderCuller culler) {
             int count = items.Count;
             for (int i = 0; i < count; i++) {
                 RenderItem item = items[i];
+                // The culling decision is taken here, before the instance is
+                // written, so a culled item costs a distance compare rather
+                // than eighty bytes of buffer and a share of a draw call.
+                if (culler != null && !culler.shouldDraw(ref item)) {
+                    instancesCulled++;
+                    continue;
+                }
                 batches[(int) item.kind].add(ref item);
             }
         }
