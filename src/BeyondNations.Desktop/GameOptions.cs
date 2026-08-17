@@ -73,6 +73,13 @@ namespace beyondnations.desktop {
         */
         public bool NoCulling = false;
 
+        /**
+        * Skip world-space nametags. Exists so that a run with labels can be
+        * compared against one without, which is how the label rendering is
+        * shown to put pixels on screen at all. See #222.
+        */
+        public bool NoLabels = false;
+
         public static GameOptions parse(string[] args) {
             GameOptions options = new GameOptions();
             for (int i = 0; i < args.Length; i++) {
@@ -89,6 +96,7 @@ namespace beyondnations.desktop {
                     case "--render-stats":     options.RenderStats = true; break;
                     case "--render-distance":  options.RenderDistance = intAfter(args, ref i, options.RenderDistance); break;
                     case "--no-culling":       options.NoCulling = true; break;
+                    case "--no-labels":        options.NoLabels = true; break;
                     case "--help":
                     case "-h":
                         printUsage();
