@@ -30,6 +30,15 @@ namespace beyondnations.desktop.input {
             return debugMode;
         }
 
+        /**
+        * Lets --debug-mode open with the overlay already on. F1 toggles the
+        * same field, so there is one answer to whether debug mode is on rather
+        * than one per component.
+        */
+        public void setDebugMode(bool debugMode) {
+            this.debugMode = debugMode;
+        }
+
         public bool isInventoryVisible() {
             return inventoryVisible;
         }
