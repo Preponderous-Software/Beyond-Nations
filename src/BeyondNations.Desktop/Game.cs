@@ -7,6 +7,7 @@ using Silk.NET.Windowing;
 using beyondnations;
 using beyondnations.desktop.input;
 using beyondnations.desktop.render;
+using beyondnations.desktop.text;
 
 namespace beyondnations.desktop {
 
@@ -36,6 +37,10 @@ namespace beyondnations.desktop {
 
         private Simulation simulation;
         private readonly WorldSnapshot snapshot = new WorldSnapshot();
+
+        // --- #222 world-space text ---
+        private WorldLabelRenderer labels;
+        // --- end #222 ---
 
         // --- #218 instanced renderer ---
         private PrimitiveRenderer renderer;
@@ -143,6 +148,17 @@ namespace beyondnations.desktop {
                 renderStats = new RenderStatsRecorder();
             }
             // --- end #218 ---
+
+            // --- #222 world-space text ---
+            // Nametags are billboarded quads out of one glyph atlas,
+            // packed once here rather than a Canvas per label.
+            if (!options.NoLabels) {
+                labels = new WorldLabelRenderer(gl);
+                if (labels.isReady()) {
+                    Log.info("label atlas: " + labels.getAtlasWidth() + "x" + labels.getAtlasHeight());
+                }
+            }
+            // --- end #222 ---
 
             onFramebufferResize(window.FramebufferSize);
 
@@ -281,6 +297,10 @@ namespace beyondnations.desktop {
                 renderer.render(snapshot, camera.getViewMatrix(), camera.getProjectionMatrix(), culler);
                 reportRenderDistance(player.getRenderDistance());
                 // --- end #219 ---
+
+                // --- #222 world-space text ---
+                labels?.render(snapshot.getLabels(), camera.getViewMatrix(), camera.getProjectionMatrix());
+                // --- end #222 ---
             }
 
             framesRendered++;
@@ -368,6 +388,20 @@ namespace beyondnations.desktop {
             renderer?.Dispose();
             renderer = null;
             // --- end #218 ---
+
+            // --- #222 world-space text ---
+            // Same reason: the atlas texture, buffers and program belong to the
+            // context, so they go here rather than in Dispose().
+            if (labels != null) {
+                Log.info(string.Format(
+                    "labels: {0} drawn, {1} culled, {2} quads in {3} draw call(s), atlas {4}x{5} with {6} glyphs",
+                    labels.getLabelsDrawn(), labels.getLabelsCulled(), labels.getQuadsDrawn(),
+                    labels.getDrawCallCount(), labels.getAtlasWidth(), labels.getAtlasHeight(),
+                    labels.getPackedGlyphCount()));
+                labels.Dispose();
+                labels = null;
+            }
+            // --- end #222 ---
         }
 
         public WorldSnapshot getSnapshot() {
