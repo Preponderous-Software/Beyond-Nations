@@ -41,6 +41,12 @@ namespace beyondnations.desktop.render {
         private int peakDrawCalls;
         private int peakInstances;
 
+        // --- #219 camera and culling ---
+        private int lastRenderDistance;
+        private int lastCulled;
+        private int peakCulled;
+        // --- end #219 ---
+
         public void beginFrame() {
             if (!collectionsCaptured) {
                 collectionsAtStart0 = GC.CollectionCount(0);
@@ -87,6 +93,25 @@ namespace beyondnations.desktop.render {
         public int getLastInstances() { return lastInstances; }
         public long getSteadyAllocatedBytes() { return steadyAllocatedBytes; }
 
+        // --- #219 camera and culling ---
+        /**
+        * The render distance in force and how many snapshot items the culler
+        * rejected this frame. Until the debug overlay lands (#221), a run with
+        * --render-stats is where the render distance can be read.
+        */
+        public void recordCamera(int renderDistance, int instancesCulled) {
+            lastRenderDistance = renderDistance;
+            lastCulled = instancesCulled;
+            if (instancesCulled > peakCulled) {
+                peakCulled = instancesCulled;
+            }
+        }
+
+        public int getLastRenderDistance() { return lastRenderDistance; }
+        public int getLastCulled() { return lastCulled; }
+        public int getPeakCulled() { return peakCulled; }
+        // --- end #219 ---
+
         /**
         * One line per fact, so a run can be pasted into a pull request without
         * anybody having to interpret it.
@@ -118,6 +143,9 @@ namespace beyondnations.desktop.render {
                 + "  draw calls, peak        {2}\n"
                 + "  instances, last frame   {3}\n"
                 + "  instances, peak         {4}\n"
+                + "  render distance         {18}\n"
+                + "  instances culled, last frame  {19}\n"
+                + "  instances culled, peak        {20}\n"
                 + "  frame time min/med/p95/max ms  {5:F3} / {6:F3} / {7:F3} / {8:F3}\n"
                 + "  frame time mean ms      {9:F3}\n"
                 + "  allocated during first {10} frames, bytes  {11}\n"
@@ -136,7 +164,10 @@ namespace beyondnations.desktop.render {
                 perSteadyFrame,
                 GC.CollectionCount(0) - collectionsAtStart0,
                 GC.CollectionCount(1) - collectionsAtStart1,
-                GC.CollectionCount(2) - collectionsAtStart2);
+                GC.CollectionCount(2) - collectionsAtStart2,
+                lastRenderDistance,
+                lastCulled,
+                peakCulled);
         }
     }
 }

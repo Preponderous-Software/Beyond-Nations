@@ -20,8 +20,8 @@ namespace beyondnations.desktop {
     * fixed steps, so the tick rate is stable and independent of frame rate.
     *
     * Drawing is delegated to PrimitiveRenderer, which turns the world snapshot
-    * into a few instanced draw calls (#218). The camera it is given is the
-    * placeholder #219 replaces; the UI arrives with #221.
+    * into a few instanced draw calls (#218), viewed through the camera and
+    * filtered by the culler that came with #219; the UI arrives with #221.
     */
     public class Game : IDisposable {
         private readonly GameOptions options;
@@ -39,9 +39,14 @@ namespace beyondnations.desktop {
 
         // --- #218 instanced renderer ---
         private PrimitiveRenderer renderer;
-        private readonly PlaceholderCamera camera = new PlaceholderCamera();
         private RenderStatsRecorder renderStats;
         // --- end #218 ---
+
+        // --- #219 camera and culling ---
+        private readonly PlayerCamera camera = new PlayerCamera();
+        private readonly RenderCuller culler = new RenderCuller();
+        private int lastLoggedRenderDistance;
+        // --- end #219 ---
 
         // Fixed-step accumulator
         private readonly double fixedTimeStep;
@@ -146,6 +151,13 @@ namespace beyondnations.desktop {
             // the ImGui port in #221, so starting on the title screen would show
             // an empty window and look like a failure.
             simulation = new Simulation(gameConfig);
+            // --- #219 camera and culling ---
+            if (options.RenderDistance > 0) {
+                applyStartingRenderDistance(simulation.getPlayer(), options.RenderDistance);
+                Log.info("starting render distance: " + simulation.getPlayer().getRenderDistance());
+            }
+            culler.setEnabled(!options.NoCulling);
+            // --- end #219 ---
             // The binding table itself arrives with #217; the default key is N.
             simulation.getPlayer().getStatus().update("Press N to create a nation.");
             screens.goTo(ScreenType.WORLD);
@@ -255,19 +267,76 @@ namespace beyondnations.desktop {
                 // the snapshot, and neither reaches past the other.
                 snapshot.capture(simulation.getEntityRepository(), simulation.getEnvironment());
 
-                // --- #218 instanced renderer ---
-                // The camera is the placeholder #219 replaces; the renderer only
-                // wants a view and a projection and does not care whose they are.
-                camera.follow(simulation.getPlayer().getPosition());
-                renderer.render(snapshot, camera.getViewMatrix(), camera.getProjectionMatrix());
-                // --- end #218 ---
+                // --- #219 camera and culling ---
+                // The camera trails the player exactly as the parented Unity
+                // one did, its far plane is the render distance Page Up and
+                // Page Down move, and the culler drops everything out of the
+                // view volume or past that distance before an instance buffer
+                // is touched.
+                Player player = simulation.getPlayer();
+                MouseLook mouseLook = playerInputController.getMouseLook();
+                camera.setRenderDistance(player.getRenderDistance());
+                camera.follow(player.getPosition(), player.getYaw(), mouseLook.getYawDegrees(), mouseLook.getPitchDegrees());
+                culler.beginFrame(camera);
+                renderer.render(snapshot, camera.getViewMatrix(), camera.getProjectionMatrix(), culler);
+                reportRenderDistance(player.getRenderDistance());
+                // --- end #219 ---
             }
 
             framesRendered++;
+            // --- #219 camera and culling ---
+            renderStats?.recordCamera(
+                simulation != null ? simulation.getPlayer().getRenderDistance() : 0,
+                renderer != null ? renderer.getInstancesCulled() : 0);
+            // --- end #219 ---
             renderStats?.endFrame(
                 renderer != null ? renderer.getDrawCallCount() : 0,
                 renderer != null ? renderer.getInstancesDrawn() : 0);
         }
+
+        // --- #219 camera and culling ---
+        /**
+        * The debug overlay is #221's; until it exists, this is where the render
+        * distance can be seen changing under Page Up and Page Down. Only
+        * changes are logged, so a run is not drowned in one line per frame.
+        */
+        private void reportRenderDistance(int renderDistance) {
+            if (!options.RenderStats || renderDistance == lastLoggedRenderDistance) {
+                return;
+            }
+            lastLoggedRenderDistance = renderDistance;
+            Log.info("render distance: " + renderDistance);
+        }
+
+        public PlayerCamera getCamera() {
+            return camera;
+        }
+
+        public RenderCuller getCuller() {
+            return culler;
+        }
+
+        /**
+        * Steps the render distance towards a target using the same increase and
+        * decrease the Page Up and Page Down bindings call, so a value this flag
+        * cannot be reached by a player is not reachable here either. Stops as
+        * soon as stepping stops changing anything, which is what the clamp on
+        * Player does at either bound.
+        */
+        private static void applyStartingRenderDistance(Player player, int target) {
+            int previous = -1;
+            while (player.getRenderDistance() != previous) {
+                previous = player.getRenderDistance();
+                if (previous + 10 <= target) {
+                    player.increaseRenderDistance();
+                } else if (previous - 10 >= target) {
+                    player.decreaseRenderDistance();
+                } else {
+                    return;
+                }
+            }
+        }
+        // --- end #219 ---
 
         private void onFramebufferResize(Vector2D<int> size) {
             if (gl == null) {

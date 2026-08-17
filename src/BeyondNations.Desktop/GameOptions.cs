@@ -57,6 +57,22 @@ namespace beyondnations.desktop {
         */
         public bool RenderStats = false;
 
+        /**
+        * Start at this render distance instead of the configured one, stepped
+        * through the same increase and decrease Page Up and Page Down use and
+        * so subject to the same bounds. Zero keeps the configured value. This
+        * is what lets a run at fifty and a run at a thousand be compared
+        * without anybody holding a key down. See #219.
+        */
+        public int RenderDistance = 0;
+
+        /**
+        * Submit everything, culling nothing. The counterfactual for the
+        * culling claim: the same world drawn with the culler off says how much
+        * work it was actually saving.
+        */
+        public bool NoCulling = false;
+
         public static GameOptions parse(string[] args) {
             GameOptions options = new GameOptions();
             for (int i = 0; i < args.Length; i++) {
@@ -71,6 +87,8 @@ namespace beyondnations.desktop {
                     case "--no-vsync":         options.VSync = false; break;
                     case "--smoke-resize":     options.SmokeResize = true; break;
                     case "--render-stats":     options.RenderStats = true; break;
+                    case "--render-distance":  options.RenderDistance = intAfter(args, ref i, options.RenderDistance); break;
+                    case "--no-culling":       options.NoCulling = true; break;
                     case "--help":
                     case "-h":
                         printUsage();
@@ -112,6 +130,8 @@ namespace beyondnations.desktop {
             Console.WriteLine("  --no-vsync              do not wait for vertical sync");
             Console.WriteLine("  --smoke-resize          resize part-way through, to exercise resize handling");
             Console.WriteLine("  --render-stats          report draw calls, frame times and allocation on exit");
+            Console.WriteLine("  --render-distance N     start at this render distance; 0 keeps the configured one");
+            Console.WriteLine("  --no-culling            submit every primitive, culling nothing");
         }
     }
 }
