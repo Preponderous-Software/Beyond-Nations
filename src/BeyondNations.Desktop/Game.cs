@@ -8,6 +8,7 @@ using beyondnations;
 using beyondnations.desktop.input;
 using beyondnations.desktop.render;
 using beyondnations.desktop.text;
+using beyondnations.desktop.ui;
 
 namespace beyondnations.desktop {
 
@@ -41,6 +42,10 @@ namespace beyondnations.desktop {
         // --- #222 world-space text ---
         private WorldLabelRenderer labels;
         // --- end #222 ---
+
+        // --- #221 imgui user interface ---
+        private UiHost ui;
+        // --- end #221 ---
 
         // --- #218 instanced renderer ---
         private PrimitiveRenderer renderer;
@@ -160,13 +165,36 @@ namespace beyondnations.desktop {
             }
             // --- end #222 ---
 
+            // --- #221 imgui user interface ---
+            ui = new UiHost(gl, window, input, screens, gameConfig);
+            ui.setDebugMode(options.DebugMode);
+            // --- end #221 ---
+
             onFramebufferResize(window.FramebufferSize);
 
-            // Straight into the world for now. The title and menu screens are
-            // reachable through the state machine but have nothing to draw until
-            // the ImGui port in #221, so starting on the title screen would show
-            // an empty window and look like a failure.
+            // The Unity build opened on the title screen, and now that the
+            // screens exist again so does this. The world is not built until a
+            // screen asks for one, except when --start-screen names it directly.
+            screens.goTo(options.StartScreen);
+            if (screens.isWorldActive()) {
+                createWorld();
+            }
+
+            clock.Start();
+            Log.info("host ready: " + options.TicksPerSecond + " ticks per second");
+        }
+
+        // --- #221 imgui user interface ---
+        /**
+        * Builds the world. Called either because --start-screen named the world
+        * or because a screen asked for a new game. Creating a world is the
+        * host's to do, which is why a screen returns an intent rather than
+        * doing it.
+        */
+        private void createWorld() {
             simulation = new Simulation(gameConfig);
+            simulation.getPlayer().getStatus().update("Press " + KeyBindings.CreateNewNation + " to create a nation.");
+
             // --- #219 camera and culling ---
             if (options.RenderDistance > 0) {
                 applyStartingRenderDistance(simulation.getPlayer(), options.RenderDistance);
@@ -174,13 +202,8 @@ namespace beyondnations.desktop {
             }
             culler.setEnabled(!options.NoCulling);
             // --- end #219 ---
-            // The binding table itself arrives with #217; the default key is N.
-            simulation.getPlayer().getStatus().update("Press N to create a nation.");
-            screens.goTo(ScreenType.WORLD);
-
-            clock.Start();
-            Log.info("host ready: " + options.TicksPerSecond + " ticks per second");
         }
+        // --- end #221 ---
 
         /**
         * Variable rate. Runs once per frame, then advances the simulation by as
@@ -188,6 +211,13 @@ namespace beyondnations.desktop {
         */
         private void onUpdate(double deltaTime) {
             readInput();
+
+            // Housekeeping runs on every screen, not just the world. Before
+            // #221 the host always started in the world, so leaving these below
+            // the guard below was harmless; now that it can open on the title
+            // screen, a run started there would never take its screenshot and
+            // never exit.
+            runHousekeeping();
 
             if (!screens.shouldAdvanceSimulation() || simulation == null) {
                 return;
@@ -210,6 +240,12 @@ namespace beyondnations.desktop {
                 fixedStepsRun++;
             }
 
+        }
+
+        /**
+        * Resize, screenshot and exit, none of which depend on a world existing.
+        */
+        private void runHousekeeping() {
             if (options.SmokeResize && !smokeResizeDone && framesRendered > 10) {
                 smokeResizeDone = true;
                 Vector2D<int> resized = new Vector2D<int>(options.Width / 2, options.Height / 2);
@@ -302,6 +338,19 @@ namespace beyondnations.desktop {
                 labels?.render(snapshot.getLabels(), camera.getViewMatrix(), camera.getProjectionMatrix());
                 // --- end #222 ---
             }
+
+            // --- #221 imgui user interface ---
+            // Drawn last, so it sits over the world rather than under it.
+            ui?.render(deltaTime, window.FramebufferSize.X, window.FramebufferSize.Y, simulation);
+            if (ui != null) {
+                if (ui.consumeStartRequest()) {
+                    createWorld();
+                }
+                if (ui.isQuitRequested()) {
+                    window.Close();
+                }
+            }
+            // --- end #221 ---
 
             framesRendered++;
             // --- #219 camera and culling ---
@@ -402,6 +451,11 @@ namespace beyondnations.desktop {
                 labels = null;
             }
             // --- end #222 ---
+
+            // --- #221 imgui user interface ---
+            ui?.Dispose();
+            ui = null;
+            // --- end #221 ---
         }
 
         public WorldSnapshot getSnapshot() {

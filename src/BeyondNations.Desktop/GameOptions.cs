@@ -80,6 +80,18 @@ namespace beyondnations.desktop {
         */
         public bool NoLabels = false;
 
+        /**
+        * Which screen the game opens on. The Unity build always opened on the
+        * title screen; naming another is how each screen is rendered and
+        * checked without a person clicking through to it. See #221.
+        */
+        public ScreenType StartScreen = ScreenType.TITLE;
+
+        /**
+        * Start with the debug overlay already on, which F1 otherwise toggles.
+        */
+        public bool DebugMode = false;
+
         public static GameOptions parse(string[] args) {
             GameOptions options = new GameOptions();
             for (int i = 0; i < args.Length; i++) {
@@ -97,6 +109,8 @@ namespace beyondnations.desktop {
                     case "--render-distance":  options.RenderDistance = intAfter(args, ref i, options.RenderDistance); break;
                     case "--no-culling":       options.NoCulling = true; break;
                     case "--no-labels":        options.NoLabels = true; break;
+                    case "--debug-mode":       options.DebugMode = true; break;
+                    case "--start-screen":     options.StartScreen = screenAfter(args, ref i); break;
                     case "--help":
                     case "-h":
                         printUsage();
@@ -110,6 +124,24 @@ namespace beyondnations.desktop {
                 }
             }
             return options;
+        }
+
+        private static ScreenType screenAfter(string[] args, ref int i) {
+            if (i + 1 >= args.Length) {
+                Console.Error.WriteLine("missing value after " + args[i]);
+                System.Environment.Exit(2);
+            }
+            i++;
+            switch (args[i].ToLowerInvariant()) {
+                case "title":     return ScreenType.TITLE;
+                case "main-menu": return ScreenType.MAIN_MENU;
+                case "config":    return ScreenType.CONFIG;
+                case "world":     return ScreenType.WORLD;
+                case "pause":     return ScreenType.PAUSE;
+            }
+            Console.Error.WriteLine("unknown screen: " + args[i] + " (expected title, main-menu, config, world or pause)");
+            System.Environment.Exit(2);
+            return ScreenType.TITLE;
         }
 
         private static int intAfter(string[] args, ref int i, int fallback) {
