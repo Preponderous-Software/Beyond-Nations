@@ -329,17 +329,26 @@ namespace beyondnationstests.desktop.input {
         }
 
         [Fact]
-        public void takeScreenshot_isEdgeTriggered_andReportsNotYetImplemented() {
+        public void takeScreenshot_isLeftEntirelyToTheHost() {
+            // Capture needs a framebuffer, so Game.readInput() owns F12 and
+            // reports its own status. This controller must not touch the
+            // status line for that key: it used to claim "Screenshot capture
+            // is not implemented yet." on the same frame the host had already
+            // written the PNG, so the message the player read was the
+            // opposite of what happened (#246).
             Simulation simulation = createSimulation();
             Player player = simulation.getPlayer();
             FakeInputSource source = new FakeInputSource();
             InputService inputService = new InputService(source);
             PlayerInputController controller = new PlayerInputController();
+            string statusBeforePress = player.getStatus().getStatus();
 
             source.press(Key.F12);
             inputService.update();
             controller.update(simulation, inputService);
-            Assert.Equal("Screenshot capture is not implemented yet.", player.getStatus().getStatus());
+
+            Assert.Equal(statusBeforePress, player.getStatus().getStatus());
+            Assert.DoesNotContain("Screenshot", player.getStatus().getStatus());
         }
     }
 }

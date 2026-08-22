@@ -67,11 +67,9 @@ namespace beyondnations.desktop {
         private int fixedStepsRun;
         private readonly Stopwatch clock = new Stopwatch();
 
-        // Screenshot capture (#224). The key binding itself is minimal and
-        // temporary -- #217 owns the real binding table -- but the capture
-        // path (glReadPixels -> PNG) lives here so it can be exercised
-        // headlessly via --screenshot-after-frames.
-        private bool screenshotKeyWasDown;
+        // Screenshot capture (#224). The capture path (glReadPixels -> PNG)
+        // lives here so it can be exercised headlessly via
+        // --screenshot-after-frames as well as from the F12 binding (#246).
         private bool screenshotAfterFramesDone;
         private string lastScreenshotPath;
 
@@ -107,8 +105,8 @@ namespace beyondnations.desktop {
         /**
         * Reads the current framebuffer and writes it as a PNG under
         * AppDataPaths.getScreenshotsDirectory(). Public so it can be
-        * invoked both from the (minimal, #217-owned) key binding below and
-        * from --screenshot-after-frames for headless verification.
+        * invoked both from the F12 binding below and from
+        * --screenshot-after-frames for headless verification.
         */
         public string takeScreenshot() {
             Vector2D<int> size = window.FramebufferSize;
@@ -266,8 +264,9 @@ namespace beyondnations.desktop {
         /**
         * The binding table lives in KeyBindings and is applied by
         * PlayerInputController (src/BeyondNations.Desktop/input); see #217.
-        * Escape is the one binding that stays here, since toggling screens can
-        * close the window, which only the host owns.
+        * Two bindings stay here because neither one acts on the simulation:
+        * Escape, since toggling screens can close the window, and F12, since
+        * capture reads the framebuffer. Both are things only the host owns.
         */
         private void readInput() {
             if (inputService == null) {
@@ -282,25 +281,42 @@ namespace beyondnations.desktop {
                 }
             }
 
-            // Screenshot key, preserved from the original KeyBindings.takeScreenshot
-            // (F12). This is deliberately minimal -- #217 owns the real binding
-            // table -- it just proves the capture path still works from a keypress.
-            bool screenshotKeyIsDown = false;
-            foreach (IKeyboard keyboard in input.Keyboards) {
-                if (keyboard.IsKeyPressed(Key.F12)) {
-                    screenshotKeyIsDown = true;
-                }
+            // --- #246 ---
+            // Capture reads the framebuffer, so the screenshot key stays with
+            // the host rather than moving into PlayerInputController along with
+            // the rest of the bindings. It is read from the binding table and
+            // edge-detected by InputService like every other key, and it sits
+            // above the world check so a screenshot can be taken on any screen.
+            if (inputService.wasPressedThisFrame(KeyBindings.TakeScreenshot)) {
+                captureScreenshotAndReport();
             }
-            if (screenshotKeyIsDown && !screenshotKeyWasDown) {
-                takeScreenshot();
-            }
-            screenshotKeyWasDown = screenshotKeyIsDown;
+            // --- end #246 ---
 
             if (simulation == null || !screens.isWorldActive()) {
                 return;
             }
 
             playerInputController.update(simulation, inputService);
+        }
+
+        /**
+        * Takes a screenshot and reports the outcome on the player's status
+        * line, which is the game's only in-world feedback channel. A capture
+        * that succeeds silently reads exactly like a dead key, and one that
+        * throws would otherwise take the window down with it.
+        */
+        private void captureScreenshotAndReport() {
+            string message;
+            try {
+                message = "Screenshot saved to " + takeScreenshot() + ".";
+            }
+            catch (Exception exception) {
+                Log.error("Screenshot capture failed: " + exception.Message);
+                message = "Screenshot capture failed: " + exception.Message;
+            }
+            if (simulation != null) {
+                simulation.getPlayer().getStatus().update(message);
+            }
         }
 
         /**

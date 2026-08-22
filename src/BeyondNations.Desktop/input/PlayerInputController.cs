@@ -145,12 +145,11 @@ namespace beyondnations.desktop.input {
                     new TeleportAllPawnsCommand(simulation.getEntityRepository(), simulation.getRandom())
                         .execute(player));
             }
-            if (inputService.wasPressedThisFrame(KeyBindings.TakeScreenshot)) {
-                // Screenshot capture needs a framebuffer to read from; the
-                // renderer arrives with #218. The binding is live and
-                // edge-triggered, it just has nothing to call yet.
-                player.getStatus().update("Screenshot capture is not implemented yet.");
-            }
+            // KeyBindings.TakeScreenshot is deliberately absent from this
+            // table: capture needs a framebuffer to read from, so it is
+            // handled by the host in Game.readInput() and reports its own
+            // status from there (#246). Handling it here as well would have
+            // the world screen fire twice on one press.
         }
 
         private void runIfDebugMode(Player player, string actionDescription, System.Action action) {
