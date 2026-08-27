@@ -69,8 +69,9 @@ namespace beyondnations.desktop.render {
         }
 
         /**
-        * Groundwork for #173: the view is a mode on one camera, so switching
-        * is this call and nothing else.
+        * What V does (#173): the view is a mode on one camera, so switching is
+        * this call and nothing else. The host additionally drops the player
+        * from the snapshot while the eye is on top of them.
         */
         public void toggleMode() {
             mode = mode == CameraMode.ThirdPerson ? CameraMode.FirstPerson : CameraMode.ThirdPerson;

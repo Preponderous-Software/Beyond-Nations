@@ -350,5 +350,24 @@ namespace beyondnationstests.desktop.input {
             Assert.Equal(statusBeforePress, player.getStatus().getStatus());
             Assert.DoesNotContain("Screenshot", player.getStatus().getStatus());
         }
+
+        [Fact]
+        public void toggleCameraView_isLeftEntirelyToTheHost() {
+            // The camera is the host's, not the simulation's, so Game.readInput()
+            // owns V and reports the new view itself. Handling it here as well
+            // would toggle nothing and would overwrite that report (#173).
+            Simulation simulation = createSimulation();
+            Player player = simulation.getPlayer();
+            FakeInputSource source = new FakeInputSource();
+            InputService inputService = new InputService(source);
+            PlayerInputController controller = new PlayerInputController();
+            string statusBeforePress = player.getStatus().getStatus();
+
+            source.press(Key.V);
+            inputService.update();
+            controller.update(simulation, inputService);
+
+            Assert.Equal(statusBeforePress, player.getStatus().getStatus());
+        }
     }
 }

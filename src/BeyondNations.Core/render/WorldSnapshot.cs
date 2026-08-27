@@ -68,6 +68,24 @@ namespace beyondnations {
         * The environment may be null, which yields entities with no ground.
         */
         public void capture(EntityRepository entityRepository, Environment environment) {
+            capture(entityRepository, environment, null);
+        }
+
+        /**
+        * As above, but omitting one entity entirely: its primitives and its
+        * label both.
+        *
+        * The first-person camera (#173) puts the eye a little above the
+        * player's own capsule and only a fraction of a unit from it, so at any
+        * downward pitch the player would be looking straight at themselves.
+        * Which entity the camera is attached to is the host's business, so the
+        * host names it rather than the simulation inferring it, and nothing
+        * about the entity is changed to achieve it -- setVisible already means
+        * something else (being inside a settlement) and is not borrowed here.
+        *
+        * A null id hides nothing, which is what the two-argument form passes.
+        */
+        public void capture(EntityRepository entityRepository, Environment environment, EntityId hiddenEntityId) {
             entityItems.Clear();
             groundItems.Clear();
             labels.Clear();
@@ -81,6 +99,9 @@ namespace beyondnations {
             for (int e = 0; e < entityCount; e++) {
                 Entity entity = entityRepository.getEntityAt(e);
                 if (entity.isMarkedForDeletion() || !entity.isVisible()) {
+                    continue;
+                }
+                if (hiddenEntityId != null && hiddenEntityId.Equals(entity.getId())) {
                     continue;
                 }
 
