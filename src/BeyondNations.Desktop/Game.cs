@@ -168,6 +168,14 @@ namespace beyondnations.desktop {
             playerInputController.setDebugMode(options.DebugMode);
             // --- end #221 ---
 
+            // --- #173 ---
+            // The view is a mode on the one camera, so opening in first person
+            // is the same call V makes and nothing more.
+            if (options.FirstPerson) {
+                camera.setMode(CameraMode.FirstPerson);
+            }
+            // --- end #173 ---
+
             onFramebufferResize(window.FramebufferSize);
 
             // The Unity build opened on the title screen, and now that the
@@ -264,9 +272,12 @@ namespace beyondnations.desktop {
         /**
         * The binding table lives in KeyBindings and is applied by
         * PlayerInputController (src/BeyondNations.Desktop/input); see #217.
-        * Two bindings stay here because neither one acts on the simulation:
-        * Escape, since toggling screens can close the window, and F12, since
-        * capture reads the framebuffer. Both are things only the host owns.
+        * Three bindings stay here because none of them acts on the simulation:
+        * Escape, since toggling screens can close the window; F12, since
+        * capture reads the framebuffer; and V, since the view is a mode on the
+        * host's camera. All three are things only the host owns. Escape and
+        * F12 sit above the world check because they mean something on every
+        * screen; V sits below it, because the view only matters in the world.
         */
         private void readInput() {
             if (inputService == null) {
@@ -295,6 +306,20 @@ namespace beyondnations.desktop {
             if (simulation == null || !screens.isWorldActive()) {
                 return;
             }
+
+            // --- #173 ---
+            // The camera belongs to the host, not to the simulation, so the
+            // view key is read here rather than in PlayerInputController along
+            // with the keys that issue commands. Below the world check, since
+            // there is nothing to look at from the menus.
+            if (inputService.wasPressedThisFrame(KeyBindings.ToggleCameraView)) {
+                camera.toggleMode();
+                simulation.getPlayer().getStatus().update(
+                    camera.getMode() == CameraMode.FirstPerson
+                        ? "First-person view."
+                        : "Third-person view.");
+            }
+            // --- end #173 ---
 
             playerInputController.update(simulation, inputService);
         }
@@ -329,11 +354,25 @@ namespace beyondnations.desktop {
             gl.Clear((uint) (ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit));
 
             if (simulation != null && screens.isWorldActive()) {
+                Player player = simulation.getPlayer();
+
                 // The snapshot is rebuilt into the same buffers every frame and
                 // is what the renderer draws from. Capturing it here keeps the
                 // seam honest: the host reads the simulation, the renderer reads
                 // the snapshot, and neither reaches past the other.
-                snapshot.capture(simulation.getEntityRepository(), simulation.getEnvironment());
+                //
+                // --- #173 ---
+                // In first person the eye sits just above the player's own
+                // capsule, close enough that any downward pitch looks straight
+                // at it, so the player is left out of the snapshot rather than
+                // drawn and then looked through. Nothing on the entity changes:
+                // the host names what its camera is attached to and the
+                // simulation omits it for this frame only.
+                // --- end #173 ---
+                snapshot.capture(
+                    simulation.getEntityRepository(),
+                    simulation.getEnvironment(),
+                    camera.getMode() == CameraMode.FirstPerson ? player.getId() : null);
 
                 // --- #219 camera and culling ---
                 // The camera trails the player exactly as the parented Unity
@@ -341,7 +380,6 @@ namespace beyondnations.desktop {
                 // Page Down move, and the culler drops everything out of the
                 // view volume or past that distance before an instance buffer
                 // is touched.
-                Player player = simulation.getPlayer();
                 MouseLook mouseLook = playerInputController.getMouseLook();
                 camera.setRenderDistance(player.getRenderDistance());
                 camera.follow(player.getPosition(), player.getYaw(), mouseLook.getYawDegrees(), mouseLook.getPitchDegrees());

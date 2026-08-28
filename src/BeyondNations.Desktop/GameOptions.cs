@@ -92,6 +92,14 @@ namespace beyondnations.desktop {
         */
         public bool DebugMode = false;
 
+        /**
+        * Open in first person rather than the trailing third-person view the
+        * Unity build had. V toggles the same camera mid-run; this exists so a
+        * screenshot of the first-person framing can be taken without a person
+        * pressing it. See #173.
+        */
+        public bool FirstPerson = false;
+
         public static GameOptions parse(string[] args) {
             GameOptions options = new GameOptions();
             for (int i = 0; i < args.Length; i++) {
@@ -110,6 +118,7 @@ namespace beyondnations.desktop {
                     case "--no-culling":       options.NoCulling = true; break;
                     case "--no-labels":        options.NoLabels = true; break;
                     case "--debug-mode":       options.DebugMode = true; break;
+                    case "--first-person":     options.FirstPerson = true; break;
                     case "--start-screen":     options.StartScreen = screenAfter(args, ref i); break;
                     case "--help":
                     case "-h":
@@ -158,20 +167,37 @@ namespace beyondnations.desktop {
             return parsed;
         }
 
+        /**
+        * The text --help prints, returned rather than written so that it can be
+        * read back and checked against the switch block above. It used to be a
+        * run of Console.WriteLine calls with no way to assert on it, and four
+        * options had gone missing from it unnoticed (#249).
+        */
+        public static string getUsageText() {
+            return string.Join(System.Environment.NewLine, new string[] {
+                "Beyond Nations",
+                "",
+                "  --width N               window width          (default 1280)",
+                "  --height N              window height         (default 720)",
+                "  --ticks-per-second N    simulation rate       (default 50)",
+                "  --exit-after-frames N   render N frames then exit; 0 runs until closed",
+                "  --screenshot-after-frames N  take a screenshot once N frames have rendered; 0 disables",
+                "  --seed N                world seed; 0 picks one",
+                "  --no-vsync              do not wait for vertical sync",
+                "  --smoke-resize          resize part-way through, to exercise resize handling",
+                "  --render-stats          report draw calls, frame times and allocation on exit",
+                "  --render-distance N     start at this render distance; 0 keeps the configured one",
+                "  --no-culling            submit every primitive, culling nothing",
+                "  --no-labels             draw no world-space nametags",
+                "  --first-person          open in first person; V toggles the view mid-run",
+                "  --debug-mode            open with the F1 debug overlay already on",
+                "  --start-screen NAME     open on title, main-menu, config, world or pause",
+                "  --help, -h              print this and exit"
+            });
+        }
+
         private static void printUsage() {
-            Console.WriteLine("Beyond Nations");
-            Console.WriteLine();
-            Console.WriteLine("  --width N               window width          (default 1280)");
-            Console.WriteLine("  --height N              window height         (default 720)");
-            Console.WriteLine("  --ticks-per-second N    simulation rate       (default 50)");
-            Console.WriteLine("  --exit-after-frames N   render N frames then exit; 0 runs until closed");
-            Console.WriteLine("  --screenshot-after-frames N  take a screenshot once N frames have rendered; 0 disables");
-            Console.WriteLine("  --seed N                world seed; 0 picks one");
-            Console.WriteLine("  --no-vsync              do not wait for vertical sync");
-            Console.WriteLine("  --smoke-resize          resize part-way through, to exercise resize handling");
-            Console.WriteLine("  --render-stats          report draw calls, frame times and allocation on exit");
-            Console.WriteLine("  --render-distance N     start at this render distance; 0 keeps the configured one");
-            Console.WriteLine("  --no-culling            submit every primitive, culling nothing");
+            Console.WriteLine(getUsageText());
         }
     }
 }

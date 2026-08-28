@@ -26,6 +26,7 @@ The game takes arguments that make it checkable without a person watching it, wh
 | `--screenshot-after-frames N` | write a PNG and carry on |
 | `--render-stats` | report draw calls, instance counts and frame times on exit |
 | `--debug-mode` | open with the F1 overlay already on |
+| `--first-person` | open in first person, which `V` otherwise toggles |
 | `--help` | list every switch |
 
 ### Troubleshooting

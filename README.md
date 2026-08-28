@@ -71,6 +71,7 @@ The following controls are available in the game:
 | `B` | Build stall |
 | `I` | Toggle the inventory display (shown by default) |
 | `Insert` | Toggle auto-walk |
+| `V` | Switch between the third-person and first-person view |
 | `Page Up` | Increase render distance |
 | `Page Down` | Decrease render distance |
 | `Escape` | Pause / unpause; back out of a menu; quit from the main menu |
