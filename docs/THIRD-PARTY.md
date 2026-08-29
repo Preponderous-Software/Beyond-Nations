@@ -37,9 +37,20 @@ Restored from nuget.org at build time; none is vendored into this repository.
 | Package | Used for | Licence |
 | --- | --- | --- |
 | `Silk.NET.Windowing`, `Silk.NET.OpenGL`, `Silk.NET.Input` | Window, GL context and input in the desktop host | MIT |
+| `Silk.NET.OpenGL.Extensions.ImGui` | The GL backend and input plumbing behind Dear ImGui | MIT |
+| `ImGui.NET` | The menus, the heads-up display and the info boxes | MIT |
 | `FontStashSharp` | Glyph atlas packing and text layout | MIT |
 | `StbImageWriteSharp` | PNG encoding for screenshots | Public domain / MIT |
-| `xunit`, `Microsoft.NET.Test.Sdk` | Tests only; not shipped | Apache-2.0 / MIT |
+| `xunit`, `xunit.runner.visualstudio`, `Microsoft.NET.Test.Sdk` | Tests only; not shipped | Apache-2.0 / MIT |
+
+`ImGui.NET` is a managed wrapper around [Dear ImGui](https://github.com/ocornut/imgui),
+which is MIT-licensed in its own right. It is the one package here that carries a
+**native** binary — `cimgui` — restored alongside the managed assembly and copied
+into the build output, so it travels with anything the host ships. That native
+binary is why the version is pinned to 1.90.8.1: the one shipped with 1.91.6.1 is
+built against GLIBC 2.38 and will not load on an older distribution. The pin is
+recorded beside the `PackageReference` in
+`src/BeyondNations.Desktop/BeyondNations.Desktop.csproj`. See #221.
 
 `BeyondNations.Core` has **no** package dependencies at all. That is deliberate:
 the simulation is meant to build and run with nothing but the .NET SDK.
