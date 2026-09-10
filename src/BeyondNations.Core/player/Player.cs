@@ -110,8 +110,8 @@ namespace beyondnations {
             Vector3 horizontalVelocity = getForward() * forwardAmount * currentSpeed;
             setVelocity(new Vector3(horizontalVelocity.X, getVelocity().Y, horizontalVelocity.Z));
 
-            if (energy < 90 && getInventory().getNumItems(ItemType.APPLE) > 0) {
-                eatApple();
+            if (energy < 90) {
+                eatIfCarryingFood();
             }
 
             energy -= metabolism;
@@ -240,9 +240,13 @@ namespace beyondnations {
             setCurrentSettlementId(null);
         }
 
-        private void eatApple() {
-            getInventory().removeItem(ItemType.APPLE, 1);
-            energy += 10;
+        /**
+        * Eats the most nourishing food carried, if any. Which item types count as
+        * food, and what each restores, belongs to FoodItems (#83) -- an apple is
+        * no longer the only thing the player will eat.
+        */
+        private void eatIfCarryingFood() {
+            energy += FoodItems.consumeMostNourishingFood(getInventory());
         }
     }
 }

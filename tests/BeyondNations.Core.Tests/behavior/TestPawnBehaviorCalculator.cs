@@ -529,5 +529,83 @@ namespace beyondnationstests {
 
             // cleanup
         }
+
+        /**
+            * Input: pawn is outside a settlement, low on energy and carrying nothing edible
+            * Expected output: GO_TO_HOME_SETTLEMENT
+        */
+        [Fact]
+        public void testComputeBehaviorType_OutsideSettlementAndHungryWithNoFood_ShouldGoHome() {
+            // prepare
+            EntityRepository entityRepository = new EntityRepository(random);
+            Environment environment = new Environment(5, 5, entityRepository, random);
+            NationRepository nationRepository = new NationRepository(random);
+            GameConfig gameConfig = new GameConfig();
+            TickCounter tickCounter = new TickCounter();
+
+            Pawn pawn = makeHungryPawnWithADistantHome(entityRepository, nationRepository);
+
+            PawnBehaviorCalculator calculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository, gameConfig, tickCounter, random);
+
+            // execute
+            BehaviorType behaviorType = calculator.computeBehaviorType(pawn);
+
+            // verify
+            Assert.Equal(BehaviorType.GO_TO_HOME_SETTLEMENT, behaviorType);
+
+            // cleanup
+        }
+
+        /**
+            * Input: the same pawn, carrying chicken meat instead of nothing
+            * Expected output: not GO_TO_HOME_SETTLEMENT -- the meat is food, so the
+            * pawn eats on the next energy step rather than walking home for an apple (#83)
+        */
+        [Fact]
+        public void testComputeBehaviorType_OutsideSettlementAndHungryWithChickenMeat_ShouldNotGoHomeForFood() {
+            // prepare: identical to the test above but for the meat
+            EntityRepository entityRepository = new EntityRepository(random);
+            Environment environment = new Environment(5, 5, entityRepository, random);
+            NationRepository nationRepository = new NationRepository(random);
+            GameConfig gameConfig = new GameConfig();
+            TickCounter tickCounter = new TickCounter();
+
+            Pawn pawn = makeHungryPawnWithADistantHome(entityRepository, nationRepository);
+            pawn.getInventory().addItem(ItemType.CHICKEN_MEAT, 1);
+
+            PawnBehaviorCalculator calculator = new PawnBehaviorCalculator(environment, entityRepository, nationRepository, gameConfig, tickCounter, random);
+
+            // execute
+            BehaviorType behaviorType = calculator.computeBehaviorType(pawn);
+
+            // verify: nationless, no settlement within join range and not enough
+            // wood to found one, so the pawn goes back to gathering
+            Assert.Equal(BehaviorType.GATHER_RESOURCES, behaviorType);
+
+            // cleanup
+        }
+
+        /**
+        * A nationless pawn at the origin, below the energy threshold, holding coins
+        * and a home settlement far enough away that it is out of join range. The
+        * only thing separating the two food tests above is what it is carrying.
+        */
+        private Pawn makeHungryPawnWithADistantHome(EntityRepository entityRepository, NationRepository nationRepository) {
+            Pawn homeLeader = new Pawn(new Vector3(1000, 0, 1000), "test", random);
+            entityRepository.addEntity(homeLeader);
+            Nation homeNation = new Nation("test", homeLeader.getId(), random);
+            nationRepository.addNation(homeNation);
+            Settlement home = new Settlement(new Vector3(1000, 0, 1000), homeNation.getId(), homeNation.getColor(), homeNation.getName(), random);
+            entityRepository.addEntity(home);
+
+            Pawn pawn = new Pawn(new Vector3(0, 0, 0), "test", random);
+            pawn.setEnergy(10);
+            // A pawn starts with between 50 and 199 coins; the branch under test
+            // needs at least one, so the precondition is pinned rather than rolled.
+            pawn.getInventory().setNumItems(ItemType.COIN, 10);
+            pawn.setHomeSettlementId(home.getId());
+            entityRepository.addEntity(pawn);
+            return pawn;
+        }
     }
 }

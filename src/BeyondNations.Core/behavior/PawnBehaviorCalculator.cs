@@ -228,7 +228,10 @@ namespace beyondnations {
         }
 
         private bool pawnNeedsFood(Pawn pawn) {
-            return pawn.getEnergy() < 80 && pawn.getInventory().getNumItems(ItemType.APPLE) == 0;
+            // Any edible item counts, not just an apple (#83) -- a pawn carrying
+            // chicken meat will eat it on the next energy step, so it has no
+            // reason to go looking for food.
+            return pawn.getEnergy() < 80 && !FoodItems.hasFood(pawn.getInventory());
         }
     }
 }

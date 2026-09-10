@@ -12,6 +12,7 @@ needs a window, which is why each can be exercised by a test — see the [Archit
 | Inventory | Implemented | [`src/BeyondNations.Core/inventory/`](../src/BeyondNations.Core/inventory/), [`src/BeyondNations.Core/item/`](../src/BeyondNations.Core/item/) |
 | Nation | Implemented | [`src/BeyondNations.Core/nation/`](../src/BeyondNations.Core/nation/) |
 | Resource Collection | Implemented | [`src/BeyondNations.Core/command/interact/`](../src/BeyondNations.Core/command/interact/) |
+| Food and Energy | Implemented | [`src/BeyondNations.Core/item/FoodItems.cs`](../src/BeyondNations.Core/item/FoodItems.cs) |
 | Building | Implemented | [`src/BeyondNations.Core/command/settlement/`](../src/BeyondNations.Core/command/settlement/) |
 | Pawn | Implemented | [`src/BeyondNations.Core/entity/entities/Pawn.cs`](../src/BeyondNations.Core/entity/entities/Pawn.cs), [`src/BeyondNations.Core/behavior/`](../src/BeyondNations.Core/behavior/) |
 | Market | Implemented | [`src/BeyondNations.Core/market/`](../src/BeyondNations.Core/market/) |
@@ -39,9 +40,14 @@ The nation system creates and manages nations. Players can create their own nati
 *Planned:* per-nation culture and history, alliances, and conflict between nations.
 
 ## Resource Collection
-Players and pawns collect resources by interacting with the nearest entity in range. A tree yields wood and a rock yields stone, for both. The player can additionally harvest a chicken for chicken meat; pawn gathering targets only trees and rocks. These resources are used to build structures and to trade.
+Players and pawns collect resources by interacting with the nearest entity in range. A tree yields wood and a rock yields stone, for both. The player can additionally harvest a chicken for chicken meat; pawn gathering targets only trees and rocks. These resources are used to build structures, to trade, and — for apples and chicken meat — to eat.
 
 *Planned:* using collected resources as crafting inputs.
+
+## Food and Energy
+The player and every pawn carry an energy level that falls each tick by their own metabolism. A pawn inside a settlement burns energy more slowly than one outside it, and the player's energy does not fall at all while inside one. Reaching zero energy produces a death event and, subject to configuration, a respawn at the home settlement. Energy is restored by eating: below a threshold, the most nourishing edible item carried is consumed and its energy added. Which item types are edible, and how much each restores, is held in one table rather than being named at each call site, so an apple and chicken meat are both food and a pawn carrying either has no reason to go looking for more.
+
+*Planned:* letting pawns harvest a chicken for themselves — the interaction is reachable by the player only, so a pawn can obtain meat by trade but not by hunting.
 
 ## Building
 The building system creates and manages settlements. Players and pawns can found a settlement and build stalls within it.
