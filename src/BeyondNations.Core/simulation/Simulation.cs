@@ -103,9 +103,8 @@ namespace beyondnations {
                             Pawn pawn = (Pawn) entity;
 
                             // update energy
-                            if (pawn.getEnergy() < 90 && pawn.getInventory().getNumItems(ItemType.APPLE) > 0) {
-                                pawn.getInventory().removeItem(ItemType.APPLE, 1);
-                                pawn.setEnergy(pawn.getEnergy() + 10);
+                            if (pawn.getEnergy() < 90) {
+                                pawn.setEnergy(pawn.getEnergy() + FoodItems.consumeMostNourishingFood(pawn.getInventory()));
                             }
 
                             if (pawn.isCurrentlyInSettlement()) {

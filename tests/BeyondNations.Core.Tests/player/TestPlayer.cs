@@ -125,5 +125,67 @@ namespace beyondnationstests {
             Assert.True(player.consumeJumpRequest());
             Assert.False(player.consumeJumpRequest());
         }
+
+        [Fact]
+        public void testHungryPlayerEatsAnApple() {
+            // prepare: energy under the 90 threshold that triggers a meal
+            Player player = makePlayer(25, 50);
+            player.setEnergy(50);
+            player.getInventory().addItem(ItemType.APPLE, 2);
+
+            // run
+            player.fixedUpdate();
+
+            // check: one apple gone, its energy gained less one step of metabolism
+            Assert.Equal(1, player.getInventory().getNumItems(ItemType.APPLE));
+            Assert.True(player.getEnergy() > 50 + FoodItems.getEnergyRestored(ItemType.APPLE) - 1);
+        }
+
+        [Fact]
+        public void testHungryPlayerEatsChickenMeat() {
+            // prepare: meat and nothing else edible, the case that used to leave
+            // the player starving beside a full inventory (#83)
+            Player player = makePlayer(25, 50);
+            player.setEnergy(50);
+            player.getInventory().addItem(ItemType.CHICKEN_MEAT, 2);
+
+            // run
+            player.fixedUpdate();
+
+            // check
+            Assert.Equal(1, player.getInventory().getNumItems(ItemType.CHICKEN_MEAT));
+            Assert.True(player.getEnergy() > 50 + FoodItems.getEnergyRestored(ItemType.CHICKEN_MEAT) - 1);
+        }
+
+        [Fact]
+        public void testWellFedPlayerEatsNothing() {
+            // prepare: above the threshold
+            Player player = makePlayer(25, 50);
+            player.setEnergy(95);
+            player.getInventory().addItem(ItemType.CHICKEN_MEAT, 2);
+            player.getInventory().addItem(ItemType.APPLE, 2);
+
+            // run
+            player.fixedUpdate();
+
+            // check
+            Assert.Equal(2, player.getInventory().getNumItems(ItemType.CHICKEN_MEAT));
+            Assert.Equal(2, player.getInventory().getNumItems(ItemType.APPLE));
+        }
+
+        [Fact]
+        public void testHungryPlayerWithNoFoodEatsNothingAndKeepsItsMaterials() {
+            // prepare
+            Player player = makePlayer(25, 50);
+            player.setEnergy(50);
+            player.getInventory().addItem(ItemType.WOOD, 5);
+
+            // run
+            player.fixedUpdate();
+
+            // check: wood is not food, and energy only fell by metabolism
+            Assert.Equal(5, player.getInventory().getNumItems(ItemType.WOOD));
+            Assert.True(player.getEnergy() < 50);
+        }
     }
 }
